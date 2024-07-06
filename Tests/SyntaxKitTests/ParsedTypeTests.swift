@@ -210,6 +210,8 @@ import SyntaxKit
         }
     }
 
+    // TODO: More tests, for e.g. `descriptionWithoutOptionality()`
+
     private func makeTypeSyntax(for type: String) throws -> TypeSyntax {
         let code = "let variable: \(type)"
         let syntax = Parser.parse(source: code)
