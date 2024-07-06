@@ -15,11 +15,11 @@ public indirect enum ParsedType {
         }
     }
 
-    case plain(TokenSyntax)
+    case identifier(TokenSyntax)
     case optional(of: Self)
     case array(of: Self)
     case dictionary(key: Self, value: Self)
-    case member(base: Self, extension: Self)
+    case member(`extension`: Self, base: Self)
     case metatype(base: Self)
     case unknownGeneric(Self, arguments: [Self])
 
@@ -58,10 +58,10 @@ public indirect enum ParsedType {
                     self = .dictionary(key: key, value: value)
                 default:
                     let arguments = try arguments.map(\.argument).map(Self.init(syntax:))
-                    self = .unknownGeneric(.plain(name), arguments: arguments)
+                    self = .unknownGeneric(.identifier(name), arguments: arguments)
                 }
             } else {
-                self = .plain(name)
+                self = .identifier(name)
             }
         } else if let type = syntax.as(OptionalTypeSyntax.self) {
             self = try .optional(of: Self(syntax: type.wrappedType))
@@ -72,9 +72,9 @@ public indirect enum ParsedType {
             let value = try Self(syntax: type.value)
             self = .dictionary(key: key, value: value)
         } else if let type = syntax.as(MemberTypeSyntax.self) {
-            let kind = try Self(syntax: type.baseType)
-            let extensionType = try Self(syntax: type)
-            self = .member(base: kind, extension: extensionType)
+            let base = try Self(syntax: type.baseType)
+            let `extension` = ParsedType.identifier(type.name)
+            self = .member(extension: `extension`, base: base)
         } else if let type = syntax.as(MetatypeTypeSyntax.self) {
             let baseType = try Self(syntax: type.baseType)
             self = .metatype(base: baseType)
@@ -90,8 +90,8 @@ public indirect enum ParsedType {
 extension ParsedType: CustomStringConvertible {
     public var description: String {
         switch self {
-        case let .plain(type):
-            "\(type)"
+        case let .identifier(type):
+            "\(type.trimmed.description)"
         case let .optional(type):
             "\(type)?"
         case let .array(type):
@@ -111,8 +111,8 @@ extension ParsedType: CustomStringConvertible {
 extension ParsedType: CustomDebugStringConvertible {
     public var debugDescription: String {
         switch self {
-        case let .plain(type):
-            "\(type.debugDescription)"
+        case let .identifier(type):
+            "\(type.trimmed.debugDescription)"
         case let .optional(type):
             "\(type.debugDescription)?"
         case let .array(type):
