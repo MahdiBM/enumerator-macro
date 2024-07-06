@@ -38,7 +38,7 @@ import SyntaxKit
     }
 
     @Test private func parseArrayOfOptionalDoubles() throws {
-        let typeSyntax = try makeTypeSyntax(for: "[Double?]")
+        let typeSyntax = try makeTypeSyntax(for: "[   Double? ]")
         let parsed = try ParsedType(syntax: typeSyntax)
         if case let .array(element) = parsed,
            case let .optional(wrapped) = element,
@@ -91,7 +91,7 @@ import SyntaxKit
     }
 
     @Test private func parseLabeledTupleOfStringAndOptionalInt() throws {
-        let typeSyntax = try makeTypeSyntax(for: "(some: String, thing: Int?)")
+        let typeSyntax = try makeTypeSyntax(for: "(some:String,thing:Int?)")
         let parsed = try ParsedType(syntax: typeSyntax)
         if case let .identifier(syntax) = parsed {
             #expect(syntax.tokenKind == .identifier("String"))
@@ -111,7 +111,7 @@ import SyntaxKit
     }
 
     @Test private func parseDictionaryWithKeyOfBarOfBieAndValueOfAny() throws {
-        let typeSyntax = try makeTypeSyntax(for: "[Bar<Bie>  : Any]")
+        let typeSyntax = try makeTypeSyntax(for: "[  Bar< Bie >:Any]")
         let parsed = try ParsedType(syntax: typeSyntax)
         if case let .dictionary(key, value) = parsed,
            case let .unknownGeneric(firstInKey, arguments) = key,
@@ -128,7 +128,7 @@ import SyntaxKit
     }
 
     @Test private func parseOpaqueSomeOfThing() throws {
-        let typeSyntax = try makeTypeSyntax(for: "some Thing")
+        let typeSyntax = try makeTypeSyntax(for: "some   Thing")
         let parsed = try ParsedType(syntax: typeSyntax)
         if case let .identifier(syntax) = parsed {
             #expect(syntax.tokenKind == .identifier("String"))
@@ -138,7 +138,7 @@ import SyntaxKit
     }
 
     @Test private func parseOpaqueSomeOfBarOfBie() throws {
-        let typeSyntax = try makeTypeSyntax(for: "some Bar<Bie>")
+        let typeSyntax = try makeTypeSyntax(for: "some   Bar<  Bie  >")
         let parsed = try ParsedType(syntax: typeSyntax)
         if case let .identifier(syntax) = parsed {
             #expect(syntax.tokenKind == .identifier("String"))
@@ -148,7 +148,7 @@ import SyntaxKit
     }
 
     @Test private func parseExistentialAnyOfThing() throws {
-        let typeSyntax = try makeTypeSyntax(for: "any Thing")
+        let typeSyntax = try makeTypeSyntax(for: "any   Thing")
         let parsed = try ParsedType(syntax: typeSyntax)
         if case let .identifier(syntax) = parsed {
             #expect(syntax.tokenKind == .identifier("String"))
@@ -158,7 +158,7 @@ import SyntaxKit
     }
 
     @Test private func parseExistentialAnyOfBarOfBie() throws {
-        let typeSyntax = try makeTypeSyntax(for: "any Bar<Bie>")
+        let typeSyntax = try makeTypeSyntax(for: "any Bar<  Bie>")
         let parsed = try ParsedType(syntax: typeSyntax)
         if case let .identifier(syntax) = parsed {
             #expect(syntax.tokenKind == .identifier("String"))
@@ -168,7 +168,7 @@ import SyntaxKit
     }
 
     @Test private func parseNestedTypesOfFirstOfOptionalSecondOfThird() throws {
-        let typeSyntax = try makeTypeSyntax(for: "First.Second?.Third")
+        let typeSyntax = try makeTypeSyntax(for: "First.Second?  .Third")
         let parsed = try ParsedType(syntax: typeSyntax)
         if case let .member(`extension`, base) = parsed,
            case let .identifier(firstSyntax) = `extension`,
@@ -185,7 +185,7 @@ import SyntaxKit
     }
 
     @Test private func parseMetatype() throws {
-        let typeSyntax = try makeTypeSyntax(for: "Foo.Type")
+        let typeSyntax = try makeTypeSyntax(for: "Foo  .Type")
         let parsed = try ParsedType(syntax: typeSyntax)
         if case let .metatype(base) = parsed,
            case let .identifier(firstSyntax) = base {
