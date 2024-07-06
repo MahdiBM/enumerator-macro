@@ -1,6 +1,6 @@
 import SwiftSyntax
 
-public indirect enum ParsedType: CustomStringConvertible {
+public indirect enum ParsedType {
     enum Error: Swift.Error, CustomStringConvertible {
         case unknownParameterType(String, syntaxType: Any.Type)
         case failedToParse(Any.Type)
@@ -19,9 +19,9 @@ public indirect enum ParsedType: CustomStringConvertible {
     case optional(of: Self)
     case array(of: Self)
     case dictionary(key: Self, value: Self)
-    case member(base: Self, extension: TokenSyntax)
+    case member(base: Self, extension: Self)
     case metatype(base: Self)
-    case unknownGeneric(TokenSyntax, arguments: [Self])
+    case unknownGeneric(Self, arguments: [Self])
 
     public func descriptionWithoutOptionality() -> (isOptional: Bool, description: String) {
         switch self {
@@ -38,25 +38,6 @@ public indirect enum ParsedType: CustomStringConvertible {
             true
         default:
             false
-        }
-    }
-
-    public var description: String {
-        switch self {
-        case let .plain(type):
-            "\(type)"
-        case let .optional(type):
-            "\(type)?"
-        case let .array(type):
-            "[\(type)]"
-        case let .dictionary(key, value):
-            "[\(key): \(value)]"
-        case let .member(base, `extension`):
-            "\(base.description).\(`extension`)"
-        case let .metatype(base):
-            "\(base.description).Type"
-        case let .unknownGeneric(name, arguments: arguments):
-            "\(name)<\(arguments.map(\.description).joined(separator: ", "))>"
         }
     }
 
@@ -77,7 +58,7 @@ public indirect enum ParsedType: CustomStringConvertible {
                     self = .dictionary(key: key, value: value)
                 default:
                     let arguments = try arguments.map(\.argument).map(Self.init(syntax:))
-                    self = .unknownGeneric(name, arguments: arguments)
+                    self = .unknownGeneric(.plain(name), arguments: arguments)
                 }
             } else {
                 self = .plain(name)
@@ -92,7 +73,8 @@ public indirect enum ParsedType: CustomStringConvertible {
             self = .dictionary(key: key, value: value)
         } else if let type = syntax.as(MemberTypeSyntax.self) {
             let kind = try Self(syntax: type.baseType)
-            self = .member(base: kind, extension: type.name.trimmed)
+            let extensionType = try Self(syntax: type)
+            self = .member(base: kind, extension: extensionType)
         } else if let type = syntax.as(MetatypeTypeSyntax.self) {
             let baseType = try Self(syntax: type.baseType)
             self = .metatype(base: baseType)
@@ -101,6 +83,48 @@ public indirect enum ParsedType: CustomStringConvertible {
                 syntax.trimmed.description,
                 syntaxType: syntax.syntaxNodeType
             )
+        }
+    }
+}
+
+extension ParsedType: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case let .plain(type):
+            "\(type)"
+        case let .optional(type):
+            "\(type)?"
+        case let .array(type):
+            "[\(type)]"
+        case let .dictionary(key, value):
+            "[\(key): \(value)]"
+        case let .member(base, `extension`):
+            "\(base.description).\(`extension`)"
+        case let .metatype(base):
+            "\(base.description).Type"
+        case let .unknownGeneric(name, arguments: arguments):
+            "\(name)<\(arguments.map(\.description).joined(separator: ", "))>"
+        }
+    }
+}
+
+extension ParsedType: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        switch self {
+        case let .plain(type):
+            "\(type.debugDescription)"
+        case let .optional(type):
+            "\(type.debugDescription)?"
+        case let .array(type):
+            "[\(type.debugDescription)]"
+        case let .dictionary(key, value):
+            "[\(key.debugDescription): \(value.debugDescription)]"
+        case let .member(base, `extension`):
+            "\(base.debugDescription).\(`extension`.debugDescription)"
+        case let .metatype(base):
+            "\(base.debugDescription).Type"
+        case let .unknownGeneric(name, arguments: arguments):
+            "\(name.debugDescription)<\(arguments.map(\.debugDescription).joined(separator: ", "))>"
         }
     }
 }
