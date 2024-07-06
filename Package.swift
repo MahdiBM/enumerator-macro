@@ -26,11 +26,18 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "SyntaxKit"
+            name: "SyntaxKit",
+            dependencies: [
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+            ]
         ),
         .testTarget(
             name: "SyntaxKitTests",
-            dependencies: ["SyntaxKit"]
+            dependencies: [
+                "SyntaxKit",
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftParser", package: "swift-syntax"),
+            ]
         ),
     ]
 )
