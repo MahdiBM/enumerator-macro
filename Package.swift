@@ -10,7 +10,7 @@ let package = Package(
         .iOS(.v17),
         .tvOS(.v17),
         .watchOS(.v10),
-        .visionOS(.v1)
+        .visionOS(.v1),
     ],
     products: [
         .library(
@@ -26,14 +26,15 @@ let package = Package(
         .package(
             url: "https://github.com/apple/swift-testing",
             .upToNextMinor(from: "0.10.0")
-        )
+        ),
     ],
     targets: [
         .target(
             name: "SyntaxKit",
             dependencies: [
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
-            ]
+            ],
+            swiftSettings: swiftSettings
         ),
         .testTarget(
             name: "SyntaxKitTests",
@@ -42,7 +43,15 @@ let package = Package(
                 .product(name: "Testing", package: "swift-testing"),
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftParser", package: "swift-syntax"),
-            ]
+            ],
+            swiftSettings: swiftSettings
         ),
     ]
 )
+
+var swiftSettings: [SwiftSetting] {
+    [
+        .enableExperimentalFeature("ExistentialAny"),
+        .enableExperimentalFeature("AccessLevelOnImport"),
+    ]
+}
