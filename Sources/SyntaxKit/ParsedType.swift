@@ -3,22 +3,31 @@ import SwiftSyntax
 public indirect enum ParsedType {
     enum Error: Swift.Error, CustomStringConvertible {
         case unknownParameterType(String, syntaxType: Any.Type)
-        case failedToParse(Any.Type)
+        case unknownSomeOrAnySpecifier(token: TokenSyntax)
 
         var description: String {
             switch self {
             case let .unknownParameterType(type, syntaxType):
                 "unknownParameterType(\(type), syntaxType: \(syntaxType))"
-            case let .failedToParse(type):
-                "failedToParse(\(type))"
+            case let .unknownSomeOrAnySpecifier(token):
+                "unknownSomeOrAnySpecifier(token: \(token))"
             }
         }
+    }
+
+    public struct TupleElement {
+        public let firstName: TokenSyntax?
+        public let secondName: TokenSyntax?
+        public let type: ParsedType
     }
 
     case identifier(TokenSyntax)
     case optional(of: Self)
     case array(of: Self)
     case dictionary(key: Self, value: Self)
+    case tuple(of: [TupleElement])
+    case some(of: Self)
+    case any(of: Self)
     case member(`extension`: Self, base: Self)
     case metatype(base: Self)
     case unknownGeneric(Self, arguments: [Self])
@@ -71,6 +80,27 @@ public indirect enum ParsedType {
             let key = try Self(syntax: type.key)
             let value = try Self(syntax: type.value)
             self = .dictionary(key: key, value: value)
+        } else if let type = syntax.as(TupleTypeSyntax.self) {
+            let elements = try type.elements.map { element in
+                try TupleElement(
+                    firstName: element.firstName,
+                    secondName: element.secondName,
+                    type: Self(syntax: element.type)
+                )
+            }
+            self = .tuple(of: elements)
+        } else if let type = syntax.as(SomeOrAnyTypeSyntax.self) {
+            let constraint = try Self(syntax: type.constraint)
+            switch type.someOrAnySpecifier.tokenKind {
+            case .keyword(.some):
+                self = .some(of: constraint)
+            case .keyword(.any):
+                self = .any(of: constraint)
+            default:
+                throw Error.unknownSomeOrAnySpecifier(
+                    token: type.someOrAnySpecifier
+                )
+            }
         } else if let type = syntax.as(MemberTypeSyntax.self) {
             let base = try Self(syntax: type.baseType)
             let `extension` = ParsedType.identifier(type.name)
@@ -98,6 +128,12 @@ extension ParsedType: CustomStringConvertible {
             "[\(type)]"
         case let .dictionary(key, value):
             "[\(key): \(value)]"
+        case let .tuple(elements):
+            "(\(elements.map(\.description).joined(separator: ", ")))"
+        case let .some(type):
+            "some \(type)"
+        case let .any(type):
+            "any \(type)"
         case let .member(base, `extension`):
             "\(base.description).\(`extension`)"
         case let .metatype(base):
@@ -119,6 +155,12 @@ extension ParsedType: CustomDebugStringConvertible {
             "[\(type.debugDescription)]"
         case let .dictionary(key, value):
             "[\(key.debugDescription): \(value.debugDescription)]"
+        case let .tuple(elements):
+            "(\(elements.map(\.debugDescription).joined(separator: ", ")))"
+        case let .some(type):
+            "some \(type.debugDescription)"
+        case let .any(type):
+            "any \(type.debugDescription)"
         case let .member(base, `extension`):
             "\(base.debugDescription).\(`extension`.debugDescription)"
         case let .metatype(base):
@@ -126,5 +168,17 @@ extension ParsedType: CustomDebugStringConvertible {
         case let .unknownGeneric(name, arguments: arguments):
             "\(name.debugDescription)<\(arguments.map(\.debugDescription).joined(separator: ", "))>"
         }
+    }
+}
+
+extension ParsedType.TupleElement: CustomStringConvertible {
+    public var description: String {
+        "ParsedType.TupleElement(firstName: \(String(describing: self.firstName)), secondName: \(String(describing: self.secondName)), type: \(self.type))"
+    }
+}
+
+extension ParsedType.TupleElement: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        "ParsedType.TupleElement(firstName: \(String(reflecting: self.firstName)), secondName: \(String(reflecting: self.secondName)), type: \(self.type.debugDescription))"
     }
 }
