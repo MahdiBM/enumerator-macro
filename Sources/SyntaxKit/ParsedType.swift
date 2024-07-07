@@ -1,5 +1,6 @@
 import SwiftSyntax
 
+/// A parsed `TypeSyntax`.
 public indirect enum ParsedType {
     enum Error: Swift.Error, CustomStringConvertible {
         case unknownParameterType(String, syntaxType: Any.Type)
@@ -15,23 +16,47 @@ public indirect enum ParsedType {
         }
     }
 
+    /// An element of a tuple.
     public struct TupleElement {
         public let firstName: TokenSyntax?
         public let secondName: TokenSyntax?
         public let type: ParsedType
     }
-
+    
+    /// A simple type identfier.
+    /// Example: `String`.
     case identifier(TokenSyntax)
+    /// An optional type.
+    /// Example: `Bool?`.
     case optional(of: Self)
+    /// An array.
+    /// Example: `[Double]`, `Array<MyType>`.
     case array(of: Self)
+    /// A dictionary.
+    /// Example: `[String: Bool]`, `[_: UInt]`.
     case dictionary(key: Self, value: Self)
+    /// A tuple.
+    /// Example: `(String)`, `(val1 _: String, val2: _, _ val3: MyType)`.
     case tuple(of: [TupleElement])
+    /// An opaque-`some` type.
+    /// Example: `some StringProtocol`, `some View`.
     case some(of: Self)
+    /// An existential-`any` type.
+    /// Example: `any StringProtocol`, `any Decodable`.
     case any(of: Self)
-    case member(`extension`: Self, base: Self)
+    /// A member type.
+    /// Example: `String.Iterator`, `ContinuousClock.Duration`, `Foo.Bar.Baz`.
+    /// In `String.Iterator`, `String` is `base` and `Iterator` is `extension`.
+    /// In `Foo.Bar.Baz`, `Foo.Bar` is `base` (of another `ParsedType.member`) and `Baz` is `extension`.
+    case member(base: Self, `extension`: Self)
+    /// A metatype.
+    /// Example: `String.Type`, `(some Decodable).Type`, `(Int, String).Type`.
     case metatype(base: Self)
+    /// A generic type other than the ones above (`Optional`, `Array`, `Dictionary`).
+    /// Example: `Collection<String>`, `Result<Response, any Error>`.
     case unknownGeneric(Self, arguments: [Self])
 
+    /// Parses any `TypeSyntax`.
     public init(syntax: some TypeSyntaxProtocol) throws {
         if let type = syntax.as(IdentifierTypeSyntax.self) {
             let name = type.name.trimmed
@@ -86,7 +111,7 @@ public indirect enum ParsedType {
         } else if let type = syntax.as(MemberTypeSyntax.self) {
             let base = try Self(syntax: type.baseType)
             let `extension` = ParsedType.identifier(type.name)
-            self = .member(extension: `extension`, base: base)
+            self = .member(base: base, extension: `extension`)
         } else if let type = syntax.as(MetatypeTypeSyntax.self) {
             let baseType = try Self(syntax: type.baseType)
             self = .metatype(base: baseType)

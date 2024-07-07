@@ -90,8 +90,26 @@ import SyntaxKit
         }
     }
 
-    @Test func parseTupleOfStringAndOptionalInt() throws {
-        let typeSyntax = try makeTypeSyntax(for: "(String, Int, labeled: [MyType])")
+    @Test func parseTupleOfDouble() throws {
+        let typeSyntax = try makeTypeSyntax(for: "(Double)")
+        let parsed = try ParsedType(syntax: typeSyntax)
+        if case var .tuple(elements) = parsed,
+           elements.count == 1 {
+            let first = elements.removeFirst()
+            if case let .identifier(firstSyntax) = first.type,
+               first.firstName == nil,
+               first.secondName == nil {
+                #expect(firstSyntax.tokenKind == .identifier("Double"))
+            } else {
+                #expect(Bool(false), "Unexpected 'ParsedType': \(parsed.debugDescription)")
+            }
+        } else {
+            #expect(Bool(false), "Unexpected 'ParsedType': \(parsed.debugDescription)")
+        }
+    }
+
+    @Test func parseTupleOfStringAndInferretTypeAndArrayOfMyType() throws {
+        let typeSyntax = try makeTypeSyntax(for: "(String, _, labeled: [MyType])")
         let parsed = try ParsedType(syntax: typeSyntax)
         if case var .tuple(elements) = parsed,
            elements.count == 3 {
@@ -109,7 +127,7 @@ import SyntaxKit
                third.firstName?.tokenKind == .identifier("labeled"),
                third.secondName == nil {
                 #expect(firstSyntax.tokenKind == .identifier("String"))
-                #expect(secondSyntax.tokenKind == .identifier("Int"))
+                #expect(secondSyntax.tokenKind == .wildcard)
                 #expect(thirdSyntax.tokenKind == .identifier("MyType"))
             } else {
                 #expect(Bool(false), "Unexpected 'ParsedType': \(parsed.debugDescription)")
@@ -215,10 +233,10 @@ import SyntaxKit
     @Test func parseNestedTypesOfFirstOfOptionalSecondOfThird() throws {
         let typeSyntax = try makeTypeSyntax(for: "First.Second?  .Third")
         let parsed = try ParsedType(syntax: typeSyntax)
-        if case let .member(`extension`, base) = parsed,
+        if case let .member(base, `extension`) = parsed,
            case let .identifier(firstSyntax) = `extension`,
            case let .optional(wrapped) = base,
-           case let .member(`extension`, base) = wrapped,
+           case let .member(base, `extension`) = wrapped,
            case let .identifier(secondSyntax) = `extension`,
            case let .identifier(thirdSyntax) = base {
             #expect(firstSyntax.tokenKind == .identifier("Third"))
@@ -250,6 +268,51 @@ import SyntaxKit
            case let .identifier(secondSyntax) = arguments.first {
             #expect(firstSyntax.tokenKind == .identifier("Bar"))
             #expect(secondSyntax.tokenKind == .identifier("Bie"))
+        } else {
+            #expect(Bool(false), "Unexpected 'ParsedType': \(parsed.debugDescription)")
+        }
+    }
+
+    @Test func parseLabeledMetatypeTupleOfSomeDecodable() throws {
+        let typeSyntax = try makeTypeSyntax(for: "(some Decodable).Type")
+        let parsed = try ParsedType(syntax: typeSyntax)
+        if case let .metatype(type) = parsed,
+           case var .tuple(elements) = type,
+           elements.count == 1 {
+            let first = elements.removeFirst()
+            if case let .some(firstType) = first.type,
+               case let .identifier(firstSyntax) = firstType,
+               first.firstName == nil,
+               first.secondName == nil {
+                #expect(firstSyntax.tokenKind == .identifier("Decodable"))
+            } else {
+                #expect(Bool(false), "Unexpected 'ParsedType': \(parsed.debugDescription)")
+            }
+        } else {
+            #expect(Bool(false), "Unexpected 'ParsedType': \(parsed.debugDescription)")
+        }
+    }
+
+    @Test func parseLabeledMetatypeTupleOfStringAndOptionalInt() throws {
+        let typeSyntax = try makeTypeSyntax(for: "(some _:String, _ thing:Int?).Type")
+        let parsed = try ParsedType(syntax: typeSyntax)
+        if case let .metatype(type) = parsed,
+           case var .tuple(elements) = type,
+           elements.count == 2 {
+            let first = elements.removeFirst()
+            let second = elements.removeFirst()
+            if case let .identifier(firstSyntax) = first.type,
+               first.firstName?.tokenKind == .identifier("some"),
+               first.secondName?.tokenKind == .wildcard,
+               case let .optional(secondWrapped) = second.type,
+               case let .identifier(secondSyntax) = secondWrapped,
+               second.firstName?.tokenKind == .wildcard,
+               second.secondName?.tokenKind == .identifier("thing") {
+                #expect(firstSyntax.tokenKind == .identifier("String"))
+                #expect(secondSyntax.tokenKind == .identifier("Int"))
+            } else {
+                #expect(Bool(false), "Unexpected 'ParsedType': \(parsed.debugDescription)")
+            }
         } else {
             #expect(Bool(false), "Unexpected 'ParsedType': \(parsed.debugDescription)")
         }
