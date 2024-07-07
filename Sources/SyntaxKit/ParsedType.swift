@@ -1,7 +1,7 @@
-import SwiftSyntax
+public import SwiftSyntax
 
 /// A parsed `TypeSyntax`.
-public indirect enum ParsedType {
+public struct ParsedType {
     enum Error: Swift.Error, CustomStringConvertible {
         case unknownParameterType(String, syntaxType: Any.Type)
         case unknownSomeOrAnySpecifier(token: TokenSyntax)
@@ -16,48 +16,56 @@ public indirect enum ParsedType {
         }
     }
 
-    /// An element of a tuple.
-    public struct TupleElement {
-        public let firstName: TokenSyntax?
-        public let secondName: TokenSyntax?
-        public let type: ParsedType
+    public indirect enum BaseType {
+        /// A simple type identifier.
+        /// Example: `String`.
+        case identifier(TokenSyntax)
+        /// An optional type.
+        /// Example: `Bool?`.
+        case optional(of: ParsedType)
+        /// An array.
+        /// Example: `[Double]`, `Array<MyType>`.
+        case array(of: ParsedType)
+        /// A dictionary.
+        /// Example: `[String: Bool]`, `[_: UInt]`.
+        case dictionary(key: ParsedType, value: ParsedType)
+        /// A tuple.
+        /// Example: `(String)`, `(val1 _: String, val2: _, _ val3: MyType)`.
+        case tuple(of: [ParsedType])
+        /// An opaque-`some` type.
+        /// Example: `some StringProtocol`, `some View`.
+        case some(of: ParsedType)
+        /// An existential-`any` type.
+        /// Example: `any StringProtocol`, `any Decodable`.
+        case any(of: ParsedType)
+        /// A member type.
+        /// Example: `String.Iterator`, `ContinuousClock.Duration`, `Foo.Bar.Baz`.
+        /// In `String.Iterator`, `String` is `base` and `Iterator` is `extension`.
+        /// In `Foo.Bar.Baz`, `Foo.Bar` is `base` (of another `ParsedType.member`) and `Baz` is `extension`.
+        case member(base: ParsedType, `extension`: ParsedType)
+        /// A metatype.
+        /// Example: `String.Type`, `(some Decodable).Type`, `(Int, String).Type`.
+        case metatype(base: ParsedType)
+        /// A generic type other than the ones above (`Optional`, `Array`, `Dictionary`).
+        /// Example: `Collection<String>`, `Result<Response, any Error>`.
+        case unknownGeneric(ParsedType, arguments: [ParsedType])
     }
-    
-    /// A simple type identfier.
-    /// Example: `String`.
-    case identifier(TokenSyntax)
-    /// An optional type.
-    /// Example: `Bool?`.
-    case optional(of: Self)
-    /// An array.
-    /// Example: `[Double]`, `Array<MyType>`.
-    case array(of: Self)
-    /// A dictionary.
-    /// Example: `[String: Bool]`, `[_: UInt]`.
-    case dictionary(key: Self, value: Self)
-    /// A tuple.
-    /// Example: `(String)`, `(val1 _: String, val2: _, _ val3: MyType)`.
-    case tuple(of: [TupleElement])
-    /// An opaque-`some` type.
-    /// Example: `some StringProtocol`, `some View`.
-    case some(of: Self)
-    /// An existential-`any` type.
-    /// Example: `any StringProtocol`, `any Decodable`.
-    case any(of: Self)
-    /// A member type.
-    /// Example: `String.Iterator`, `ContinuousClock.Duration`, `Foo.Bar.Baz`.
-    /// In `String.Iterator`, `String` is `base` and `Iterator` is `extension`.
-    /// In `Foo.Bar.Baz`, `Foo.Bar` is `base` (of another `ParsedType.member`) and `Baz` is `extension`.
-    case member(base: Self, `extension`: Self)
-    /// A metatype.
-    /// Example: `String.Type`, `(some Decodable).Type`, `(Int, String).Type`.
-    case metatype(base: Self)
-    /// A generic type other than the ones above (`Optional`, `Array`, `Dictionary`).
-    /// Example: `Collection<String>`, `Result<Response, any Error>`.
-    case unknownGeneric(Self, arguments: [Self])
+
+    public let syntax: TypeSyntax?
+    public let type: BaseType
+
+    private init(syntax: TypeSyntax?, type: BaseType) {
+        self.syntax = syntax
+        self.type = type
+    }
+
+    static func identifier(_ identifier: TokenSyntax) -> Self {
+        ParsedType(syntax: nil, type: .identifier(identifier))
+    }
 
     /// Parses any `TypeSyntax`.
     public init(syntax: some TypeSyntaxProtocol) throws {
+        self.syntax = TypeSyntax(syntax)
         if let type = syntax.as(IdentifierTypeSyntax.self) {
             let name = type.name.trimmed
             if let genericArgumentClause = type.genericArgumentClause,
@@ -65,44 +73,41 @@ public indirect enum ParsedType {
                 let arguments = genericArgumentClause.arguments
                 switch (arguments.count, name.trimmedDescription) { // FIXME: Change from TRIMMED
                 case (1, "Optional"):
-                    self = try .optional(of: Self(syntax: arguments.first!.argument))
+                    self.type = try .optional(of: Self(syntax: arguments.first!.argument))
                 case (1, "Array"):
-                    self = try .array(of: Self(syntax: arguments.first!.argument))
+                    self.type = try .array(of: Self(syntax: arguments.first!.argument))
                 case (2, "Dictionary"):
                     let key = try Self(syntax: arguments.first!.argument)
                     let value = try Self(syntax: arguments.last!.argument)
-                    self = .dictionary(key: key, value: value)
+                    self.type = .dictionary(key: key, value: value)
                 default:
                     let arguments = try arguments.map(\.argument).map(Self.init(syntax:))
-                    self = .unknownGeneric(.identifier(name), arguments: arguments)
+                    let base = ParsedType.identifier(name)
+                    self.type = .unknownGeneric(base, arguments: arguments)
                 }
             } else {
-                self = .identifier(name)
+                self.type = .identifier(name)
             }
         } else if let type = syntax.as(OptionalTypeSyntax.self) {
-            self = try .optional(of: Self(syntax: type.wrappedType))
+            self.type = try .optional(of: Self(syntax: type.wrappedType))
         } else if let type = syntax.as(ArrayTypeSyntax.self) {
-            self = try .array(of: Self(syntax: type.element))
+            self.type = try .array(of: Self(syntax: type.element))
         } else if let type = syntax.as(DictionaryTypeSyntax.self) {
             let key = try Self(syntax: type.key)
             let value = try Self(syntax: type.value)
-            self = .dictionary(key: key, value: value)
+            self.type = .dictionary(key: key, value: value)
         } else if let type = syntax.as(TupleTypeSyntax.self) {
-            let elements = try type.elements.map { element in
-                try TupleElement(
-                    firstName: element.firstName,
-                    secondName: element.secondName,
-                    type: Self(syntax: element.type)
-                )
+            let elements = try type.elements.map {
+                try Self(syntax: $0.type)
             }
-            self = .tuple(of: elements)
+            self.type = .tuple(of: elements)
         } else if let type = syntax.as(SomeOrAnyTypeSyntax.self) {
             let constraint = try Self(syntax: type.constraint)
             switch type.someOrAnySpecifier.tokenKind {
             case .keyword(.some):
-                self = .some(of: constraint)
+                self.type = .some(of: constraint)
             case .keyword(.any):
-                self = .any(of: constraint)
+                self.type = .any(of: constraint)
             default:
                 throw Error.unknownSomeOrAnySpecifier(
                     token: type.someOrAnySpecifier
@@ -111,10 +116,10 @@ public indirect enum ParsedType {
         } else if let type = syntax.as(MemberTypeSyntax.self) {
             let base = try Self(syntax: type.baseType)
             let `extension` = ParsedType.identifier(type.name)
-            self = .member(base: base, extension: `extension`)
+            self.type = .member(base: base, extension: `extension`)
         } else if let type = syntax.as(MetatypeTypeSyntax.self) {
             let baseType = try Self(syntax: type.baseType)
-            self = .metatype(base: baseType)
+            self.type = .metatype(base: baseType)
         } else {
             throw Error.unknownParameterType(
                 syntax.trimmed.description,
@@ -125,6 +130,18 @@ public indirect enum ParsedType {
 }
 
 extension ParsedType: CustomStringConvertible {
+    public var description: String {
+        "ParsedType(syntax: \(String(describing: self.syntax)), type: \(self.type))"
+    }
+}
+
+extension ParsedType: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        "ParsedType(syntax: \(String(reflecting: self.syntax)), type: \(self.type.debugDescription))"
+    }
+}
+
+extension ParsedType.BaseType: CustomStringConvertible {
     public var description: String {
         switch self {
         case let .identifier(type):
@@ -151,7 +168,7 @@ extension ParsedType: CustomStringConvertible {
     }
 }
 
-extension ParsedType: CustomDebugStringConvertible {
+extension ParsedType.BaseType: CustomDebugStringConvertible {
     public var debugDescription: String {
         switch self {
         case let .identifier(type):
@@ -175,17 +192,5 @@ extension ParsedType: CustomDebugStringConvertible {
         case let .unknownGeneric(name, arguments: arguments):
             "\(name.debugDescription)<\(arguments.map(\.debugDescription).joined(separator: ", "))>"
         }
-    }
-}
-
-extension ParsedType.TupleElement: CustomStringConvertible {
-    public var description: String {
-        "ParsedType.TupleElement(firstName: \(String(describing: self.firstName)), secondName: \(String(describing: self.secondName)), type: \(self.type))"
-    }
-}
-
-extension ParsedType.TupleElement: CustomDebugStringConvertible {
-    public var debugDescription: String {
-        "ParsedType.TupleElement(firstName: \(String(reflecting: self.firstName)), secondName: \(String(reflecting: self.secondName)), type: \(self.type.debugDescription))"
     }
 }
