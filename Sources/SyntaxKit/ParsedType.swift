@@ -32,24 +32,6 @@ public indirect enum ParsedType {
     case metatype(base: Self)
     case unknownGeneric(Self, arguments: [Self])
 
-    public func descriptionWithoutOptionality() -> (isOptional: Bool, description: String) {
-        switch self {
-        case let .optional(type):
-            (true, type.description)
-        default:
-            (false, self.description)
-        }
-    }
-
-    public var isOptional: Bool {
-        switch self {
-        case .optional:
-            true
-        default:
-            false
-        }
-    }
-
     public init(syntax: some TypeSyntaxProtocol) throws {
         if let type = syntax.as(IdentifierTypeSyntax.self) {
             let name = type.name.trimmed
