@@ -4,7 +4,7 @@ concurrency:
   cancel-in-progress: true
 on:
   pull_request: { types: [opened, reopened, synchronize, ready_for_review] }
-  push: { branches: [ main ] }
+  push: { branches: [main] }
 
 jobs:
   main-tests:
@@ -14,5 +14,6 @@ jobs:
       with_tsan: true
       with_api_check: true
       with_gh_codeql: false
+      extra_flags: --enable-swift-testing
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
