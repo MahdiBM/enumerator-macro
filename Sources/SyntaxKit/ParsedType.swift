@@ -71,12 +71,12 @@ public struct ParsedType {
             if let genericArgumentClause = type.genericArgumentClause,
                !genericArgumentClause.arguments.isEmpty {
                 let arguments = genericArgumentClause.arguments
-                switch (arguments.count, name.trimmedDescription) { // FIXME: Change from TRIMMED
-                case (1, "Optional"):
+                switch (arguments.count, name.tokenKind) { // FIXME: Change from TRIMMED
+                case (1, .identifier("Optional")):
                     self.type = try .optional(of: Self(syntax: arguments.first!.argument))
-                case (1, "Array"):
+                case (1, .identifier("Array")):
                     self.type = try .array(of: Self(syntax: arguments.first!.argument))
-                case (2, "Dictionary"):
+                case (2, .identifier("Dictionary")):
                     let key = try Self(syntax: arguments.first!.argument)
                     let value = try Self(syntax: arguments.last!.argument)
                     self.type = .dictionary(key: key, value: value)
@@ -120,6 +120,16 @@ public struct ParsedType {
         } else if let type = syntax.as(MetatypeTypeSyntax.self) {
             let baseType = try Self(syntax: type.baseType)
             self.type = .metatype(base: baseType)
+            // TODO: -
+            /// - ``AttributedTypeSyntax``
+            /// - ``ClassRestrictionTypeSyntax``
+            /// - ``CompositionTypeSyntax``
+            /// - ``ImplicitlyUnwrappedOptionalTypeSyntax``
+            /// - ``MissingTypeSyntax``
+            /// - ``NamedOpaqueReturnTypeSyntax``
+            /// - ``PackElementTypeSyntax``
+            /// - ``PackExpansionTypeSyntax``
+            /// - ``SuppressedTypeSyntax``
         } else {
             throw Error.unknownParameterType(
                 syntax.trimmed.description,

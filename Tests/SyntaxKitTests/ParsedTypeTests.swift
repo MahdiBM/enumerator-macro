@@ -28,8 +28,32 @@ import SyntaxKit
         }
     }
 
+    @Test func parseSpelledOptionalString() throws {
+        let typeSyntax = try makeTypeSyntax(for: "Optional<String>")
+        let parsed = try ParsedType(syntax: typeSyntax)
+        #expect(parsed.syntax == typeSyntax)
+        if case let .optional(wrapped) = parsed.type,
+           case let .identifier(syntax) = wrapped.type {
+            #expect(syntax.tokenKind == .identifier("String"))
+        } else {
+            #expect(Bool(false), "Unexpected 'ParsedType': \(parsed.debugDescription)")
+        }
+    }
+
     @Test func parseArrayOfDoubles() throws {
         let typeSyntax = try makeTypeSyntax(for: "[Double]")
+        let parsed = try ParsedType(syntax: typeSyntax)
+        #expect(parsed.syntax == typeSyntax)
+        if case let .array(element) = parsed.type,
+           case let .identifier(syntax) = element.type {
+            #expect(syntax.tokenKind == .identifier("Double"))
+        } else {
+            #expect(Bool(false), "Unexpected 'ParsedType': \(parsed.debugDescription)")
+        }
+    }
+
+    @Test func parseSpelledArrayOfDoubles() throws {
+        let typeSyntax = try makeTypeSyntax(for: "Array<Double>")
         let parsed = try ParsedType(syntax: typeSyntax)
         #expect(parsed.syntax == typeSyntax)
         if case let .array(element) = parsed.type,
@@ -160,6 +184,24 @@ import SyntaxKit
 
     @Test func parseDictionaryWithKeyOfBarOfBieAndValueOfAny() throws {
         let typeSyntax = try makeTypeSyntax(for: "[  Bar< Bie >:Any]")
+        let parsed = try ParsedType(syntax: typeSyntax)
+        #expect(parsed.syntax == typeSyntax)
+        if case let .dictionary(key, value) = parsed.type,
+           case let .unknownGeneric(firstInKey, arguments) = key.type,
+           case let .identifier(firstInKeySyntax) = firstInKey.type,
+           arguments.count == 1,
+           case let .identifier(secondInKey) = arguments.first?.type,
+           case let .identifier(valueSyntax) = value.type {
+            #expect(firstInKeySyntax.tokenKind == .identifier("Bar"))
+            #expect(secondInKey.tokenKind == .identifier("Bie"))
+            #expect(valueSyntax.tokenKind == .keyword(.Any))
+        } else {
+            #expect(Bool(false), "Unexpected 'ParsedType': \(parsed.debugDescription)")
+        }
+    }
+
+    @Test func parseSpelledDictionaryWithKeyOfBarOfBieAndValueOfAny() throws {
+        let typeSyntax = try makeTypeSyntax(for: "Dictionary<Bar<Bie>, Any>")
         let parsed = try ParsedType(syntax: typeSyntax)
         #expect(parsed.syntax == typeSyntax)
         if case let .dictionary(key, value) = parsed.type,
