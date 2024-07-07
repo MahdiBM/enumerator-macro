@@ -8,10 +8,18 @@ on:
 
 jobs:
   tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        swift-image:
+          - swiftlang/swift:nightly-6.0-jammy
+          - swiftlang/swift:nightly-main-jammy
+
     runs-on: ubuntu-latest
 
-    container:
-      image: swiftlang/swift:nightly-6.0-jammy
+    container: ${{ matrix.swift-image }}
+
+    timeout-minutes: 30
 
     steps:
       - name: Check out ${{ github.event.repository.name }}
@@ -37,7 +45,7 @@ jobs:
           key: "${{ github.event.repository.name }}-debug-build-${{ runner.os }}-${{ hashFiles('./Package.resolved') }}"
 
       - name: Run tests
-        run: swift test --enable-code-coverage --enable-swift-testing --parallel
+        run: swift test --enable-code-coverage --parallel
 
       - name: Submit code coverage
         uses: vapor/swift-codecov-action@v0.3
