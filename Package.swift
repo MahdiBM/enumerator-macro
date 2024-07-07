@@ -22,6 +22,10 @@ let package = Package(
         .package(
             url: "https://github.com/swiftlang/swift-syntax",
             from: "600.0.0-prerelease-2024-06-12"
+        ),
+        .package(
+            url: "https://github.com/apple/swift-testing",
+            .upToNextMinor(from: "0.10.0")
         )
     ],
     targets: [
@@ -35,6 +39,7 @@ let package = Package(
             name: "SyntaxKitTests",
             dependencies: [
                 "SyntaxKit",
+                .product(name: "Testing", package: "swift-testing"),
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftParser", package: "swift-syntax"),
             ]
