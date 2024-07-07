@@ -18,7 +18,7 @@ public struct ParsedType {
 
     public indirect enum BaseType {
         /// A simple type identifier.
-        /// Example: `String`.
+        /// Example: `String`, `MyType`.
         case identifier(TokenSyntax)
         /// An optional type.
         /// Example: `Bool?`.
@@ -59,7 +59,7 @@ public struct ParsedType {
         self.type = type
     }
 
-    static func identifier(_ identifier: TokenSyntax) -> Self {
+    private static func identifier(_ identifier: TokenSyntax) -> Self {
         ParsedType(syntax: nil, type: .identifier(identifier))
     }
 
