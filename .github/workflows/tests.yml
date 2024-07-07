@@ -30,9 +30,9 @@ jobs:
         uses: runs-on/cache/restore@v4
         with:
           path: .build
-          # e.g. 'syntax-kit-debug-build-Linux-c7008df8062ac4d5887ead9e59aa05829e'
-          key: "${{ github.event.repository.name }}-debug-build-${{ runner.os }}-${{ hashFiles('./Package.resolved') }}"
-          restore-keys: "${{ github.event.repository.name }}-debug-build-${{ runner.os }}-"
+          # e.g. 'syntax-kit-debug-build-swiftlang/swift:nightly-6.0-jammy-Linux-c7008df8062ac4d5887ead9e59aa05829e'
+          key: "${{ github.event.repository.name }}-debug-build-${{ matrix.swift-image }}-${{ runner.os }}-${{ hashFiles('./Package.resolved') }}"
+          restore-keys: "${{ github.event.repository.name }}-debug-build-${{ matrix.swift-image }}-${{ runner.os }}-"
 
       - name: Build ${{ github.event.repository.name }}
         run: swift build --build-tests
@@ -42,7 +42,7 @@ jobs:
         uses: runs-on/cache/save@v4
         with:
           path: .build
-          key: "${{ github.event.repository.name }}-debug-build-${{ runner.os }}-${{ hashFiles('./Package.resolved') }}"
+          key: "${{ github.event.repository.name }}-debug-build-${{ matrix.swift-image }}-${{ runner.os }}-${{ hashFiles('./Package.resolved') }}"
 
       - name: Run tests
         run: swift test --enable-code-coverage --parallel
