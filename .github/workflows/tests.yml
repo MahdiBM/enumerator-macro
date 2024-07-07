@@ -1,0 +1,18 @@
+name: tests
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+on:
+  pull_request: { types: [opened, reopened, synchronize, ready_for_review] }
+  push: { branches: [ main ] }
+
+jobs:
+  main-tests:
+    uses: vapor/ci/.github/workflows/run-unit-tests.yml@main
+    with:
+      with_coverage: true
+      with_tsan: true
+      with_api_check: true
+      with_gh_codeql: false
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
