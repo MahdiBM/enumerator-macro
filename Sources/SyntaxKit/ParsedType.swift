@@ -71,7 +71,7 @@ public struct ParsedType {
             if let genericArgumentClause = type.genericArgumentClause,
                !genericArgumentClause.arguments.isEmpty {
                 let arguments = genericArgumentClause.arguments
-                switch (arguments.count, name.tokenKind) { // FIXME: Change from TRIMMED
+                switch (arguments.count, name.tokenKind) {
                 case (1, .identifier("Optional")):
                     self.type = try .optional(of: Self(syntax: arguments.first!.argument))
                 case (1, .identifier("Array")):
@@ -120,16 +120,51 @@ public struct ParsedType {
         } else if let type = syntax.as(MetatypeTypeSyntax.self) {
             let baseType = try Self(syntax: type.baseType)
             self.type = .metatype(base: baseType)
-            // TODO: -
-            /// - ``AttributedTypeSyntax``
-            /// - ``ClassRestrictionTypeSyntax``
-            /// - ``CompositionTypeSyntax``
-            /// - ``ImplicitlyUnwrappedOptionalTypeSyntax``
-            /// - ``MissingTypeSyntax``
-            /// - ``NamedOpaqueReturnTypeSyntax``
-            /// - ``PackElementTypeSyntax``
-            /// - ``PackExpansionTypeSyntax``
-            /// - ``SuppressedTypeSyntax``
+        } else if let _ = syntax.as(AttributedTypeSyntax.self) {
+            throw Error.unknownParameterType(
+                syntax.trimmed.description,
+                syntaxType: syntax.syntaxNodeType
+            )
+        } else if let _ = syntax.as(ClassRestrictionTypeSyntax.self) {
+            throw Error.unknownParameterType(
+                syntax.trimmed.description,
+                syntaxType: syntax.syntaxNodeType
+            )
+        } else if let _ = syntax.as(CompositionTypeSyntax.self) {
+            throw Error.unknownParameterType(
+                syntax.trimmed.description,
+                syntaxType: syntax.syntaxNodeType
+            )
+        } else if let _ = syntax.as(ImplicitlyUnwrappedOptionalTypeSyntax.self) {
+            throw Error.unknownParameterType(
+                syntax.trimmed.description,
+                syntaxType: syntax.syntaxNodeType
+            )
+        } else if let _ = syntax.as(MissingTypeSyntax.self) {
+            throw Error.unknownParameterType(
+                syntax.trimmed.description,
+                syntaxType: syntax.syntaxNodeType
+            )
+        } else if let _ = syntax.as(NamedOpaqueReturnTypeSyntax.self) {
+            throw Error.unknownParameterType(
+                syntax.trimmed.description,
+                syntaxType: syntax.syntaxNodeType
+            )
+        } else if let _ = syntax.as(PackElementTypeSyntax.self) {
+            throw Error.unknownParameterType(
+                syntax.trimmed.description,
+                syntaxType: syntax.syntaxNodeType
+            )
+        } else if let _ = syntax.as(PackExpansionTypeSyntax.self) {
+            throw Error.unknownParameterType(
+                syntax.trimmed.description,
+                syntaxType: syntax.syntaxNodeType
+            )
+        } else if let _ = syntax.as(SuppressedTypeSyntax.self) {
+            throw Error.unknownParameterType(
+                syntax.trimmed.description,
+                syntaxType: syntax.syntaxNodeType
+            )
         } else {
             throw Error.unknownParameterType(
                 syntax.trimmed.description,
@@ -143,11 +178,19 @@ extension ParsedType: CustomStringConvertible {
     public var description: String {
         "ParsedType(syntax: \(String(describing: self.syntax)), type: \(self.type))"
     }
+
+    public var typeDescription: String {
+        self.type.typeDescription
+    }
 }
 
 extension ParsedType: CustomDebugStringConvertible {
     public var debugDescription: String {
         "ParsedType(syntax: \(String(reflecting: self.syntax)), type: \(self.type.debugDescription))"
+    }
+
+    public var typeDebugDescription: String {
+        self.type.typeDebugDescription
     }
 }
 
@@ -176,6 +219,31 @@ extension ParsedType.BaseType: CustomStringConvertible {
             "\(name)<\(arguments.map(\.description).joined(separator: ", "))>"
         }
     }
+
+    public var typeDescription: String {
+        switch self {
+        case let .identifier(type):
+            "\(type.trimmed.description)"
+        case let .optional(type):
+            "\(type.typeDescription)?"
+        case let .array(type):
+            "[\(type.typeDescription)]"
+        case let .dictionary(key, value):
+            "[\(key.typeDescription): \(value.typeDescription)]"
+        case let .tuple(elements):
+            "(\(elements.map(\.typeDescription).joined(separator: ", ")))"
+        case let .some(type):
+            "some \(type.typeDescription)"
+        case let .any(type):
+            "any \(type.typeDescription)"
+        case let .member(base, `extension`):
+            "\(base.typeDescription).\(`extension`.typeDescription)"
+        case let .metatype(base):
+            "\(base.typeDescription).Type"
+        case let .unknownGeneric(name, arguments: arguments):
+            "\(name)<\(arguments.map(\.typeDescription).joined(separator: ", "))>"
+        }
+    }
 }
 
 extension ParsedType.BaseType: CustomDebugStringConvertible {
@@ -201,6 +269,31 @@ extension ParsedType.BaseType: CustomDebugStringConvertible {
             "\(base.debugDescription).Type"
         case let .unknownGeneric(name, arguments: arguments):
             "\(name.debugDescription)<\(arguments.map(\.debugDescription).joined(separator: ", "))>"
+        }
+    }
+
+    public var typeDebugDescription: String {
+        switch self {
+        case let .identifier(type):
+            "\(type.trimmed.debugDescription)"
+        case let .optional(type):
+            "\(type.type.typeDebugDescription)?"
+        case let .array(type):
+            "[\(type.typeDebugDescription)]"
+        case let .dictionary(key, value):
+            "[\(key.typeDebugDescription): \(value.typeDebugDescription)]"
+        case let .tuple(elements):
+            "(\(elements.map(\.typeDebugDescription).joined(separator: ", ")))"
+        case let .some(type):
+            "some \(type.typeDebugDescription)"
+        case let .any(type):
+            "any \(type.typeDebugDescription)"
+        case let .member(base, `extension`):
+            "\(base.typeDebugDescription).\(`extension`.typeDebugDescription)"
+        case let .metatype(base):
+            "\(base.typeDebugDescription).Type"
+        case let .unknownGeneric(name, arguments: arguments):
+            "\(name.typeDebugDescription)<\(arguments.map(\.typeDebugDescription).joined(separator: ", "))>"
         }
     }
 }
