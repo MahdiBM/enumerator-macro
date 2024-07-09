@@ -1,2 +1,2 @@
-# SyntaxKit
-Utility for working with SwiftSyntax
+# EnumeratorMacro
+A utility for working with Swift Enums.
