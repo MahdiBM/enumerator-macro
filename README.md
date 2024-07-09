@@ -1,2 +1,2 @@
 # EnumeratorMacro
-A utility for working with Swift Enums.
+A utility for working with Swift enums
