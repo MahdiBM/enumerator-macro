@@ -36,7 +36,6 @@ let package = Package(
         .macro(
             name: "EnumeratorMacro",
             dependencies: [
-                "SyntaxKit",
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
                 .product(name: "Mustache", package: "swift-mustache"),
@@ -46,7 +45,6 @@ let package = Package(
         .testTarget(
             name: "EnumeratorMacroTests",
             dependencies: [
-                "SyntaxKit",
                 "EnumeratorMacro",
                 .product(name: "Testing", package: "swift-testing"),
                 .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
