@@ -1,10 +1,10 @@
 // swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
-
+import CompilerPluginSupport
 import PackageDescription
 
 let package = Package(
-    name: "SyntaxKit",
+    name: "EnumeratorMacro",
     platforms: [
         .macOS(.v14),
         .iOS(.v17),
@@ -14,8 +14,8 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "SyntaxKit",
-            targets: ["SyntaxKit"]
+            name: "EnumeratorMacro",
+            targets: ["EnumeratorMacro"]
         ),
     ],
     dependencies: [
@@ -27,21 +27,32 @@ let package = Package(
             url: "https://github.com/apple/swift-testing",
             .upToNextMinor(from: "0.10.0")
         ),
+        .package(
+            url: "https://github.com/mahdibm/swift-mustache",
+            branch: "mmbm-swift-6"
+        ),
     ],
     targets: [
-        .target(
-            name: "SyntaxKit",
+        .macro(
+            name: "EnumeratorMacro",
             dependencies: [
-                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                "SyntaxKit",
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+                .product(name: "Mustache", package: "swift-mustache"),
             ],
             swiftSettings: swiftSettings
         ),
         .testTarget(
-            name: "SyntaxKitTests",
+            name: "EnumeratorMacroTests",
             dependencies: [
                 "SyntaxKit",
+                "EnumeratorMacro",
                 .product(name: "Testing", package: "swift-testing"),
+                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftParser", package: "swift-syntax"),
             ],
             swiftSettings: swiftSettings

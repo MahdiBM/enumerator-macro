@@ -1,6 +1,15 @@
 {
-  "originHash" : "50cb47421625af7188301d64f0db7fffd3b6a974fef3d3a020bbfe982829d3e3",
+  "originHash" : "ce25c9bdeb39120a6e58c3aa2fa205e436aca11542cc194f7b4520aecb86b27d",
   "pins" : [
+    {
+      "identity" : "swift-mustache",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mahdibm/swift-mustache",
+      "state" : {
+        "branch" : "mmbm-swift-6",
+        "revision" : "e23122de36452ff04699b0fccc9a53866250c239"
+      }
+    },
     {
       "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",
