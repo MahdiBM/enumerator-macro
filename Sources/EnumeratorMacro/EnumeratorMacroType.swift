@@ -33,8 +33,11 @@ extension EnumeratorMacroType: MemberMacro {
                 .formatted()
                 .description
         }.map { template in
-            try MustacheTemplate(string: "{{%CONTENT_TYPE:TEXT}}\n" + template)
-                .render(["cases": cases])
+            try MustacheTemplate(
+                string: "{{%CONTENT_TYPE:TEXT}}\n" + template
+            ).render([
+                "cases": cases
+            ])
         }.map {
             var parser = Parser($0)
             return DeclSyntax.parse(from: &parser)
