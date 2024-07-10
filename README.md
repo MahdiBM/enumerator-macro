@@ -19,21 +19,24 @@ var caseName: String {
 }
 """
 )
-enum MyEnum {
-    case a
+enum TestEnum {
+    case a(val1: String, val2: Int)
     case b
+    case testCase(testValue: String)
 }
 ```
 Is expanded to:
 ```swift
-enum MyEnum {
-    case a
+enum TestEnum {
+    case a(val1: String, val2: Int)
     case b
+    case testCase(testValue: String)
 
     var caseName: String {
         switch self {
         case .a: "a"
         case .b: "b"
+        case .testCase: "testCase"
         }
     }
 }
