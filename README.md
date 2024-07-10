@@ -123,3 +123,22 @@ enum TestEnum {
     }
 }
 ```
+
+## How To Add EnumeratorMacro To Your Project
+
+To use the `EnumeratorMacro` library in a SwiftPM project, 
+add the following line to the dependencies in your `Package.swift` file:
+
+```swift
+.package(url: "https://github.com/MahdiBM/EnumeratorMacro", branch: "main"),
+```
+
+Include `EnumeratorMacro` as a dependency for your targets:
+
+```swift
+.target(name: "<target>", dependencies: [
+    .product(name: "EnumeratorMacro", package: "EnumeratorMacro"),
+]),
+```
+
+Finally, add `import EnumeratorMacro` to your source code.
