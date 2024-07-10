@@ -63,6 +63,6 @@ var swiftSettings: [SwiftSetting] {
     [
         .enableExperimentalFeature("ExistentialAny"),
         .enableExperimentalFeature("AccessLevelOnImport"),
-        .enableExperimentalFeature("StrictConcurrency"),
+        .enableUpcomingFeature("StrictConcurrency"),
     ]
 }

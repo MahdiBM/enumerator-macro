@@ -1,4 +1,5 @@
 import EnumeratorMacro
+import EnumeratorMacroImpl
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
 import XCTest
