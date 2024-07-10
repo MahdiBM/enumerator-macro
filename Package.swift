@@ -40,11 +40,7 @@ let package = Package(
         ),
         .target(
             name: "EnumeratorMacro",
-            dependencies: [
-                "EnumeratorMacroImpl",
-                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
-                .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
-            ],
+            dependencies: ["EnumeratorMacroImpl"],
             swiftSettings: swiftSettings
         ),
         .testTarget(
