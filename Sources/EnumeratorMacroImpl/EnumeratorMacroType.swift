@@ -32,9 +32,11 @@ extension EnumeratorMacroType: MemberMacro {
         if exprList.isEmpty {
             throw MacroError.expectedAtLeastOneArgument
         }
-        let stringLiteralArguments = exprList.compactMap {
-            $0.expression
-                .as(StringLiteralExprSyntax.self)?
+        let stringLiteralArguments = try exprList.compactMap { element in
+            guard let stringLiteral = element.expression.as(StringLiteralExprSyntax.self) else {
+                throw MacroError.allArgumentsMustBeStringLiterals(violation: element.description)
+            }
+            return stringLiteral
                 .segments
                 .formatted()
                 .description

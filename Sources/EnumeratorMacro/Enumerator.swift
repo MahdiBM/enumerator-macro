@@ -26,14 +26,14 @@ let staticString: StaticString = """
     }
     """
 
-@Enumerator(staticString)
-enum TestEnumd2 {
-    case a(value: String)
-    case b
-    case f
-    case testCase(testValue: String)
-
-//    func dso() {
-//        let a = Subtype.a
-//    }
-}
+//@Enumerator(staticString)
+//enum TestEnumd2 {
+//    case a(value: String)
+//    case b
+//    case f
+//    case testCase(testValue: String)
+//
+////    func dso() {
+////        let a = Subtype.a
+////    }
+//}

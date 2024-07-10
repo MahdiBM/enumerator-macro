@@ -136,7 +136,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testCreatesSubtypeWithMulti() throws {
+    func testCreatesSubtypeWithMultiMacroArguments() throws {
         assertMacroExpansion(
             #"""
             @Enumerator("""
@@ -182,6 +182,58 @@ final class EnumeratorMacroTests: XCTestCase {
                         .b
                     case .testCase:
                         .testCase
+                    }
+                }
+            }
+            """#,
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
+    func testCreatesGetCaseValueFunctions() throws {
+        assertMacroExpansion(
+            #"""
+            @Enumerator("""
+            {{#cases}}
+            {{^empty(parameters)}}
+            func get{{capitalized(name)}}() -> ({{joined(namesWithTypes(parameters))}})? {
+                switch self {
+                case .{{name}}{{withParens(joined(namesWithTypes(parameters)))}}:
+                    return {{withParens(joined(names(parameters)))}}
+                default:
+                    return nil
+                }
+            }
+            {{/empty(parameters)}}
+            {{/cases}}
+            """)
+            enum TestEnum {
+                case a(val1: String, val2: Int)
+                case b
+                case testCase(testValue: String)
+            }
+            """#,
+            expandedSource: #"""
+            enum TestEnum {
+                case a(val1: String, val2: Int)
+                case b
+                case testCase(testValue: String)
+
+                func getA() -> (val1: String, val2: Int)? {
+                    switch self {
+                    case .a(val1: String, val2: Int):
+                        return (val1, val2)
+                    default:
+                        return nil
+                    }
+                }
+
+                func getTestcase() -> (testValue: String)? {
+                    switch self {
+                    case .testCase(testValue: String):
+                        return (testValue)
+                    default:
+                        return nil
                     }
                 }
             }

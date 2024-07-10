@@ -1,6 +1,6 @@
 import Mustache
 
-struct MString {
+struct EString {
     var underlying: String
 
     init(_ underlying: String) {
@@ -8,19 +8,19 @@ struct MString {
     }
 }
 
-extension MString: CustomStringConvertible {
+extension EString: CustomStringConvertible {
     var description: String {
         self.underlying.description
     }
 }
 
-extension MString: CustomReflectable {
+extension EString: CustomReflectable {
     var customMirror: Mirror {
         self.underlying.customMirror
     }
 }
 
-extension MString: MustacheTransformable {
+extension EString: MustacheTransformable {
     func transform(_ name: String) -> Any? {
         if let defaultTransformed = self.underlying.transform(name) {
             return convertToCustomTypesIfPossible(defaultTransformed)
@@ -37,7 +37,7 @@ extension MString: MustacheTransformable {
     }
 }
 
-extension MString: StringProtocol {
+extension EString: StringProtocol {
     typealias Index = String.Index
     typealias UTF8View = String.UTF8View
     typealias UTF16View = String.UTF16View

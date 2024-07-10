@@ -1,32 +1,32 @@
 import Mustache
 
-struct MArray<Element> {
-    fileprivate let underlying: [Element]
+struct EOptionalsArray<Element> {
+    fileprivate let underlying: [Element?]
 
-    init(underlying: [Element]) {
+    init(underlying: [Element?]) {
         self.underlying = underlying
     }
 }
 
-extension MArray: Sequence, MustacheSequence {
-    func makeIterator() -> Array<Element>.Iterator {
+extension EOptionalsArray: Sequence, MustacheSequence {
+    func makeIterator() -> Array<Element?>.Iterator {
         self.underlying.makeIterator()
     }
 }
 
-extension MArray: CustomStringConvertible {
+extension EOptionalsArray: CustomStringConvertible {
     var description: String {
         self.underlying.description
     }
 }
 
-extension MArray: CustomReflectable {
+extension EOptionalsArray: CustomReflectable {
     var customMirror: Mirror {
         Mirror(reflecting: self.underlying)
     }
 }
 
-extension MArray: MustacheTransformable {
+extension EOptionalsArray: MustacheTransformable {
     func transform(_ name: String) -> Any? {
         if let defaultTransformed = self.underlying.transform(name) {
             return convertToCustomTypesIfPossible(defaultTransformed)
@@ -34,9 +34,10 @@ extension MArray: MustacheTransformable {
             switch name {
             case "joined":
                 let joined = self.underlying
-                    .map { String(describing: $0) }
+                    .enumerated()
+                    .map { $1.map { String(describing: $0) } ?? "_param\($0)" }
                     .joined(separator: ", ")
-                let string = MString(joined)
+                let string = EString(joined)
                 return string
             default:
                 return nil
