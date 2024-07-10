@@ -30,13 +30,16 @@ extension EParameters: MustacheTransformable {
                 let joined = self.underlying
                     .map(\.name)
                     .enumerated()
-                    .map { $1?.underlying ?? "_param\($0)" }
+                    .map { $1?.underlying ?? "_param\($0 + 1)" }
                     .joined(separator: ", ")
                 let string = EString(joined)
                 return string
             case "namesWithTypes":
                 let namesWithTypes = self
-                    .map { ($0.name.map { "\($0): " } ?? "") + $0.type }
+                    .enumerated()
+                    .map { idx, element in
+                        (element.name ?? "_param\(idx + 1)") + ": " + element.type
+                    }
                 let array = EArray(underlying: namesWithTypes)
                 return array
             case "names":

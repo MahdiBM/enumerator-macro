@@ -208,21 +208,21 @@ final class EnumeratorMacroTests: XCTestCase {
             {{/cases}}
             """)
             enum TestEnum {
-                case a(val1: String, val2: Int)
+                case a(val1: String, Int)
                 case b
                 case testCase(testValue: String)
             }
             """#,
             expandedSource: #"""
             enum TestEnum {
-                case a(val1: String, val2: Int)
+                case a(val1: String, Int)
                 case b
                 case testCase(testValue: String)
 
-                func getA() -> (val1: String, val2: Int)? {
+                func getA() -> (val1: String, _param2: Int)? {
                     switch self {
-                    case .a(val1: String, val2: Int):
-                        return (val1, val2)
+                    case .a(val1: String, _param2: Int):
+                        return (val1, _param2)
                     default:
                         return nil
                     }

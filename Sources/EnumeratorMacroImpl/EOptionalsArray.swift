@@ -35,7 +35,7 @@ extension EOptionalsArray: MustacheTransformable {
             case "joined":
                 let joined = self.underlying
                     .enumerated()
-                    .map { $1.map { String(describing: $0) } ?? "_param\($0)" }
+                    .map { $1.map { String(describing: $0) } ?? "_param\($0 + 1)" }
                     .joined(separator: ", ")
                 let string = EString(joined)
                 return string
