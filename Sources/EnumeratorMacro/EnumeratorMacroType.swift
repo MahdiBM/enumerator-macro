@@ -27,10 +27,7 @@ extension EnumeratorMacroType: MemberMacro {
         }
         let rendered = try arguments.as(LabeledExprListSyntax.self)!.compactMap {
             $0.expression
-        }.compactMap { expression in
-            expression.as(StringLiteralExprSyntax.self)
-        }.map { stringLiteralExpr in
-            stringLiteralExpr
+                .as(StringLiteralExprSyntax.self)?
                 .segments
                 .formatted()
                 .description
