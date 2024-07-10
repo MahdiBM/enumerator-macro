@@ -1,4 +1,3 @@
-@_exported public import EnumeratorMacroImpl
 import SwiftSyntaxMacros
 
 @attached(member, names: arbitrary)
@@ -21,25 +20,15 @@ macro CreateSubtype(
     type: "EnumeratorMacroType"
 )
 
-@Enumerator("""
-enum Subtype: String {
-    {{#cases}}
-    case {{name}}
-    {{/cases}}
-}
-""")
-enum TestEnum2 {
-    case a(value: String)
-    case b
-    case f
-    case testCase(testValue: String)
-
-    func dso() {
-        let a = Subtype.a
+let staticString: StaticString = """
+    enum Subtype: String {
+        {{#cases}}
+        case {{name}}
+        {{/cases}}
     }
-}
+    """
 
-@CreateSubtype()
+@Enumerator(staticString)
 enum TestEnumd2 {
     case a(value: String)
     case b

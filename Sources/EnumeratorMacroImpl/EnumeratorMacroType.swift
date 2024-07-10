@@ -26,7 +26,12 @@ extension EnumeratorMacroType: MemberMacro {
         guard let arguments = node.arguments else {
             throw MacroError.macroDeclarationHasNoArguments
         }
-        let exprList = arguments.as(LabeledExprListSyntax.self)!
+        guard let exprList = arguments.as(LabeledExprListSyntax.self) else {
+            throw MacroError.unacceptableArguments
+        }
+        if exprList.isEmpty {
+            throw MacroError.expectedAtLeastOneArgument
+        }
         let stringLiteralArguments = exprList.compactMap {
             $0.expression
                 .as(StringLiteralExprSyntax.self)?
