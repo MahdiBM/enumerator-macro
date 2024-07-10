@@ -99,7 +99,7 @@ Not very practical but I'll leave it here for showcase for now.
 @Enumerator("""
 enum Copy {
     {{#cases}}
-    case {{name}}{{withParens(joined(namesWithTypes(parameters)))}}
+    case {{name}}{{withParens(joined(namesAndTypes(parameters)))}}
     {{/cases}}
 }
 """)
@@ -120,6 +120,56 @@ enum TestEnum {
         case a(val1: String, val2: Int)
         case b
         case testCase(testValue: String)
+    }
+}
+```
+
+###  Create Functions For Each Case
+
+```swift
+@Enumerator("""
+{{#cases}}
+{{^empty(parameters)}}
+func get{{capitalized(name)}}() -> ({{joined(tupleValue(parameters))}})? {
+    switch self {
+    case let .{{name}}{{withParens(joined(names(parameters)))}}:
+        return {{withParens(joined(names(parameters)))}}
+    default:
+        return nil
+    }
+}
+{{/empty(parameters)}}
+{{/cases}}
+""")
+enum TestEnum {
+    case a(val1: String, Int)
+    case b
+    case testCase(testValue: String)
+}
+```
+Is expanded to:
+```swift
+enum TestEnum {
+    case a(val1: String, Int)
+    case b
+    case testCase(testValue: String)
+
+    func getA() -> (val1: String, _param2: Int)? {
+        switch self {
+        case let .a(val1, _param2):
+            return (val1, _param2)
+        default:
+            return nil
+        }
+    }
+
+    func getTestcase() -> (String)? {
+        switch self {
+        case let .testCase(testValue):
+            return (testValue)
+        default:
+            return nil
+        }
     }
 }
 ```
