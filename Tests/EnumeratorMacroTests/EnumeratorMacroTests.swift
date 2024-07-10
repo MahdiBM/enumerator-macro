@@ -1,4 +1,5 @@
 import EnumeratorMacro
+import EnumeratorMacroImpl
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
 import Testing
@@ -194,12 +195,6 @@ import Testing
     }
 }
 
-@attached(member, names: arbitrary)
-macro Enumerator(_ templates: String...) = #externalMacro(
-    module: "EnumeratorMacro",
-    type: "EnumeratorMacroType"
-)
-
 @Enumerator("""
 enum Subtype: String {
 {{#cases}}
@@ -254,20 +249,4 @@ enum TestEnum {
     func isTheSameCase(as other: Self) -> Bool {
         self.subtype == other.subtype
     }
-}
-
-@Enumerator("""
-{{#cases}}
-var is{{capitalized(name)}}: Bool {
-    switch self {
-    case .{{name}}: true
-    default: false
-    }
-}
-{{/cases}}
-""")
-enum TestEnum3 {
-    case a(value: String)
-    case b
-    case testCase(testValue: String)
 }
