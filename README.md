@@ -1,5 +1,5 @@
 # EnumeratorMacro
-A utility for creating case-by-case code for your Swift enums using the Mustache templating engine.
+A utility for creating case-by-case code for your Swift enums using the Mustache templating engine.   
 `EnumeratorMacro` uses [swift-mustache](https://github.com/hummingbird-project/swift-mustache/issues/35)'s flavor.
 
 # This is a Work-In-Progress
