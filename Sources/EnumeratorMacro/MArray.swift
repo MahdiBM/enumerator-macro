@@ -38,16 +38,6 @@ extension MArray: MustacheTransformable {
                     .joined(separator: ", ")
                 let string = MString(joined)
                 return string
-            case "joinedWithParenthesis":
-                if self.underlying.isEmpty {
-                    return ""
-                } else {
-                    let joined = self.underlying
-                        .map { String(describing: $0) }
-                        .joined(separator: ", ")
-                    let string = MString("(\(joined))")
-                    return string
-                }
             default:
                 return nil
             }

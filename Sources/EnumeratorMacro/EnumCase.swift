@@ -64,18 +64,6 @@ extension EnumCase.Parameters: MustacheTransformable {
                     .joined(separator: ", ")
                 let string = MString(joined)
                 return string
-            case "joinedWithParenthesis":
-                let names = self.underlying.map(\.name)
-                if names.isEmpty {
-                    return MString("")
-                } else {
-                    let joined = names
-                        .enumerated()
-                        .map { $1?.underlying ?? "_unnamed_\($0)" }
-                        .joined(separator: ", ")
-                    let string = MString("(\(joined))")
-                    return string
-                }
             case "namesWithTypes":
                 let namesWithTypes = self
                     .map { ($0.name.map { "\($0): " } ?? "") + $0.type }

@@ -39,17 +39,6 @@ extension MOptionalsArray: MustacheTransformable {
                     .joined(separator: ", ")
                 let string = MString(joined)
                 return string
-            case "joinedWithParenthesis":
-                if self.underlying.isEmpty {
-                    return ""
-                } else {
-                    let joined = self.underlying
-                        .enumerated()
-                        .map { $1.map { String(describing: $0) } ?? "_unnamed_\($0)" }
-                        .joined(separator: ", ")
-                    let string = MString("(\(joined))")
-                    return string
-                }
             default:
                 return nil
             }

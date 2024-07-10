@@ -9,14 +9,14 @@ import Testing
             #"""
             @Enumerator(
             """
-                var caseName: String {
-                    switch self {
-                    {{#cases}}
-                    case .{{name}}:
-                        "{{name}}"
-                    {{/cases}}
-                    }
+            var caseName: String {
+                switch self {
+                {{#cases}}
+                case .{{name}}:
+                    "{{name}}"
+                {{/cases}}
                 }
+            }
             """
             )
             enum TestEnum {
@@ -30,16 +30,17 @@ import Testing
                 case b
 
                 var caseName: String {
-                        switch self {
-                        case .a:
-                            "a"
-                        case .b:
-                            "b"
-                        }
+                    switch self {
+                    case .a:
+                        "a"
+                    case .b:
+                        "b"
                     }
+                }
             }
             """#,
-            macros: EnumeratorMacroEntryPoint.macros
+            macros: EnumeratorMacroEntryPoint.macros,
+            sourceLocation: Testing.SourceLocation()
         )
     }
 
@@ -48,9 +49,9 @@ import Testing
             #"""
             @Enumerator("""
             enum CopyOfSelf {
-            {{#cases}}
-            case {{name}}{{joinedWithParenthesis(namesWithTypes(parameters))}}
-            {{/cases}}
+                {{#cases}}
+                case {{name}}{{withParens(joined(namesWithTypes(parameters)))}}
+                {{/cases}}
             }
             """)
             enum TestEnum {
@@ -72,7 +73,8 @@ import Testing
                 }
             }
             """#,
-            macros: EnumeratorMacroEntryPoint.macros
+            macros: EnumeratorMacroEntryPoint.macros,
+            sourceLocation: Testing.SourceLocation()
         )
     }
 
@@ -111,6 +113,7 @@ import Testing
                         return false
                     }
                 }
+
                 var isB: Bool {
                     switch self {
                     case .b:
@@ -119,6 +122,7 @@ import Testing
                         return false
                     }
                 }
+
                 var isTestcase: Bool {
                     switch self {
                     case .testCase:
@@ -129,7 +133,63 @@ import Testing
                 }
             }
             """#,
-            macros: EnumeratorMacroEntryPoint.macros
+            macros: EnumeratorMacroEntryPoint.macros,
+            sourceLocation: Testing.SourceLocation()
+        )
+    }
+
+    @Test func createsSubtypeWithMulti() throws {
+        assertMacroExpansionWithSwiftTesting(
+            #"""
+            @Enumerator("""
+            enum Subtype: String {
+                {{#cases}}
+                case {{name}}
+                {{/cases}}
+            }
+            """,
+            """
+            var subtype: Subtype {
+                switch self {
+                {{#cases}}
+                case .{{name}}:
+                    .{{name}}
+                {{/cases}}
+                }
+            }
+            """)
+            enum TestEnum {
+                case a(val1: String, val2: Int)
+                case b
+                case testCase(testValue: String)
+            }
+            """#,
+            expandedSource: #"""
+            enum TestEnum {
+                case a(val1: String, val2: Int)
+                case b
+                case testCase(testValue: String)
+
+                enum Subtype: String {
+                    case a
+                    case b
+                    case testCase
+                }
+
+                var subtype: Subtype {
+                    switch self {
+                    case .a:
+                        .a
+                    case .b:
+                        .b
+                    case .testCase:
+                        .testCase
+                    }
+                }
+            }
+            """#,
+            macros: EnumeratorMacroEntryPoint.macros,
+            sourceLocation: Testing.SourceLocation()
         )
     }
 }

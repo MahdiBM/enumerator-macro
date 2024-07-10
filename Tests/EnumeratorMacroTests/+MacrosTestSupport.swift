@@ -14,7 +14,7 @@ func assertMacroExpansionWithSwiftTesting(
     testModuleName: String = "TestModule",
     testFileName: String = "test.swift",
     indentationWidth: Trivia = .spaces(4),
-    sourceLocation: Testing.SourceLocation = Testing.SourceLocation()
+    sourceLocation: Testing.SourceLocation
 ) {
     let macroSpecs = macros.mapValues { MacroSpec(type: $0) }
     SwiftSyntaxMacrosGenericTestSupport.assertMacroExpansion(
@@ -31,7 +31,7 @@ func assertMacroExpansionWithSwiftTesting(
             #expect(Bool(false), .init(stringLiteral: $0.message), sourceLocation: sourceLocation)
         },
         fileID: "",  // Not used in the failure handler
-        filePath: "",
+        filePath: "", // (MahdiBM Note): Requires static string
         line: UInt(sourceLocation.line),
         column: 0  // Not used in the failure handler
     )

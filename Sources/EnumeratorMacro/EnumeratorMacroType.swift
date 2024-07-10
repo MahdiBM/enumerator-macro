@@ -26,23 +26,29 @@ extension EnumeratorMacroType: MemberMacro {
         guard let arguments = node.arguments else {
             throw MacroError.macroDeclarationHasNoArguments
         }
-        let rendered = try arguments.as(LabeledExprListSyntax.self)!.compactMap {
+        let exprList = arguments.as(LabeledExprListSyntax.self)!
+        let stringLiteralArguments = exprList.compactMap {
             $0.expression
                 .as(StringLiteralExprSyntax.self)?
                 .segments
                 .formatted()
                 .description
-        }.map { template in
+        }
+        let rendered = try stringLiteralArguments.map { template in
             try MustacheTemplate(
                 string: "{{%CONTENT_TYPE:TEXT}}\n" + template
             ).render([
                 "cases": cases
             ])
-        }.map {
-            var parser = Parser($0)
-            return DeclSyntax.parse(from: &parser)
+        }
+        let syntaxes: [DeclSyntax] = rendered.flatMap { rendered in
+            SourceFileSyntax(
+                stringLiteral: rendered
+            ).statements.compactMap { statement in
+                DeclSyntax(statement.item)
+            }
         }
 
-        return rendered
+        return syntaxes
     }
 }
