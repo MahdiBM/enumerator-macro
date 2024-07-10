@@ -30,7 +30,7 @@ jobs:
         uses: runs-on/cache/restore@v4
         with:
           path: .build
-          # e.g. 'syntax-kit-debug-build-swiftlang/swift:nightly-6.0-jammy-Linux-c7008df8062ac4d5887ead9e59aa05829e'
+          # e.g. 'enumerator-macro-debug-build-swiftlang/swift:nightly-6.0-jammy-Linux-c7008df8062ac4d5887ead9e59aa05829e'
           key: "${{ github.event.repository.name }}-debug-build-${{ matrix.swift-image }}-${{ runner.os }}-${{ hashFiles('./Package.resolved') }}"
           restore-keys: "${{ github.event.repository.name }}-debug-build-${{ matrix.swift-image }}-${{ runner.os }}-"
 
