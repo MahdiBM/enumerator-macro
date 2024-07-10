@@ -19,13 +19,13 @@ import Testing
                 }
             """
             )
-            public enum TestEnum {
+            enum TestEnum {
                 case a
                 case b
             }
             """#,
             expandedSource: #"""
-            public enum TestEnum {
+            enum TestEnum {
                 case a
                 case b
 
@@ -53,14 +53,14 @@ import Testing
             {{/cases}}
             }
             """)
-            public enum TestEnum {
+            enum TestEnum {
                 case a(val1: String, val2: Int)
                 case b
                 case testCase(testValue: String)
             }
             """#,
             expandedSource: #"""
-            public enum TestEnum {
+            enum TestEnum {
                 case a(val1: String, val2: Int)
                 case b
                 case testCase(testValue: String)
@@ -91,14 +91,14 @@ import Testing
             }
             {{/cases}}
             """)
-            public enum TestEnum {
+            enum TestEnum {
                 case a(val1: String, val2: Int)
                 case b
                 case testCase(testValue: String)
             }
             """#,
             expandedSource: #"""
-            public enum TestEnum {
+            enum TestEnum {
                 case a(val1: String, val2: Int)
                 case b
                 case testCase(testValue: String)
@@ -186,7 +186,7 @@ var is{{capitalized(name)}}: Bool {
 }
 {{/cases}}
 """)
-public enum TestEnum {
+enum TestEnum {
     case a(value: String)
     case b
     case testCase(testValue: String)
@@ -206,7 +206,7 @@ var is{{capitalized(name)}}: Bool {
 }
 {{/cases}}
 """)
-public enum TestEnum3 {
+enum TestEnum3 {
     case a(value: String)
     case b
     case testCase(testValue: String)

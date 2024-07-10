@@ -4,10 +4,10 @@ import SwiftSyntaxMacros
 import SwiftParser
 import Mustache
 
-public enum EnumeratorMacroType {}
+enum EnumeratorMacroType {}
 
 extension EnumeratorMacroType: MemberMacro {
-    public static func expansion(
+    static func expansion(
         of node: AttributeSyntax,
         providingMembersOf declaration: some DeclGroupSyntax,
         in context: some MacroExpansionContext

@@ -1,6 +1,6 @@
 import Mustache
 
-public struct MOptionalsArray<Element> {
+struct MOptionalsArray<Element> {
     fileprivate let underlying: [Element?]
 
     init(underlying: [Element?]) {
@@ -9,25 +9,25 @@ public struct MOptionalsArray<Element> {
 }
 
 extension MOptionalsArray: Sequence, MustacheSequence {
-    public func makeIterator() -> Array<Element?>.Iterator {
+    func makeIterator() -> Array<Element?>.Iterator {
         self.underlying.makeIterator()
     }
 }
 
 extension MOptionalsArray: CustomStringConvertible {
-    public var description: String {
+    var description: String {
         self.underlying.description
     }
 }
 
 extension MOptionalsArray: CustomReflectable {
-    public var customMirror: Mirror {
+    var customMirror: Mirror {
         Mirror(reflecting: self.underlying)
     }
 }
 
 extension MOptionalsArray: MustacheTransformable {
-    public func transform(_ name: String) -> Any? {
+    func transform(_ name: String) -> Any? {
         if let defaultTransformed = self.underlying.transform(name) {
             return convertToCustomTypesIfPossible(defaultTransformed)
         } else {

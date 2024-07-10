@@ -2,18 +2,18 @@ import SwiftDiagnostics
 import SwiftSyntax
 import Mustache
 
-public struct EnumCase {
-    public struct Parameter {
-        public let name: MString?
-        public let type: MString
+struct EnumCase {
+    struct Parameter {
+        let name: MString?
+        let type: MString
 
-        public init(name: String?, type: String) {
+        init(name: String?, type: String) {
             self.name = name.map { .init($0) }
             self.type = .init(type)
         }
     }
 
-    public struct Parameters {
+    struct Parameters {
         fileprivate let underlying: [Parameter]
 
         init(underlying: [Parameter]) {
@@ -21,10 +21,10 @@ public struct EnumCase {
         }
     }
 
-    public let name: MString
-    public let parameters: Parameters
+    let name: MString
+    let parameters: Parameters
 
-    public init(from element: EnumCaseElementSyntax) throws {
+    init(from element: EnumCaseElementSyntax) throws {
         self.name = .init(element.name.trimmedDescription)
         let parameters = element.parameterClause?.parameters ?? []
         self.parameters = .init(underlying: parameters.map { parameter in
@@ -39,19 +39,19 @@ public struct EnumCase {
 // MARK: - + Parameters
 
 extension EnumCase.Parameters: Sequence, MustacheSequence {
-    public func makeIterator() -> Array<EnumCase.Parameter>.Iterator {
+    func makeIterator() -> Array<EnumCase.Parameter>.Iterator {
         self.underlying.makeIterator()
     }
 }
 
 //extension EnumCase.Parameters: CustomReflectable {
-//    public var customMirror: Mirror {
+//    var customMirror: Mirror {
 //        Mirror(reflecting: self.underlying)
 //    }
 //}
 
 extension EnumCase.Parameters: MustacheTransformable {
-    public func transform(_ name: String) -> Any? {
+    func transform(_ name: String) -> Any? {
         if let defaultTransformed = self.underlying.transform(name) {
             return convertToCustomTypesIfPossible(defaultTransformed)
         } else {
@@ -97,7 +97,7 @@ extension EnumCase.Parameters: MustacheTransformable {
 }
 
 extension EnumCase.Parameters: CustomStringConvertible {
-    public var description: String {
+    var description: String {
         self.underlying.description
     }
 }
