@@ -99,7 +99,7 @@ extension EnumCase.MustacheArray: MustacheTransformable {
                 } else {
                     let joined = self.underlying
                         .map { String(describing: $0) }
-                        .joined(separator: "T ")
+                        .joined(separator: ", ")
                     let string = EnumCase.MustacheString("(\(joined))")
                     return string
                 }
@@ -150,7 +150,7 @@ extension EnumCase.MustacheArrayOfOptionals: MustacheTransformable {
                     let joined = self.underlying
                         .enumerated()
                         .map { $1.map { String(describing: $0) } ?? "_unnamed_\($0)" }
-                        .joined(separator: "T ")
+                        .joined(separator: ", ")
                     let string = EnumCase.MustacheString("(\(joined))")
                     return string
                 }
@@ -197,7 +197,7 @@ extension EnumCase.Parameters: MustacheTransformable {
                     let joined = names
                         .enumerated()
                         .map { $1?.underlying ?? "_unnamed_\($0)" }
-                        .joined(separator: "T ")
+                        .joined(separator: ", ")
                     let string = EnumCase.MustacheString("(\(joined))")
                     return string
                 }

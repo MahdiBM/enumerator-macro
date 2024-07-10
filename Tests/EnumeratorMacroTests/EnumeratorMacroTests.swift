@@ -4,7 +4,7 @@ import SwiftSyntaxMacrosTestSupport
 import Testing
 
 @Suite struct EnumeratorMacroTests {
-    @Test func works() throws {
+    @Test func createsCaseName() throws {
         assertMacroExpansionWithSwiftTesting(
             #"""
             @Enumerator(
@@ -42,6 +42,96 @@ import Testing
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
+
+    @Test func createsACopyOfSelf() throws {
+        assertMacroExpansionWithSwiftTesting(
+            #"""
+            @Enumerator("""
+            enum CopyOfSelf {
+            {{#cases}}
+            case {{name}}{{joinedWithParenthesis(namesWithTypes(parameters))}}
+            {{/cases}}
+            }
+            """)
+            public enum TestEnum {
+                case a(val1: String, val2: Int)
+                case b
+                case testCase(testValue: String)
+            }
+            """#,
+            expandedSource: #"""
+            public enum TestEnum {
+                case a(val1: String, val2: Int)
+                case b
+                case testCase(testValue: String)
+
+                enum CopyOfSelf {
+                    case a(val1: String, val2: Int)
+                    case b
+                    case testCase(testValue: String)
+                }
+            }
+            """#,
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
+    @Test func createsDeclarationsForCaseChecking() throws {
+        assertMacroExpansionWithSwiftTesting(
+            #"""
+            @Enumerator("""
+            {{#cases}}
+            var is{{capitalized(name)}}: Bool {
+                switch self {
+                case .{{name}}:
+                    return true
+                default:
+                    return false
+                }
+            }
+            {{/cases}}
+            """)
+            public enum TestEnum {
+                case a(val1: String, val2: Int)
+                case b
+                case testCase(testValue: String)
+            }
+            """#,
+            expandedSource: #"""
+            public enum TestEnum {
+                case a(val1: String, val2: Int)
+                case b
+                case testCase(testValue: String)
+
+                var isA: Bool {
+                    switch self {
+                    case .a:
+                        return true
+                    default:
+                        return false
+                    }
+                }
+                var isB: Bool {
+                    switch self {
+                    case .b:
+                        return true
+                    default:
+                        return false
+                    }
+                }
+                var isTestcase: Bool {
+                    switch self {
+                    case .testCase:
+                        return true
+                    default:
+                        return false
+                    }
+                }
+            }
+            """#,
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
 }
 
 @attached(member, names: arbitrary)
@@ -49,27 +139,6 @@ macro Enumerator(_ templates: String...) = #externalMacro(
     module: "EnumeratorMacro",
     type: "EnumeratorMacroType"
 )
-
-
-
-
-/// {{#namesWithTypes(parameters)}}{{joined(.)}}{{/namesWithTypes(parameters)}}
-
-@Enumerator("""
-enum CopyOfSelf: String {
-{{#cases}}
-case {{name}}{{#namesWithTypes(parameters)}}{{joined(.)}}{{/namesWithTypes(parameters)}}
-{{/cases}}
-}
-""")
-public enum TestEnum2 {
-    case a(val1: String, val2: Int)
-    case b
-    case testCase(testValue: String)
-}
-
-
-
 
 @Enumerator("""
 enum Subtype: String {

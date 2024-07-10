@@ -1,6 +1,7 @@
 import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
+import SwiftParser
 import Mustache
 
 public enum EnumeratorMacroType {}
@@ -14,7 +15,7 @@ extension EnumeratorMacroType: MemberMacro {
         if declaration.hasError { return [] }
 
         guard let enumDecl = declaration.as(EnumDeclSyntax.self) else {
-            fatalError("Not enum")
+            throw MacroError.isNotEnum
         }
 
         let members = enumDecl.memberBlock.members
@@ -23,7 +24,7 @@ extension EnumeratorMacroType: MemberMacro {
         let cases = try elements.map(EnumCase.init(from:))
 
         guard let arguments = node.arguments else {
-            fatalError("No arguments")
+            throw MacroError.macroDeclarationHasNoArguments
         }
         let rendered = try arguments.as(LabeledExprListSyntax.self)!.compactMap {
             $0.expression
@@ -34,8 +35,11 @@ extension EnumeratorMacroType: MemberMacro {
         }.map { template in
             try MustacheTemplate(string: "{{%CONTENT_TYPE:TEXT}}\n" + template)
                 .render(["cases": cases])
-        }.map(DeclSyntax.init(stringLiteral:))
-        
+        }.map {
+            var parser = Parser($0)
+            return DeclSyntax.parse(from: &parser)
+        }
+
         return rendered
     }
 }

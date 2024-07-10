@@ -1,5 +1,5 @@
 {
-  "originHash" : "ce25c9bdeb39120a6e58c3aa2fa205e436aca11542cc194f7b4520aecb86b27d",
+  "originHash" : "db12584d48eea6de43652535e6f196bf16b860f1a22c890a09e0ccf979302a90",
   "pins" : [
     {
       "identity" : "swift-mustache",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/mahdibm/swift-mustache",
       "state" : {
         "branch" : "mmbm-swift-6",
-        "revision" : "e23122de36452ff04699b0fccc9a53866250c239"
+        "revision" : "72f3279b228908c786d80289e7260439163654f2"
       }
     },
     {
