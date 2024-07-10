@@ -34,14 +34,26 @@ extension EParameters: MustacheTransformable {
                     .joined(separator: ", ")
                 let string = EString(joined)
                 return string
-            case "namesWithTypes":
-                let namesWithTypes = self
+            case "namesAndTypes":
+                let namesAndTypes = self
                     .enumerated()
                     .map { idx, element in
                         (element.name ?? "_param\(idx + 1)") + ": " + element.type
                     }
-                let array = EArray(underlying: namesWithTypes)
+                let array = EArray(underlying: namesAndTypes)
                 return array
+            case "tupleValue":
+                if self.underlying.count == 1 {
+                    return EArray(underlying: [underlying[0].type])
+                } else {
+                    let namesAndTypes = self
+                        .enumerated()
+                        .map { idx, element in
+                            (element.name ?? "_param\(idx + 1)") + ": " + element.type
+                        }
+                    let array = EArray(underlying: namesAndTypes)
+                    return array
+                }
             case "names":
                 let names = self.map(\.name)
                 let array = EOptionalsArray(underlying: names)

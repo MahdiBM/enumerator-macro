@@ -50,7 +50,7 @@ final class EnumeratorMacroTests: XCTestCase {
             @Enumerator("""
             enum CopyOfSelf {
                 {{#cases}}
-                case {{name}}{{withParens(joined(namesWithTypes(parameters)))}}
+                case {{name}}{{withParens(joined(namesAndTypes(parameters)))}}
                 {{/cases}}
             }
             """)
@@ -196,9 +196,9 @@ final class EnumeratorMacroTests: XCTestCase {
             @Enumerator("""
             {{#cases}}
             {{^empty(parameters)}}
-            func get{{capitalized(name)}}() -> ({{joined(namesWithTypes(parameters))}})? {
+            func get{{capitalized(name)}}() -> ({{joined(tupleValue(parameters))}})? {
                 switch self {
-                case .{{name}}{{withParens(joined(namesWithTypes(parameters)))}}:
+                case let .{{name}}{{withParens(joined(names(parameters)))}}:
                     return {{withParens(joined(names(parameters)))}}
                 default:
                     return nil
@@ -221,16 +221,16 @@ final class EnumeratorMacroTests: XCTestCase {
 
                 func getA() -> (val1: String, _param2: Int)? {
                     switch self {
-                    case .a(val1: String, _param2: Int):
+                    case let .a(val1, _param2):
                         return (val1, _param2)
                     default:
                         return nil
                     }
                 }
 
-                func getTestcase() -> (testValue: String)? {
+                func getTestcase() -> (String)? {
                     switch self {
-                    case .testCase(testValue: String):
+                    case let .testCase(testValue):
                         return (testValue)
                     default:
                         return nil
