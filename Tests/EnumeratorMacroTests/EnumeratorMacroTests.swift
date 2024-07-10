@@ -1,12 +1,11 @@
 import EnumeratorMacro
-import EnumeratorMacroImpl
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
-import Testing
+import XCTest
 
-@Suite struct EnumeratorMacroTests {
-    @Test func createsCaseName() throws {
-        assertMacroExpansionWithSwiftTesting(
+final class EnumeratorMacroTests: XCTestCase {
+    func testCreatesCaseName() throws {
+        assertMacroExpansion(
             #"""
             @Enumerator(
             """
@@ -40,13 +39,12 @@ import Testing
                 }
             }
             """#,
-            macros: EnumeratorMacroEntryPoint.macros,
-            sourceLocation: Testing.SourceLocation()
+            macros: EnumeratorMacroEntryPoint.macros
         )
     }
 
-    @Test func createsACopyOfSelf() throws {
-        assertMacroExpansionWithSwiftTesting(
+    func testCreatesACopyOfSelf() throws {
+        assertMacroExpansion(
             #"""
             @Enumerator("""
             enum CopyOfSelf {
@@ -74,13 +72,12 @@ import Testing
                 }
             }
             """#,
-            macros: EnumeratorMacroEntryPoint.macros,
-            sourceLocation: Testing.SourceLocation()
+            macros: EnumeratorMacroEntryPoint.macros
         )
     }
 
-    @Test func createsDeclarationsForCaseChecking() throws {
-        assertMacroExpansionWithSwiftTesting(
+    func testCreatesDeclarationsForCaseChecking() throws {
+        assertMacroExpansion(
             #"""
             @Enumerator("""
             {{#cases}}
@@ -134,13 +131,12 @@ import Testing
                 }
             }
             """#,
-            macros: EnumeratorMacroEntryPoint.macros,
-            sourceLocation: Testing.SourceLocation()
+            macros: EnumeratorMacroEntryPoint.macros
         )
     }
 
-    @Test func createsSubtypeWithMulti() throws {
-        assertMacroExpansionWithSwiftTesting(
+    func testCreatesSubtypeWithMulti() throws {
+        assertMacroExpansion(
             #"""
             @Enumerator("""
             enum Subtype: String {
@@ -189,64 +185,7 @@ import Testing
                 }
             }
             """#,
-            macros: EnumeratorMacroEntryPoint.macros,
-            sourceLocation: Testing.SourceLocation()
+            macros: EnumeratorMacroEntryPoint.macros
         )
-    }
-}
-
-@Enumerator("""
-enum Subtype: String {
-{{#cases}}
-case {{name}}
-{{/cases}}
-}
-""",
-"""
-var subtype: Subtype {
-    switch self {
-    {{#cases}}
-    case .{{name}}:
-        return .{{name}}
-    {{/cases}}
-    }
-}
-""",
-"""
-var parameterNames: [String] {
-    switch self {
-    {{#cases}}
-    case .{{name}}:
-        return [
-{{^parameters}}
-"empty"
-{{/parameters}}
-{{#parameters}}
-"{{snakeCased(name)}}"
-{{/parameters}}
-        ]
-    {{/cases}}
-    }
-}
-""",
-"""
-{{#cases}}
-var is{{capitalized(name)}}: Bool {
-    switch self {
-    case .{{name}}:
-        return true
-    default:
-        return false
-    }
-}
-{{/cases}}
-""")
-enum TestEnum {
-    case a(value: String)
-    case b
-    case testCase(testValue: String)
-
-    func isTheSameCase(as other: Self) -> Bool {
-        self.subtype == other.subtype
     }
 }

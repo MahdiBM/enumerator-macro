@@ -1,4 +1,4 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 5.10
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 import CompilerPluginSupport
 import PackageDescription
@@ -21,11 +21,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/swiftlang/swift-syntax",
-            from: "600.0.0-prerelease-2024-06-12"
-        ),
-        .package(
-            url: "https://github.com/apple/swift-testing",
-            .upToNextMinor(from: "0.10.0")
+            "510.0.0" ..< "610.0.0"
         ),
         .package(
             url: "https://github.com/mahdibm/swift-mustache",
@@ -44,7 +40,11 @@ let package = Package(
         ),
         .target(
             name: "EnumeratorMacro",
-            dependencies: ["EnumeratorMacroImpl"],
+            dependencies: [
+                "EnumeratorMacroImpl",
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+            ],
             swiftSettings: swiftSettings
         ),
         .testTarget(
@@ -52,7 +52,6 @@ let package = Package(
             dependencies: [
                 "EnumeratorMacro",
                 "EnumeratorMacroImpl",
-                .product(name: "Testing", package: "swift-testing"),
                 .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
@@ -68,5 +67,6 @@ var swiftSettings: [SwiftSetting] {
     [
         .enableExperimentalFeature("ExistentialAny"),
         .enableExperimentalFeature("AccessLevelOnImport"),
+        .enableExperimentalFeature("StrictConcurrency"),
     ]
 }
