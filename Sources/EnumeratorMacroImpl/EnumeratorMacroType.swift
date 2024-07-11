@@ -33,34 +33,74 @@ extension EnumeratorMacroType: MemberMacro {
         if exprList.isEmpty {
             throw MacroError.expectedAtLeastOneArgument
         }
-        let templates = try exprList.compactMap { element in
+        let templates = try exprList.compactMap { 
+            element -> (template: String, syntax: StringLiteralExprSyntax) in
             guard let stringLiteral = element.expression.as(StringLiteralExprSyntax.self) else {
                 throw MacroError.allArgumentsMustBeStringLiterals(violation: element.description)
             }
-            return stringLiteral
+            let template = stringLiteral
                 .segments
                 .formatted()
                 .description
+            return (template, stringLiteral)
         }
-        let rendered = try templates.map { template in
-            try MustacheTemplate(
-                string: "{{%CONTENT_TYPE:TEXT}}\n" + template
-            ).render([
-                "cases": cases
-            ])
+        let rendered = templates.compactMap {
+            (template, syntax) -> (rendered: String, syntax: StringLiteralExprSyntax)? in
+            do {
+                let rendered = try MustacheTemplate(
+                    string: "{{%CONTENT_TYPE:TEXT}}\n" + template
+                ).render([
+                    "cases": cases
+                ])
+                return (rendered, syntax)
+            } catch {
+                let message: MacroError
+                let errorSyntax: SyntaxProtocol
+                if let parserError = error as? MustacheTemplate.ParserError {
+                    message = .mustacheTemplateError(
+                        message: String(describing: parserError.error)
+                    )
+                    let segments = Array(syntax.segments)
+                    let segmentIdx = parserError.context.lineNumber - 2
+                    if segmentIdx < segments.count {
+                        let syntaxAtErrorLine = segments[segmentIdx]
+                        errorSyntax = syntaxAtErrorLine
+                    } else {
+                        errorSyntax = syntax
+                    }
+                } else {
+                    message = .mustacheTemplateError(
+                        message: String(describing: error)
+                    )
+                    errorSyntax = syntax
+                }
+                context.diagnose(
+                    Diagnostic(
+                        node: errorSyntax,
+                        message: message
+                    )
+                )
+                return nil
+            }
         }
-        let syntaxes: [DeclSyntax] = rendered.flatMap { rendered in
-            SourceFileSyntax(
+        let syntaxes: [DeclSyntax] = rendered.compactMap {
+            (rendered, syntax) -> [DeclSyntax]? in
+            let decls = SourceFileSyntax(
                 stringLiteral: rendered
             ).statements.compactMap { statement in
                 DeclSyntax(statement.item)
             }
-        }
-
-        let withErrors = syntaxes.filter(\.hasError)
-        guard withErrors.isEmpty else {
-            throw MacroError.renderedSyntaxesContainsErrors(withErrors.map(\.description))
-        }
+            if let withError = decls.first(where: \.hasError) {
+                context.diagnose(
+                    Diagnostic(
+                        node: syntax,
+                        message: MacroError.renderedSyntaxContainsErrors(withError.description)
+                    )
+                )
+                return nil
+            }
+            return decls
+        }.flatMap { $0 }
 
         return syntaxes
     }
