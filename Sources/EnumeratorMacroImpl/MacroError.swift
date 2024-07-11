@@ -7,6 +7,7 @@ enum MacroError: Error, CustomStringConvertible {
     case unacceptableArguments
     case expectedAtLeastOneArgument
     case allArgumentsMustBeStringLiterals(violation: String)
+    case renderedSyntaxContainsErrors(String)
 
     var description: String {
         switch self {
@@ -20,6 +21,8 @@ enum MacroError: Error, CustomStringConvertible {
             "At least one argument of type StaticString is required"
         case let .allArgumentsMustBeStringLiterals(violation):
             "All arguments must be string literals, but found: \(violation)"
+        case let .renderedSyntaxContainsErrors(syntax):
+            "A rendered syntax contains errors:\n\(syntax)"
         }
     }
 }

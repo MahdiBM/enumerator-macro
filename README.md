@@ -154,10 +154,10 @@ enum TestEnum {
     case b
     case testCase(testValue: String)
 
-    func getA() -> (val1: String, _param2: Int)? {
+    func getA() -> (val1: String, param2: Int)? {
         switch self {
-        case let .a(val1, _param2):
-            return (val1, _param2)
+        case let .a(val1, param2):
+            return (val1, param2)
         default:
             return nil
         }

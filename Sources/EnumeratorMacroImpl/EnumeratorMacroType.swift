@@ -56,6 +56,11 @@ extension EnumeratorMacroType: MemberMacro {
             }
         }
 
+        if let first = syntaxes.first(where: \.hasError) {
+            
+            throw MacroError.renderedSyntaxContainsErrors(first.description)
+        }
+
         return syntaxes
     }
 }
