@@ -4,12 +4,6 @@ public macro Enumerator(_ templates: StaticString...) = #externalMacro(
     type: "EnumeratorMacroType"
 )
 
-@attached(member, names: arbitrary)
-macro CreateSubtype() = #externalMacro(
-    module: "EnumeratorMacroImpl",
-    type: "EnumeratorMacroType"
-)
-
 @Enumerator("""
 {{#cases}}
 var is{{capitalized(name)}}: Bool {
@@ -23,13 +17,6 @@ var is{{capitalized(name)}}: Bool {
 {{/cases}}
 """)
 enum TestEnum {
-    case a(val1: String, val2: Int)
-    case b
-    case testCase(testValue: String)
-}
-
-@CreateSubtype
-enum TestEnum2 {
     case a(val1: String, val2: Int)
     case b
     case testCase(testValue: String)
