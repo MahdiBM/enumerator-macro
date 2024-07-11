@@ -6,7 +6,7 @@ public macro Enumerator(_ templates: StaticString...) = #externalMacro(
 
 @Enumerator("""
 {{#cases}}
-var is{{capitalized(name)}}: Bool {
+var is{{firstCapitalized(name)}}: Bool {
     switch self {
     case .{{name}}:
         return true

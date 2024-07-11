@@ -26,10 +26,16 @@ extension EString: MustacheTransformable {
             return convertToCustomTypesIfPossible(defaultTransformed)
         } else {
             switch name {
+            case "firstCapitalized":
+                if self.isEmpty {
+                    return self
+                }
+                let modified = self[self.startIndex].uppercased() + self[self.index(after: self.startIndex)...]
+                return EString(modified)
             case "snakeCased":
                 return self.convertedToSnakeCase()
             case "withParens":
-                return self.underlying.isEmpty ? self : "(\(self))"
+                return self.isEmpty ? self : "(\(self))"
             default:
                 return nil
             }
@@ -146,7 +152,20 @@ extension EString: StringProtocol {
     }
 }
 
-private extension StringProtocol {
+extension EString: RangeReplaceableCollection {
+    init() {
+        self.underlying = ""
+    }
+
+    mutating func replaceSubrange<C>(
+        _ subrange: Range<String.Index>,
+        with newElements: C
+    ) where C : Collection, Character == C.Element {
+        self.underlying.replaceSubrange(subrange, with: newElements)
+    }
+}
+
+private extension StringProtocol where Self: RangeReplaceableCollection {
     /// Returns a new string with the camel-case-based words of this string
     /// split by the specified separator.
     ///
@@ -158,9 +177,9 @@ private extension StringProtocol {
     ///     // my_url_property
     ///     "myURLProperty".convertedToSnakeCase(separator: "-")
     ///     // my-url-property
-    func convertedToSnakeCase(separator: Character = "_") -> String {
+    func convertedToSnakeCase(separator: Character = "_") -> Self {
         guard !isEmpty else { return "" }
-        var result = ""
+        var result: Self = ""
         // Whether we should append a separator when we see a uppercase character.
         var separateOnUppercase = true
         for index in indices {

@@ -47,7 +47,7 @@ enum TestEnum {
 ```swift
 @Enumerator("""
 {{#cases}}
-var is{{capitalized(name)}}: Bool {
+var is{{firstCapitalized(name)}}: Bool {
     switch self {
     case .{{name}}: return true
     default: return false
@@ -82,7 +82,7 @@ enum TestEnum {
         }
     }
 
-    var isTestcase: Bool {
+    var isTestCase: Bool {
         switch self {
         case .testCase: return true
         default: return false
@@ -130,7 +130,7 @@ enum TestEnum {
 @Enumerator("""
 {{#cases}}
 {{^empty(parameters)}}
-func get{{capitalized(name)}}() -> ({{joined(tupleValue(parameters))}})? {
+func get{{firstCapitalized(name)}}() -> ({{joined(tupleValue(parameters))}})? {
     switch self {
     case let .{{name}}{{withParens(joined(names(parameters)))}}:
         return {{withParens(joined(names(parameters)))}}
@@ -163,7 +163,7 @@ enum TestEnum {
         }
     }
 
-    func getTestcase() -> (String)? {
+    func getTestCase() -> (String)? {
         switch self {
         case let .testCase(testValue):
             return (testValue)
