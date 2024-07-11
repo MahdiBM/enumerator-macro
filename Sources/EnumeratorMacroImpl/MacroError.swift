@@ -7,22 +7,23 @@ enum MacroError: Error, CustomStringConvertible {
     case unacceptableArguments
     case expectedAtLeastOneArgument
     case allArgumentsMustBeStringLiterals(violation: String)
-    case renderedSyntaxContainsErrors(String)
+    case renderedSyntaxesContainsErrors([String])
 
     var description: String {
         switch self {
         case .isNotEnum:
-            "Only enums are supported"
+            return "Only enums are supported"
         case .macroDeclarationHasNoArguments:
-            "The macro declaration needs to have at least 1 StringLiteral argument"
+            return "The macro declaration needs to have at least 1 StringLiteral argument"
         case .unacceptableArguments:
-            "The arguments passed to the macro were unacceptable"
+            return "The arguments passed to the macro were unacceptable"
         case .expectedAtLeastOneArgument:
-            "At least one argument of type StaticString is required"
+            return "At least one argument of type StaticString is required"
         case let .allArgumentsMustBeStringLiterals(violation):
-            "All arguments must be string literals, but found: \(violation)"
-        case let .renderedSyntaxContainsErrors(syntax):
-            "A rendered syntax contains errors:\n\(syntax)"
+            return "All arguments must be string literals, but found: \(violation)"
+        case let .renderedSyntaxesContainsErrors(syntaxes):
+            let syntaxes = syntaxes.joined(separator: "\n\(String(repeating: "-", count: 20))\n")
+            return "Some rendered syntaxes contain errors:\n\(syntaxes)"
         }
     }
 }

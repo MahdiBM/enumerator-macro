@@ -24,9 +24,9 @@ extension EnumeratorMacroType: MemberMacro {
         let elements = caseDecls.flatMap(\.elements)
         let cases = try elements.map(EnumCase.init(from:))
 
-            guard let arguments = node.arguments else {
-                throw MacroError.macroDeclarationHasNoArguments
-            }
+        guard let arguments = node.arguments else {
+            throw MacroError.macroDeclarationHasNoArguments
+        }
         guard let exprList = arguments.as(LabeledExprListSyntax.self) else {
             throw MacroError.unacceptableArguments
         }
@@ -42,7 +42,6 @@ extension EnumeratorMacroType: MemberMacro {
                 .formatted()
                 .description
         }
-
         let rendered = try templates.map { template in
             try MustacheTemplate(
                 string: "{{%CONTENT_TYPE:TEXT}}\n" + template
@@ -58,8 +57,9 @@ extension EnumeratorMacroType: MemberMacro {
             }
         }
 
-        if let first = syntaxes.first(where: \.hasError) {
-            throw MacroError.renderedSyntaxContainsErrors(first.description)
+        let withErrors = syntaxes.filter(\.hasError)
+        guard withErrors.isEmpty else {
+            throw MacroError.renderedSyntaxesContainsErrors(withErrors.map(\.description))
         }
 
         return syntaxes
