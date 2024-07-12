@@ -2,7 +2,7 @@
 A utility for creating case-by-case code for your Swift enums using the Mustache templating engine.   
 `EnumeratorMacro` uses [swift-mustache](https://github.com/hummingbird-project/swift-mustache/issues/35)'s flavor.
 
-# This is still an unpolished Work-In-Progress
+# This is still an Work-In-Progress
 
 ## Examples
 
@@ -17,8 +17,7 @@ var caseName: String {
     {{/cases}}
     }
 }
-"""
-)
+""")
 enum TestEnum {
     case a(val1: String, val2: Int)
     case b
