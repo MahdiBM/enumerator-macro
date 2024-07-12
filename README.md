@@ -8,8 +8,7 @@ A utility for creating case-by-case code for your Swift enums using the Mustache
 
 ### Derive Case Names
 ```swift
-@Enumerator(
-"""
+@Enumerator("""
 var caseName: String {
     switch self {
     {{#cases}}
