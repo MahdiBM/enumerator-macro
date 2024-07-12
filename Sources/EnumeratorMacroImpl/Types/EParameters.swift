@@ -26,14 +26,14 @@ extension EParameters: MustacheTransformable {
             return convertToCustomTypesIfPossible(defaultTransformed)
         } else {
             switch name {
-            case "joined":
-                let joined = self.underlying
-                    .map(\.name)
-                    .enumerated()
-                    .map { $1?.underlying ?? "param\($0 + 1)" }
-                    .joined(separator: ", ")
-                let string = EString(joined)
-                return string
+            case "names":
+                let names = self.map(\.name)
+                let array = EOptionalsArray(underlying: names)
+                return array
+            case "types":
+                let types = self.map(\.type)
+                let array = EArray(underlying: types)
+                return array
             case "namesAndTypes":
                 let namesAndTypes = self
                     .enumerated()
@@ -54,14 +54,6 @@ extension EParameters: MustacheTransformable {
                     let array = EArray(underlying: namesAndTypes)
                     return array
                 }
-            case "names":
-                let names = self.map(\.name)
-                let array = EOptionalsArray(underlying: names)
-                return array
-            case "types":
-                let types = self.map(\.type)
-                let array = EArray(underlying: types)
-                return array
             default:
                 return nil
             }

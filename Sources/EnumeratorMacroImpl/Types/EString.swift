@@ -27,7 +27,7 @@ extension EString: MustacheTransformable {
         } else {
             switch name {
             case "firstCapitalized":
-                if self.isEmpty {
+                if self.isEmpty || self[self.startIndex].isUppercase {
                     return self
                 }
                 let modified = self[self.startIndex].uppercased() + self[self.index(after: self.startIndex)...]
