@@ -1,8 +1,16 @@
+<p align="center">
+    <a href="https://github.com/MahdiBM/enumerator-macro/actions/workflows/tests.yml">
+        <img src="https://github.com/MahdiBM/enumerator-macro/actions/workflows/tests.yml/badge.svg" alt="Tests Badge">
+    </a>
+    </a>
+    <a href="https://swift.org">
+        <img src="https://img.shields.io/badge/swift-6.0%20%2F%205.10-brightgreen.svg" alt="Latest/Minimum Swift Version">
+    </a>
+</p>
+
 # EnumeratorMacro
 A utility for creating case-by-case code for your Swift enums using the Mustache templating engine.   
-`EnumeratorMacro` uses [swift-mustache](https://github.com/hummingbird-project/swift-mustache/issues/35)'s flavor.
-
-# This is still an Work-In-Progress
+`EnumeratorMacro` uses [swift-mustache](https://github.com/hummingbird-project/swift-mustache)'s flavor.
 
 ## Examples
 
@@ -42,6 +50,9 @@ enum TestEnum {
 
 ### Create a Subtype Enum
 
+<details>
+  <summary> Click to expand </summary>
+    
 ```swift
 @Enumerator("""
 {{#cases}}
@@ -89,8 +100,13 @@ enum TestEnum {
 }
 ```
 
-### Create a Copy Of The Enum
+</details>
+    
+### Create a Copy of The Enum
 
+<details>
+  <summary> Click to expand </summary>
+    
 Not very practical but I'll leave it here for showcase for now.
 
 ```swift
@@ -121,6 +137,8 @@ enum TestEnum {
     }
 }
 ```
+
+</details>
 
 ###  Create Functions For Each Case
 
