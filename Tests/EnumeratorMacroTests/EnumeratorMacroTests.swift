@@ -242,6 +242,41 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
+    func testDiagnosesNotAnEnum() throws {
+        assertMacroExpansion(
+            #"""
+            @Enumerator("""
+            enum Subtype: String {
+                {{#cases}
+                case {{name}}
+                {{/cases}}
+            }
+            """)
+            struct TestString {
+                let value: String
+            }
+            """#,
+            expandedSource: #"""
+            struct TestString {
+                let value: String
+            }
+            """#,
+            diagnostics: [.init(
+                id: .init(
+                    domain: "EnumeratorMacro.MacroError",
+                    id: "isNotEnum"
+                ),
+                message: """
+                Only enums are supported
+                """,
+                line: 1,
+                column: 1,
+                severity: .error
+            )],
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
     func testDiagnosesBadMustacheTemplate() throws {
         assertMacroExpansion(
             #"""
@@ -281,7 +316,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testDiagnosesBadProducedSwiftCode() throws {
+    func testDiagnosesErroneousSwiftCode() throws {
         assertMacroExpansion(
             #"""
             @Enumerator("""
@@ -324,4 +359,32 @@ final class EnumeratorMacroTests: XCTestCase {
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
+}
+
+@Enumerator("""
+{{#cases}}
+var is{{firstCapitalized(name)}}: Bool {
+    switch self {
+    case .{{name}}:
+        return true
+    default:
+        return false
+    }
+}
+{{/cases}}
+""",
+"""
+var isTestCase2: Bool {
+    switch self {
+    case let .testCase:
+        return true
+    default:
+        return false
+    }
+}
+""")
+enum TestEnum {
+    case a(val1: String, val2: Int)
+    case b
+    case testCase(testValue: String)
 }

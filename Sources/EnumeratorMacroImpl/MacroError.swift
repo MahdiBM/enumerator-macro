@@ -40,7 +40,7 @@ enum MacroError: Error, CustomStringConvertible {
         case .isNotEnum:
             "Only enums are supported"
         case .macroDeclarationHasNoArguments:
-            "The macro declaration needs to have at least 1 StringLiteral argument"
+            "The macro declaration needs to have at least 1 String-Literal argument"
         case .unacceptableArguments:
             "The arguments passed to the macro were unacceptable"
         case .expectedAtLeastOneArgument:
