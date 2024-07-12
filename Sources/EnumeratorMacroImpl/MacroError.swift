@@ -10,6 +10,7 @@ enum MacroError: Error, CustomStringConvertible {
     case renderedSyntaxContainsErrors(String)
     case couldNotFindLocationOfNode(syntax: String)
     case mustacheTemplateError(message: String)
+    case internalError(String)
 
     var description: String {
         switch self {
@@ -29,6 +30,8 @@ enum MacroError: Error, CustomStringConvertible {
             "Could not find location of node for syntax:\n\(syntax)"
         case let .mustacheTemplateError(message):
             "Error while rendering the template: \(message)"
+        case let .internalError(message):
+            "An internal error occurred. Please file a bug report at https://github.com/mahdibm/enumerator-macro. Error:\n\(message)"
         }
     }
 }

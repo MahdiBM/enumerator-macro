@@ -62,7 +62,7 @@ extension EnumeratorMacroType: MemberMacro {
                     )
                     let segments = Array(syntax.segments)
                     let segmentIdx = parserError.context.lineNumber - 2
-                    if segmentIdx < segments.count {
+                    if segmentIdx >= 0, segmentIdx < segments.count {
                         let syntaxAtErrorLine = segments[segmentIdx]
                         errorSyntax = syntaxAtErrorLine
                     } else {
@@ -88,7 +88,19 @@ extension EnumeratorMacroType: MemberMacro {
             let decls = SourceFileSyntax(
                 stringLiteral: rendered
             ).statements.compactMap { statement in
-                DeclSyntax(statement.item)
+                if let syntax = DeclSyntax(statement.item) {
+                    return syntax
+                } else {
+                    context.diagnose(
+                        Diagnostic(
+                            node: syntax,
+                            message: MacroError.internalError(
+                                "Could not convert an CodeBlockItemSyntax to a DeclSyntax"
+                            )
+                        )
+                    )
+                    return nil
+                }
             }
             if let withError = decls.first(where: \.hasError) {
                 context.diagnose(

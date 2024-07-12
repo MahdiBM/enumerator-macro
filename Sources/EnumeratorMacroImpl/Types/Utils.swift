@@ -65,8 +65,4 @@ extension Optional: OptionalProtocol {
     func asConvertedOptionalAny() -> Optional<Any> {
         self.map { convertToCustomTypesIfPossible($0) }
     }
-
-    func requireConvertedWrappedType() -> any Any.Type {
-        type(of: convertToCustomTypesIfPossible(self!))
-    }
 }
