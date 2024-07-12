@@ -269,7 +269,7 @@ To use the `EnumeratorMacro` library in a SwiftPM project,
 add the following line to the dependencies in your `Package.swift` file:
 
 ```swift
-.package(url: "https://github.com/MahdiBM/enumerator-macro", from: "1.0.0-alpha.1"),
+.package(url: "https://github.com/MahdiBM/enumerator-macro", branch: "main"),
 ```
 
 Include `EnumeratorMacro` as a dependency for your targets:
