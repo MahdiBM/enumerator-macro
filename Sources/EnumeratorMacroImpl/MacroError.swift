@@ -12,6 +12,29 @@ enum MacroError: Error, CustomStringConvertible {
     case mustacheTemplateError(message: String)
     case internalError(String)
 
+    var caseName: String {
+        switch self {
+        case .isNotEnum:
+            "isNotEnum"
+        case .macroDeclarationHasNoArguments:
+            "macroDeclarationHasNoArguments"
+        case .unacceptableArguments:
+            "unacceptableArguments"
+        case .expectedAtLeastOneArgument:
+            "expectedAtLeastOneArgument"
+        case .allArgumentsMustBeStringLiterals:
+            "allArgumentsMustBeStringLiterals"
+        case .renderedSyntaxContainsErrors:
+            "renderedSyntaxContainsErrors"
+        case .couldNotFindLocationOfNode:
+            "couldNotFindLocationOfNode"
+        case .mustacheTemplateError:
+            "mustacheTemplateError"
+        case .internalError:
+            "internalError"
+        }
+    }
+
     var description: String {
         switch self {
         case .isNotEnum:
@@ -42,7 +65,7 @@ extension MacroError: DiagnosticMessage {
     }
 
     var diagnosticID: MessageID {
-        .init(domain: "EnumeratorMacro.MacroError", id: self.description)
+        .init(domain: "EnumeratorMacro.MacroError", id: self.caseName)
     }
 
     var severity: DiagnosticSeverity {

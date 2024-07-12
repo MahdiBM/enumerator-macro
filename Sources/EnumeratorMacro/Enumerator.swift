@@ -15,6 +15,16 @@ var is{{firstCapitalized(name)}}: Bool {
     }
 }
 {{/cases}}
+""",
+"""
+var isTestCase2: Bool {
+    switch self {
+    case let .testCase:
+        return true
+    default:
+        return false
+    }
+}
 """)
 enum TestEnum {
     case a(val1: String, val2: Int)

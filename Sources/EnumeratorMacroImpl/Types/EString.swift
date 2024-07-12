@@ -34,6 +34,8 @@ extension EString: MustacheTransformable {
                 return EString(modified)
             case "snakeCased":
                 return self.convertedToSnakeCase()
+            case "camelCased":
+                return self.convertToCamelCase()
             case "withParens":
                 return self.isEmpty ? self : "(\(self))"
             default:
@@ -175,9 +177,7 @@ private extension StringProtocol where Self: RangeReplaceableCollection {
     ///     // my_property
     ///     "myURLProperty".convertedToSnakeCase()
     ///     // my_url_property
-    ///     "myURLProperty".convertedToSnakeCase(separator: "-")
-    ///     // my-url-property
-    func convertedToSnakeCase(separator: Character = "_") -> Self {
+    func convertedToSnakeCase() -> Self {
         guard !isEmpty else { return "" }
         var result: Self = ""
         // Whether we should append a separator when we see a uppercase character.
@@ -188,16 +188,61 @@ private extension StringProtocol where Self: RangeReplaceableCollection {
             if character.isUppercase {
                 if separateOnUppercase, !result.isEmpty {
                     // Append the separator.
-                    result += "\(separator)"
+                    result += "_"
                 }
                 // If the next character is uppercase and the next-next character is lowercase, like "L" in "URLSession", we should separate words.
                 separateOnUppercase = nextIndex < endIndex && self[nextIndex].isUppercase && self.index(after: nextIndex) < endIndex && self[self.index(after: nextIndex)].isLowercase
             } else {
                 // If the character is `separator`, we do not want to append another separator when we see the next uppercase character.
-                separateOnUppercase = character != separator
+                separateOnUppercase = character != "_"
             }
             // Append the lowercased character.
             result += character.lowercased()
+        }
+        return result
+    }
+
+    func convertToCamelCase() -> Self {
+        guard !self.isEmpty else { return self }
+
+        // Find the first non-underscore character
+        guard let firstNonUnderscore = self.firstIndex(where: { $0 != "_" }) else {
+            // Reached the end without finding an _
+            return self
+        }
+
+        // Find the last non-underscore character
+        var lastNonUnderscore = self.index(before: self.endIndex)
+        while lastNonUnderscore > firstNonUnderscore && self[lastNonUnderscore] == "_" {
+            self.formIndex(before: &lastNonUnderscore)
+        }
+
+        let keyRange = firstNonUnderscore...lastNonUnderscore
+        let leadingUnderscoreRange = self.startIndex..<firstNonUnderscore
+        let trailingUnderscoreRange = self.index(after: lastNonUnderscore)..<self.endIndex
+
+        let components = self[keyRange].split(separator: "_")
+        let joinedString: Self
+        if components.count == 1 {
+            // No underscores in key, leave the word as is - maybe already camel cased
+            joinedString = Self(self[keyRange])
+        } else {
+            joinedString = Self(([components[0].lowercased()] + components[1...].map(\.capitalized)).joined())
+        }
+
+        // Do a cheap isEmpty check before creating and appending potentially empty strings
+        let result: Self
+        if (leadingUnderscoreRange.isEmpty && trailingUnderscoreRange.isEmpty) {
+            result = joinedString
+        } else if (!leadingUnderscoreRange.isEmpty && !trailingUnderscoreRange.isEmpty) {
+            // Both leading and trailing underscores
+            result = Self(self[leadingUnderscoreRange]) + joinedString + Self(self[trailingUnderscoreRange])
+        } else if (!leadingUnderscoreRange.isEmpty) {
+            // Just leading
+            result = Self(self[leadingUnderscoreRange]) + joinedString
+        } else {
+            // Just trailing
+            result = joinedString + Self(self[trailingUnderscoreRange])
         }
         return result
     }

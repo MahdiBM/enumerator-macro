@@ -241,4 +241,87 @@ final class EnumeratorMacroTests: XCTestCase {
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
+
+    func testDiagnosesBadMustacheTemplate() throws {
+        assertMacroExpansion(
+            #"""
+            @Enumerator("""
+            enum Subtype: String {
+                {{#cases}
+                case {{name}}
+                {{/cases}}
+            }
+            """)
+            enum TestEnum {
+                case a(val1: String, Int)
+                case b
+                case testCase(testValue: String)
+            }
+            """#,
+            expandedSource: #"""
+            enum TestEnum {
+                case a(val1: String, Int)
+                case b
+                case testCase(testValue: String)
+            }
+            """#,
+            diagnostics: [.init(
+                id: .init(
+                    domain: "EnumeratorMacro.MacroError",
+                    id: "mustacheTemplateError"
+                ),
+                message: """
+                Error while rendering the template: unfinishedName
+                """,
+                line: 3,
+                column: 1,
+                severity: .error
+            )],
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
+    func testDiagnosesBadProducedSwiftCode() throws {
+        assertMacroExpansion(
+            #"""
+            @Enumerator("""
+            enum Subtype: String {
+                {{#cases}}
+                case "{{name}}"
+                {{/cases}}
+            }
+            """)
+            enum TestEnum {
+                case a(val1: String, Int)
+                case b
+                case testCase(testValue: String)
+            }
+            """#,
+            expandedSource: #"""
+            enum TestEnum {
+                case a(val1: String, Int)
+                case b
+                case testCase(testValue: String)
+            }
+            """#,
+            diagnostics: [.init(
+                id: .init(
+                    domain: "EnumeratorMacro.MacroError",
+                    id: "renderedSyntaxContainsErrors"
+                ),
+                message: """
+                Rendered syntax contains errors:
+                enum Subtype: String {
+                    case "a"
+                    case "b"
+                    case "testCase"
+                }
+                """,
+                line: 1,
+                column: 13,
+                severity: .error
+            )],
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
 }

@@ -84,16 +84,32 @@ extension EnumeratorMacroType: MemberMacro {
             }
         }
         let syntaxes: [DeclSyntax] = rendered.compactMap {
-            (rendered, syntax) -> [DeclSyntax]? in
-            let decls = SourceFileSyntax(
-                stringLiteral: rendered
-            ).statements.compactMap { statement in
-                if let syntax = DeclSyntax(statement.item) {
-                    return syntax
-                } else {
+            (rendered, codeSyntax) -> [DeclSyntax]? in
+            var parser = Parser(rendered)
+            let decls = SourceFileSyntax.parse(
+                from: &parser
+            ).statements.compactMap { statement -> DeclSyntax? in
+                if statement.hasError {
                     context.diagnose(
                         Diagnostic(
-                            node: syntax,
+                            node: codeSyntax,
+                            message: MacroError.renderedSyntaxContainsErrors(statement.description)
+                        )
+                    )
+                    return nil
+                }
+                switch DeclSyntax(statement.item) {
+                case let .some(declSyntax):
+                    if declSyntax.hasWarning {
+                        return declSyntax
+                        // TODO: try to fix the warnings using SwiftSyntax-provided functions
+                    } else {
+                        return declSyntax
+                    }
+                case .none:
+                    context.diagnose(
+                        Diagnostic(
+                            node: codeSyntax,
                             message: MacroError.internalError(
                                 "Could not convert an CodeBlockItemSyntax to a DeclSyntax"
                             )
@@ -101,15 +117,6 @@ extension EnumeratorMacroType: MemberMacro {
                     )
                     return nil
                 }
-            }
-            if let withError = decls.first(where: \.hasError) {
-                context.diagnose(
-                    Diagnostic(
-                        node: syntax,
-                        message: MacroError.renderedSyntaxContainsErrors(withError.description)
-                    )
-                )
-                return nil
             }
             return decls
         }.flatMap { $0 }
