@@ -35,19 +35,19 @@ enum TestEnum {
 }
 ```
 Is expanded to:
-```swift
+```diff
 enum TestEnum {
     case a(val1: String, val2: Int)
     case b
     case testCase(testValue: String)
 
-    var caseName: String {
-        switch self {
-        case .a: "a"
-        case .b: "b"
-        case .testCase: "testCase"
-        }
-    }
++    var caseName: String {
++        switch self {
++        case .a: "a"
++        case .b: "b"
++        case .testCase: "testCase"
++        }
++    }
 }
 ```
 
@@ -74,32 +74,32 @@ enum TestEnum {
 }
 ```
 Is expanded to:
-```swift
+```diff
 enum TestEnum {
     case a(val1: String, val2: Int)
     case b
     case testCase(testValue: String)
 
-    var isA: Bool {
-        switch self {
-        case .a: return true
-        default: return false
-        }
-    }
++    var isA: Bool {
++        switch self {
++        case .a: return true
++        default: return false
++        }
++    }
 
-    var isB: Bool {
-        switch self {
-        case .b: return true
-        default: return false
-        }
-    }
++    var isB: Bool {
++        switch self {
++        case .b: return true
++        default: return false
++        }
++    }
 
-    var isTestCase: Bool {
-        switch self {
-        case .testCase: return true
-        default: return false
-        }
-    }
++    var isTestCase: Bool {
++        switch self {
++        case .testCase: return true
++        default: return false
++        }
++    }
 }
 ```
 
@@ -127,17 +127,17 @@ enum TestEnum {
 }
 ```
 Is expanded to:
-```swift
+```diff
 enum TestEnum {
     case a(val1: String, val2: Int)
     case b
     case testCase(testValue: String)
 
-    enum Copy {
-        case a(val1: String, val2: Int)
-        case b
-        case testCase(testValue: String)
-    }
++    enum Copy {
++        case a(val1: String, val2: Int)
++        case b
++        case testCase(testValue: String)
++    }
 }
 ```
 
@@ -167,29 +167,29 @@ enum TestEnum {
 }
 ```
 Is expanded to:
-```swift
+```diff
 enum TestEnum {
     case a(val1: String, Int)
     case b
     case testCase(testValue: String)
 
-    func getA() -> (val1: String, param2: Int)? {
-        switch self {
-        case let .a(val1, param2):
-            return (val1, param2)
-        default:
-            return nil
-        }
-    }
++    func getA() -> (val1: String, param2: Int)? {
++        switch self {
++        case let .a(val1, param2):
++            return (val1, param2)
++        default:
++            return nil
++        }
++    }
 
-    func getTestCase() -> (String)? {
-        switch self {
-        case let .testCase(testValue):
-            return (testValue)
-        default:
-            return nil
-        }
-    }
++    func getTestCase() -> (String)? {
++        switch self {
++        case let .testCase(testValue):
++            return (testValue)
++        default:
++            return nil
++        }
++    }
 }
 ```
 
