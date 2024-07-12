@@ -2,42 +2,71 @@ func convertToCustomTypesIfPossible(_ value: Any) -> Any {
     switch value {
     case let string as any StringProtocol:
         return EString(string.description)
-    case let array as Array<EParameter>:
-        return EParameters(underlying: array)
+    case let seq as any Sequence<EParameter>:
+        return EParameters(underlying: seq.map { $0 })
     case let seq as any Sequence:
-        return EArray<Any>(
-            underlying: convertHomogeneousArrayToCustomTypes(seq.map { $0 })
-        )
-        /// TODO: Handle arrays of optionals
+        switch convertHomogeneousArrayToCustomTypes(seq.map { $0 }) {
+        case let .anys(values):
+            return EArray<Any>(underlying: values)
+        case let .optionalAnys(values):
+            return EOptionalsArray<Any>(underlying: values)
+        }
     default:
         return value
     }
 }
 
-private func convertHomogeneousArrayToCustomTypes(_ values: [Any]) -> [Any] {
+enum Elements {
+    case anys([Any])
+    case optionalAnys([Any?])
+}
+
+private func convertHomogeneousArrayToCustomTypes(_ values: [Any]) -> Elements {
     guard let first = values.first else {
-        return values
+        return .anys(values)
     }
     switch first {
+    case is any OptionalProtocol:
+        return .optionalAnys(values.map {
+            let optionalProtocol = $0 as! (any OptionalProtocol)
+            let optional = optionalProtocol.asConvertedOptionalAny()
+            return optional
+        })
     case is any StringProtocol:
-        return values.map {
+        return .anys(values.map {
             let string = $0 as! (any StringProtocol)
             return EString(string.description)
-        }
-    case is Array<EParameter>:
-        return values.map {
-            let array = $0 as! Array<EParameter>
-            return EParameters(underlying: array)
-        }
+        })
+    case is any Sequence<EParameter>:
+        return .anys(values.map {
+            let seq = $0 as! any Sequence<EParameter>
+            return EParameters(underlying: seq.map { $0 })
+        })
     case is any Sequence:
-        return values.map {
+        return .anys(values.map {
             let seq = $0 as! (any Sequence)
-            return EArray<Any>(
-                underlying: convertHomogeneousArrayToCustomTypes(seq.map { $0 })
-            )
-        }
-        /// TODO: Handle arrays of optionals
+            switch convertHomogeneousArrayToCustomTypes(seq.map { $0 }) {
+            case let .anys(values):
+                return EArray<Any>(underlying: values)
+            case let .optionalAnys(values):
+                return EOptionalsArray<Any>(underlying: values)
+            }
+        })
     default:
-        return values
+        return .anys(values)
+    }
+}
+
+private protocol OptionalProtocol {
+    func asConvertedOptionalAny() -> Optional<Any>
+}
+
+extension Optional: OptionalProtocol {
+    func asConvertedOptionalAny() -> Optional<Any> {
+        self.map { convertToCustomTypesIfPossible($0) }
+    }
+
+    func requireConvertedWrappedType() -> any Any.Type {
+        type(of: convertToCustomTypesIfPossible(self!))
     }
 }
