@@ -15,6 +15,8 @@ A utility for creating case-by-case code for your Swift enums using the Mustache
 This macro will parse your enum code, and pass different info of your enum to the mustache template renderer.   
 This way you can access the enum's info such as each case-name or case-parameters in the template, and create code based on that.
 
+This can automate and simplify creation of code that has a repeated pattern, for enums.
+
 ## Examples
 
 ### Derive Case Names
