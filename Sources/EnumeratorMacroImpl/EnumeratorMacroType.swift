@@ -2,6 +2,7 @@ import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftParser
+import SwiftParserDiagnostics
 import Mustache
 import Foundation
 
@@ -89,23 +90,34 @@ extension EnumeratorMacroType: MemberMacro {
             let decls = SourceFileSyntax.parse(
                 from: &parser
             ).statements.compactMap { statement -> DeclSyntax? in
-                if statement.hasError {
-                    context.diagnose(
-                        Diagnostic(
+                let diagnostics = ParseDiagnosticsGenerator.diagnostics(for: statement)
+                let hasError = diagnostics.contains(where: { $0.diagMessage.severity == .error })
+                if hasError {
+                    context.diagnose(.init(
+                        node: codeSyntax,
+                        message: MacroError.renderedSyntaxContainsErrors(statement.description)
+                    ))
+                }
+                for diagnostic in diagnostics {
+                    if diagnostic.diagMessage.severity == .error {
+                        context.diagnose(.init(
                             node: codeSyntax,
-                            message: MacroError.renderedSyntaxContainsErrors(statement.description)
-                        )
-                    )
+                            position: diagnostic.position,
+                            message: diagnostic.diagMessage,
+                            highlights: diagnostic.highlights,
+                            notes: diagnostic.notes,
+                            fixIts: diagnostic.fixIts
+                        ))
+                    } else if let /*fixIt*/_ = diagnostic.fixIts.first {
+                        /// TODO: Apply the fixit
+                    }
+                }
+                if hasError {
                     return nil
                 }
                 switch DeclSyntax(statement.item) {
                 case let .some(declSyntax):
-                    if declSyntax.hasWarning {
-                        return declSyntax
-                        // TODO: try to fix the warnings using SwiftSyntax-provided functions
-                    } else {
-                        return declSyntax
-                    }
+                    return declSyntax
                 case .none:
                     context.diagnose(
                         Diagnostic(

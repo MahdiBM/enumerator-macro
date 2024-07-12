@@ -277,6 +277,93 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
+    func testDiagnosesNoArguments() throws {
+        assertMacroExpansion(
+            #"""
+            @Enumerator
+            enum TestEnum {
+                case a
+            }
+            """#,
+            expandedSource: #"""
+            enum TestEnum {
+                case a
+            }
+            """#,
+            diagnostics: [.init(
+                id: .init(
+                    domain: "EnumeratorMacro.MacroError",
+                    id: "macroDeclarationHasNoArguments"
+                ),
+                message: """
+                The macro declaration needs to have at least 1 String-Literal argument
+                """,
+                line: 1,
+                column: 1,
+                severity: .error
+            )],
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
+    func testDiagnosesEmptyArguments() throws {
+        assertMacroExpansion(
+            #"""
+            @Enumerator
+            enum TestEnum {
+                case a
+            }
+            """#,
+            expandedSource: #"""
+            enum TestEnum {
+                case a
+            }
+            """#,
+            diagnostics: [.init(
+                id: .init(
+                    domain: "EnumeratorMacro.MacroError",
+                    id: "macroDeclarationHasNoArguments"
+                ),
+                message: """
+                The macro declaration needs to have at least 1 String-Literal argument
+                """,
+                line: 1,
+                column: 1,
+                severity: .error
+            )],
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
+    func testDiagnosesUnacceptableArguments() throws {
+        assertMacroExpansion(
+            #"""
+            @Enumerator(myVariable)
+            enum TestEnum {
+                case a
+            }
+            """#,
+            expandedSource: #"""
+            enum TestEnum {
+                case a
+            }
+            """#,
+            diagnostics: [.init(
+                id: .init(
+                    domain: "EnumeratorMacro.MacroError",
+                    id: "allArgumentsMustBeStringLiterals"
+                ),
+                message: """
+                All arguments must be string literals, but found: myVariable
+                """,
+                line: 1,
+                column: 1,
+                severity: .error
+            )],
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
     func testDiagnosesBadMustacheTemplate() throws {
         assertMacroExpansion(
             #"""
@@ -339,26 +426,138 @@ final class EnumeratorMacroTests: XCTestCase {
                 case testCase(testValue: String)
             }
             """#,
-            diagnostics: [.init(
-                id: .init(
-                    domain: "EnumeratorMacro.MacroError",
-                    id: "renderedSyntaxContainsErrors"
+            diagnostics: [
+                .init(
+                    id: .init(
+                        domain: "EnumeratorMacro.MacroError",
+                        id: "renderedSyntaxContainsErrors"
+                    ),
+                    message: """
+                    Rendered syntax contains errors:
+                    enum Subtype: String {
+                        case "a"
+                        case "b"
+                        case "testCase"
+                    }
+                    """,
+                    line: 1,
+                    column: 13,
+                    severity: .error
                 ),
-                message: """
-                Rendered syntax contains errors:
-                enum Subtype: String {
-                    case "a"
-                    case "b"
-                    case "testCase"
-                }
-                """,
-                line: 1,
-                column: 13,
-                severity: .error
-            )],
+                .init(
+                    id: .init(
+                        domain: "SwiftParser",
+                        id: "MissingNodesError"
+                    ),
+                    message: """
+                    expected identifier in enum case
+                    """,
+                    line: 2,
+                    column: 17,
+                    severity: .error,
+                    fixIts: [.init(
+                        message: "insert identifier"
+                    )]
+                ),
+                .init(
+                    id: .init(
+                        domain: "SwiftParser",
+                        id: "UnexpectedNodesError"
+                    ),
+                    message: """
+                    unexpected code '"a"' before enum case
+                    """,
+                    line: 2,
+                    column: 17,
+                    severity: .error
+                ),
+                .init(
+                    id: .init(
+                        domain: "SwiftParser",
+                        id: "MissingNodesError"
+                    ),
+                    message: """
+                    expected identifier in enum case
+                    """,
+                    line: 3,
+                    column: 7,
+                    severity: .error,
+                    fixIts: [.init(
+                        message: "insert identifier"
+                    )]
+                ),
+                .init(
+                    id: .init(
+                        domain: "SwiftParser",
+                        id: "UnexpectedNodesError"
+                    ),
+                    message: """
+                    unexpected code '"b"' before enum case
+                    """,
+                    line: 3,
+                    column: 7,
+                    severity: .error
+                ),
+                .init(
+                    id: .init(
+                        domain: "SwiftParser",
+                        id: "MissingNodesError"
+                    ),
+                    message: """
+                    expected identifier in enum case
+                    """,
+                    line: 4,
+                    column: 5,
+                    severity: .error,
+                    fixIts: [.init(
+                        message: "insert identifier"
+                    )]
+                ),
+                .init(
+                    id: .init(
+                        domain: "SwiftParser",
+                        id: "UnexpectedNodesError"
+                    ),
+                    message: """
+                    unexpected code '"testCase"' in enum
+                    """,
+                    line: 4,
+                    column: 5,
+                    severity: .error
+                ),
+            ],
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
+
+//    func testAppliesFixIts() throws {
+//        assertMacroExpansion(
+//            #"""
+//            @Enumerator("""
+//            var value: Int {
+//                a 1️⃣\u{a0}+ 2
+//            }
+//            """)
+//            enum TestEnum {
+//                case a(val1: String, Int)
+//                case b
+//                case testCase(testValue: String)
+//            }
+//            """#,
+//            expandedSource: #"""
+//            enum TestEnum {
+//                case a(val1: String, Int)
+//                case b
+//                case testCase(testValue: String)
+//
+//                var value: Int {
+//                    a  + 2
+//                }
+//            }
+//            """#,
+//            macros: EnumeratorMacroEntryPoint.macros
+//        )
+//    }
 }
 
 @Enumerator("""
