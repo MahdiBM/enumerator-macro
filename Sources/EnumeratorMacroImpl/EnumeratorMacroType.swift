@@ -123,7 +123,7 @@ extension EnumeratorMacroType: MemberMacro {
                         Diagnostic(
                             node: codeSyntax,
                             message: MacroError.internalError(
-                                "Could not convert an CodeBlockItemSyntax to a DeclSyntax"
+                                "Could not convert a CodeBlockItemSyntax to a DeclSyntax"
                             )
                         )
                     )
