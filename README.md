@@ -57,6 +57,63 @@ enum TestEnum {
 
 <details>
   <summary> Click to expand </summary>
+
+```swift
+@Enumerator("""
+enum Subtype: String {
+    {{#cases}}
+    case {{name}}
+    {{/cases}}
+}
+""",
+"""
+var subtype: Subtype {
+    switch self {
+    {{#cases}}
+    case .{{name}}:
+        .{{name}}
+    {{/cases}}
+    }
+}
+""")
+enum TestEnum {
+    case a(val1: String, val2: Int)
+    case b
+    case testCase(testValue: String)
+}
+```
+Is expanded to:
+```diff
+enum TestEnum {
+    case a(val1: String, val2: Int)
+    case b
+    case testCase(testValue: String)
+
++    enum Subtype: String {
++        case a
++        case b
++        case testCase
++    }
+
++    var subtype: Subtype {
++        switch self {
++        case .a:
++            .a
++        case .b:
++            .b
++        case .testCase:
++            .testCase
++        }
++    }
+}
+```
+
+</details>
+
+### Create Is-Case Properties
+
+<details>
+  <summary> Click to expand </summary>
     
 ```swift
 @Enumerator("""
