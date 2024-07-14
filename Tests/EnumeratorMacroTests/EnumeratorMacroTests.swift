@@ -538,10 +538,6 @@ final class EnumeratorMacroTests: XCTestCase {
                 switch self {
                 case let .testCase:
                     return true
-                case let .a(a, b):
-                    return false
-                case .b:
-                    return false
                 default:
                     return false
                 }
@@ -563,10 +559,84 @@ final class EnumeratorMacroTests: XCTestCase {
                     switch self {
                     case .testCase:
                         return true
-                    case let .a(a, b):
+                    default:
                         return false
-                    case .b:
+                    }
+                }
+            }
+            """#,
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
+    func testRemovesArgumentInSwitchStatements() throws {
+        assertMacroExpansion(
+            #"""
+            @Enumerator("""
+            var isTestCase: Bool {
+                switch self {
+                case let .testCase(asd):
+                    return true
+                default:
+                    return false
+                }
+            }
+            """)
+            enum TestEnum {
+                case a(val1: String, Int)
+                case b
+                case testCase(testValue: String)
+            }
+            """#,
+            expandedSource: #"""
+            enum TestEnum {
+                case a(val1: String, Int)
+                case b
+                case testCase(testValue: String)
+
+                var isTestCase: Bool {
+                    switch self {
+                    case .testCase:
+                        return true
+                    default:
                         return false
+                    }
+                }
+            }
+            """#,
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
+    func testRemovesArgumentInSwitchStatementsWithMultipleArgumentsWhereOneArgIsUsed() throws {
+        assertMacroExpansion(
+            #"""
+            @Enumerator("""
+            var isTestCase: Bool {
+                switch self {
+                case let .a(x, y):
+                    return x
+                default:
+                    return false
+                }
+            }
+            """)
+            enum TestEnum {
+                case a(val1: String, Int)
+                case b
+                case testCase(testValue: String)
+            }
+            """#,
+            expandedSource: #"""
+            enum TestEnum {
+                case a(val1: String, Int)
+                case b
+                case testCase(testValue: String)
+
+                var isTestCase: Bool {
+                    switch self {
+                    case let .a(x):
+                        return x
                     default:
                         return false
                     }
