@@ -84,8 +84,10 @@ extension EnumeratorMacroType: MemberMacro {
                 return nil
             }
         }
-        let syntaxes: [DeclSyntax] = rendered.compactMap {
-            (rendered, codeSyntax) -> [DeclSyntax]? in
+        typealias DeclWithOriginalSyntax = (DeclSyntax, StringLiteralExprSyntax)
+        let syntaxes: [DeclWithOriginalSyntax] = rendered.compactMap {
+            (rendered, codeSyntax)
+            -> (declSyntaxes: [DeclSyntax], codeSyntax: StringLiteralExprSyntax)? in
             var parser = Parser(rendered)
             let decls = SourceFileSyntax.parse(
                 from: &parser
@@ -130,9 +132,30 @@ extension EnumeratorMacroType: MemberMacro {
                     return nil
                 }
             }
-            return decls
-        }.flatMap { $0 }
+            return (decls, codeSyntax)
+        }.flatMap { result -> [DeclWithOriginalSyntax] in
+            result.declSyntaxes.map {
+                ($0, result.codeSyntax)
+            }
+        }
+        let postProcessedSyntaxes = syntaxes.compactMap { 
+            (syntax, codeSyntax) -> DeclSyntax? in
+            let rewriter = Rewriter()
+            let newSyntax = rewriter.rewrite(syntax)
+            guard let declSyntax = DeclSyntax(newSyntax) else {
+                context.diagnose(
+                    Diagnostic(
+                        node: codeSyntax,
+                        message: MacroError.internalError(
+                            "Could not convert a post-processed Syntax to a DeclSyntax"
+                        )
+                    )
+                )
+                return nil
+            }
+            return declSyntax
+        }
 
-        return syntaxes
+        return postProcessedSyntaxes
     }
 }

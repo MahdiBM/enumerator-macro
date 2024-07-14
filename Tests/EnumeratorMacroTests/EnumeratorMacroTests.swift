@@ -530,6 +530,53 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
+    func testRemovesUnusedLetInSwitchStatements() throws {
+        assertMacroExpansion(
+            #"""
+            @Enumerator("""
+            var isTestCase: Bool {
+                switch self {
+                case let .testCase:
+                    return true
+                case let .a(a, b):
+                    return false
+                case .b:
+                    return false
+                default:
+                    return false
+                }
+            }
+            """)
+            enum TestEnum {
+                case a(val1: String, Int)
+                case b
+                case testCase(testValue: String)
+            }
+            """#,
+            expandedSource: #"""
+            enum TestEnum {
+                case a(val1: String, Int)
+                case b
+                case testCase(testValue: String)
+
+                var isTestCase: Bool {
+                    switch self {
+                    case .testCase:
+                        return true
+                    case let .a(a, b):
+                        return false
+                    case .b:
+                        return false
+                    default:
+                        return false
+                    }
+                }
+            }
+            """#,
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
 //    func testAppliesFixIts() throws {
 //        assertMacroExpansion(
 //            #"""
