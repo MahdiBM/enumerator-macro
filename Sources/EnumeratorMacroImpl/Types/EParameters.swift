@@ -34,6 +34,10 @@ extension EParameters: MustacheTransformable {
                 let types = self.map(\.type)
                 let array = EArray(underlying: types)
                 return array
+            case "isOptionals":
+                let types = self.map(\.isOptional)
+                let array = EArray(underlying: types)
+                return array
             case "namesAndTypes":
                 let namesAndTypes = self
                     .enumerated()

@@ -9,7 +9,7 @@ final class Rewriter: SyntaxRewriter {
         )
     }
 
-    /// Rewrites and removed unused arguments in switch cases.
+    /// Rewrites and removes unused arguments in switch cases.
     /// For example, it rewrites:
     /// ```swift
     /// switch self {
@@ -20,8 +20,9 @@ final class Rewriter: SyntaxRewriter {
     /// ```swift
     /// switch self {
     /// case .testCase(x):
+    ///     return x
     /// ```
-    /// because `y` is unused.
+    /// so it removes `y` because `y` is unused.
     private func removeUnusedArguments(_ node: SwitchCaseSyntax) -> SwitchCaseSyntax {
         guard let label = node.label.as(SwitchCaseLabelSyntax.self) else {
             return node
@@ -103,7 +104,7 @@ final class Rewriter: SyntaxRewriter {
         return node
     }
 
-    /// Rewrites and removed unused `let`s in switch cases.
+    /// Rewrites and removes unused `let`s in switch cases.
     /// For example, it rewrites:
     /// ```swift
     /// switch self {
