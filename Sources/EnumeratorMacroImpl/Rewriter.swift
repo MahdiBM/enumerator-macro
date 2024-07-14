@@ -21,7 +21,7 @@ final class Rewriter: SyntaxRewriter {
     /// switch self {
     /// case .testCase(x):
     /// ```
-    /// because `b` is unused.
+    /// because `y` is unused.
     private func removeUnusedArguments(_ node: SwitchCaseSyntax) -> SwitchCaseSyntax {
         guard let label = node.label.as(SwitchCaseLabelSyntax.self) else {
             return node
