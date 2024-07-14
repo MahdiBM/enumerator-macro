@@ -271,6 +271,7 @@ Here's a sample context object:
             "parameters": {
                 "name": "parameterName",
                 "type": "parameterType",
+                "isOptional": true
             }
         }
     ]
