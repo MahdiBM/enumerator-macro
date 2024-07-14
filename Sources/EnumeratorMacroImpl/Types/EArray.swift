@@ -1,7 +1,7 @@
 import Mustache
 
 struct EArray<Element> {
-    fileprivate let underlying: [Element]
+    let underlying: [Element]
 
     init(underlying: [Element]) {
         self.underlying = underlying

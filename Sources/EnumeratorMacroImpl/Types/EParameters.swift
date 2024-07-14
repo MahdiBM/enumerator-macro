@@ -1,10 +1,10 @@
 import Mustache
 
 struct EParameters {
-    fileprivate let underlying: [EParameter]
+    fileprivate let underlying: EArray<EParameter>
 
     init(underlying: [EParameter]) {
-        self.underlying = underlying
+        self.underlying = .init(underlying: underlying)
     }
 }
 
@@ -43,8 +43,8 @@ extension EParameters: MustacheTransformable {
                 let array = EArray(underlying: namesAndTypes)
                 return array
             case "tupleValue":
-                if self.underlying.count == 1 {
-                    return EArray(underlying: [underlying[0].type])
+                if self.underlying.underlying.count == 1 {
+                    return EArray(underlying: [underlying.underlying[0].type])
                 } else {
                     let namesAndTypes = self
                         .enumerated()
