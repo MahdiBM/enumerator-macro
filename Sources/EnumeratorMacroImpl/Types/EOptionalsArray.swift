@@ -6,6 +6,11 @@ struct EOptionalsArray<Element> {
     init(underlying: [Element?]) {
         self.underlying = underlying
     }
+
+    @available(*, unavailable, message: "Unwrap the optionals-array first")
+    init(underlying: EOptionalsArray<Element>) {
+        fatalError()
+    }
 }
 
 extension EOptionalsArray: Sequence, MustacheSequence {

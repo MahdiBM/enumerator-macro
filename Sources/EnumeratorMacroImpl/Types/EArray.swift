@@ -6,6 +6,11 @@ struct EArray<Element> {
     init(underlying: [Element]) {
         self.underlying = underlying
     }
+
+    @available(*, unavailable, message: "Unwrap the array first")
+    init(underlying: EArray<Element>) {
+        fatalError()
+    }
 }
 
 extension EArray: Sequence, MustacheSequence {
