@@ -290,16 +290,16 @@ In addition to [`swift-mustache`'s own "functions"/"transforms"](https://docs.hu
   * `camelCased`: Converts the string from snake_case to camelCase.
   * `withParens`: If the string is not empty, surrounds it in parenthesis.
 * `Array`:
-  * `joined`: Equivalent to `.joined(seperator: ", ")`
+  * `joined`: Equivalent to `.joined(separator: ", ")`
 * `[Case]` (`cases`):
   * `filterNoParams`: Filters-in the cases with no parameters.
   * `filterWithParams`: Filters-in the cases with one or more parameters.
 * `[Parameter]` (`parameters`):
   * `names`: Returns a string-array of the names of the parameters.
     * `names(parameters)` -> `[param1, param2, param3]`.
-  * `types`: Retunrs a string-array of the types of the parameters.
+  * `types`: Returns a string-array of the types of the parameters.
     * Use with `joined`: `joined(types(parameters))` -> `(String, Int, Double)`.
-  * `isOptionals`: Retunrs a string-array of the types of the parameters.
+  * `isOptionals`: Returns a string-array of the types of the parameters.
     * `isOptionals(parameters)` -> `[true, false, true]`.
   * `namesAndTypes`: Returns a string-array where each element is equivalent to `"\(name): \(type)"`.
     * Use with `joined`: `joined(namesAndTypes(parameters))` -> `(key: String)` or `(key: String, value: Int)`. 
