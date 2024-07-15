@@ -6,7 +6,9 @@ struct ECases {
 
     init(elements: [EnumCaseElementSyntax]) throws {
         self.underlying = .init(
-            underlying: try elements.map(ECase.init(from:))
+            underlying: try elements.enumerated().map { idx, element in
+                try ECase(index: idx, from: element)
+            }
         )
     }
 }

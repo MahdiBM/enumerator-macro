@@ -267,6 +267,7 @@ Here's a sample context object:
 {
     "cases": [
         {
+            "index": 0,
             "name": "caseName",
             "parameters": {
                 "name": "parameterName",
