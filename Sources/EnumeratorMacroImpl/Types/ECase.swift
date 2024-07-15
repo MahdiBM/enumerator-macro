@@ -2,7 +2,7 @@ import SwiftDiagnostics
 import SwiftSyntax
 import Mustache
 
-struct EnumCase {
+struct ECase {
     let name: EString
     let parameters: EParameters
 

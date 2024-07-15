@@ -1,10 +1,16 @@
 import Mustache
 
 struct EParameters {
-    fileprivate let underlying: EArray<EParameter>
+    let underlying: EArray<EParameter>
 
     init(underlying: [EParameter]) {
         self.underlying = .init(underlying: underlying)
+    }
+}
+
+extension EParameters: CustomStringConvertible {
+    var description: String {
+        self.underlying.description
     }
 }
 
@@ -62,11 +68,5 @@ extension EParameters: MustacheTransformable {
                 return nil
             }
         }
-    }
-}
-
-extension EParameters: CustomStringConvertible {
-    var description: String {
-        self.underlying.description
     }
 }

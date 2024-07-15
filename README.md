@@ -291,7 +291,10 @@ In addition to [`swift-mustache`'s own "functions"/"transforms"](https://docs.hu
   * `withParens`: If the string is not empty, surrounds it in parenthesis.
 * `Array`:
   * `joined`: Equivalent to `.joined(seperator: ", ")`
-* `[Parameter]`:
+* `[Case]` (`cases`):
+  * `filterNoParams`: Filters-in the cases with no parameters.
+  * `filterWithParams`: Filters-in the cases with one or more parameters.
+* `[Parameter]` (`parameters`):
   * `names`: Returns a string-array of the names of the parameters.
     * `names(parameters)` -> `[param1, param2, param3]`.
   * `types`: Retunrs a string-array of the types of the parameters.

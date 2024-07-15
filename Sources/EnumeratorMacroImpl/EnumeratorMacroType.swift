@@ -23,7 +23,7 @@ extension EnumeratorMacroType: MemberMacro {
         let members = enumDecl.memberBlock.members
         let caseDecls = members.compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
         let elements = caseDecls.flatMap(\.elements)
-        let cases = try elements.map(EnumCase.init(from:))
+        let cases = try ECases(elements: elements)
 
         guard let arguments = node.arguments else {
             throw MacroError.macroDeclarationHasNoArguments
