@@ -76,14 +76,21 @@ extension EOptional: MustacheTransformable {
             switch name {
             case "bool":
                 return false
+            case "exists":
+                return false
             default:
                 return nil
             }
         case let .some(value):
-            if let value = value as? MustacheTransformable {
-                return value.transform(name)
-            } else {
-                return nil
+            switch name {
+            case "exists":
+                return true
+            default:
+                if let value = value as? MustacheTransformable {
+                    return value.transform(name)
+                } else {
+                    return nil
+                }
             }
         }
     }

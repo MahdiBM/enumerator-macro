@@ -257,7 +257,9 @@ final class EnumeratorMacroTests: XCTestCase {
             """)
             public enum ErrorMessage {
                 case case1 // business_error
-                case case2
+                case case2 // business_error: true
+                case case3 // business_error: false
+                case case4 // business_error: adfasdfdsff
                 case somethingSomething(integration: String)
                 case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
             }
@@ -265,7 +267,9 @@ final class EnumeratorMacroTests: XCTestCase {
             expandedSource: #"""
             public enum ErrorMessage {
                 case case1 // business_error
-                case case2
+                case case2 // business_error: true
+                case case3 // business_error: false
+                case case4 // business_error: adfasdfdsff
                 case somethingSomething(integration: String)
                 case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
 
@@ -274,6 +278,10 @@ final class EnumeratorMacroTests: XCTestCase {
                     case .case1:
                         return true
                     case .case2:
+                        return true
+                    case .case3:
+                        return false
+                    case .case4:
                         return false
                     case .somethingSomething:
                         return false
