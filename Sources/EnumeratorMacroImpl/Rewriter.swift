@@ -19,10 +19,10 @@ final class Rewriter: SyntaxRewriter {
     /// to:
     /// ```swift
     /// switch self {
-    /// case .testCase(x):
+    /// case .testCase(x, _):
     ///     return x
     /// ```
-    /// so it removes `y` because `y` is unused.
+    /// so it replaces `y` with `_` because `y` is unused.
     private func removeUnusedArguments(_ node: SwitchCaseSyntax) -> SwitchCaseSyntax {
         guard let label = node.label.as(SwitchCaseLabelSyntax.self) else {
             return node
@@ -36,59 +36,77 @@ final class Rewriter: SyntaxRewriter {
                 continue
             }
 
-            var missingPresenceIndices: [Int] = []
-            for (idx, argument) in functionCallSyntax.arguments.enumerated() {
+            var arguments = functionCallSyntax.arguments
+            var didModify = false
+            var allArgsAreWildcards = true
+
+            for (idx, argument) in arguments.enumerated() {
                 guard let patternExpr = argument.expression.as(PatternExprSyntax.self),
                       let identifier = patternExpr.pattern.as(IdentifierPatternSyntax.self) else {
                     continue
                 }
-                let presenceDetector = PresenceDetector(toDetect: identifier.identifier.tokenKind)
-                presenceDetector.walk(node)
-                if presenceDetector.detectCount < 2 {
-                    missingPresenceIndices.append(idx)
-                }
-            }
-
-            var arguments = functionCallSyntax.arguments
-
-            for (index, idxInArguments) in missingPresenceIndices.enumerated() {
-                let idx = arguments.index(at: idxInArguments - index)
-                arguments.remove(at: idx)
-            }
-
-            if !missingPresenceIndices.isEmpty {
-                let innerExpression: ExprSyntax = if arguments.isEmpty {
-                    functionCallSyntax.calledExpression
+                /// The arg is already a wildcard so no need to modify
+                if identifier.identifier.tokenKind == .wildcard {
+                    allArgsAreWildcards = allArgsAreWildcards && true
+                    continue
                 } else {
-                    ExprSyntax(
-                        functionCallSyntax.with(
-                            \.arguments,
-                             arguments.with(
-                                /// Remove the trailing comma from the last arg, if it's there.
-                                \.[arguments.lastIndex(where: { _ in true })!],
-                                 arguments.last!.with(
-                                    \.trailingComma,
-                                     nil
-                                 )
-                             )
-                        )
-                    )
-                }
-                items = items.with(
-                    \.[items.index(at: idx)].pattern,
-                     PatternSyntax(
-                        pattern.with(
-                            \.pattern,
-                             PatternSyntax(
-                                expr.with(
-                                    \.expression,
-                                     innerExpression
+                    let presenceDetector = PresenceDetector(toDetect: identifier.identifier.tokenKind)
+                    presenceDetector.walk(node)
+                    if presenceDetector.detectCount < 2 {
+                        didModify = true
+                        allArgsAreWildcards = allArgsAreWildcards && true
+                        let idx = arguments.index(at: idx)
+                        arguments[idx] = arguments[idx].with(
+                            \.expression,
+                             ExprSyntax(
+                                patternExpr.with(
+                                    \.pattern,
+                                     PatternSyntax(
+                                        identifier.with(
+                                            \.identifier,
+                                             .wildcardToken()
+                                        )
+                                     )
                                 )
                              )
                         )
-                     )
-                )
+                    } else {
+                        allArgsAreWildcards = false
+                    }
+                }
             }
+
+            let innerExpression: ExprSyntax
+
+            switch (didModify, allArgsAreWildcards) {
+            case (true, true), (false, true):
+                innerExpression = functionCallSyntax.calledExpression
+            case (true, false):
+                innerExpression = ExprSyntax(
+                    functionCallSyntax.with(
+                        \.arguments,
+                         arguments
+                    )
+                )
+            case (false, false):
+                /// Nothing to modify
+                continue
+            }
+
+            items = items.with(
+                \.[items.index(at: idx)].pattern,
+                 PatternSyntax(
+                    pattern.with(
+                        \.pattern,
+                         PatternSyntax(
+                            expr.with(
+                                \.expression,
+                                 innerExpression
+                            )
+                         )
+                    )
+                 )
+            )
         }
 
         let node = node.with(

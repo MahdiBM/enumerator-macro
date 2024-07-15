@@ -635,7 +635,7 @@ final class EnumeratorMacroTests: XCTestCase {
 
                 var isTestCase: Bool {
                     switch self {
-                    case let .a(x):
+                    case let .a(x, _):
                         return x
                     default:
                         return false
