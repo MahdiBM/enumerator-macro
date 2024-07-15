@@ -1,4 +1,5 @@
 import Mustache
+import Foundation
 
 struct EArray<Element> {
     let underlying: [Element]
@@ -43,7 +44,30 @@ extension EArray: MustacheTransformable {
                     .joined(separator: ", ")
                 let string = EString(joined)
                 return string
+            case "keyValues":
+                let split: [EKeyValue] = self.underlying
+                    .map { String(describing: $0) }
+                    .compactMap { string -> EKeyValue? in
+                        let split = string.split(
+                            separator: ":",
+                            maxSplits: 1
+                        ).map {
+                            $0.trimmingCharacters(in: .whitespacesAndNewlines)
+                        }
+                        guard split.count > 0 else {
+                            return nil
+                        }
+                        return EKeyValue(
+                            key: EString(split[0]),
+                            value: EString(split.count > 1 ? split[1] : "")
+                        )
+                    }
+                return EArray<EKeyValue>(underlying: split)
             default:
+                if let keyValues = self as? EArray<EKeyValue> {
+                    let value = keyValues.first(where: { $0.key == name })?.value
+                    return EOptional(value)
+                }
                 return nil
             }
         }

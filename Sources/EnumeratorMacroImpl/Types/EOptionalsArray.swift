@@ -1,9 +1,13 @@
 import Mustache
 
 struct EOptionalsArray<Element> {
-    fileprivate let underlying: [Element?]
+    fileprivate let underlying: [EOptional<Element>]
 
     init(underlying: [Element?]) {
+        self.underlying = underlying.map(EOptional.init)
+    }
+
+    init(underlying: [EOptional<Element>]) {
         self.underlying = underlying
     }
 
@@ -14,7 +18,7 @@ struct EOptionalsArray<Element> {
 }
 
 extension EOptionalsArray: Sequence, MustacheSequence {
-    func makeIterator() -> Array<Element?>.Iterator {
+    func makeIterator() -> Array<EOptional<Element>>.Iterator {
         self.underlying.makeIterator()
     }
 }
@@ -44,6 +48,25 @@ extension EOptionalsArray: MustacheTransformable {
                     .joined(separator: ", ")
                 let string = EString(joined)
                 return string
+            case "keyValues":
+                let split: [EKeyValue] = self.underlying
+                    .compactMap { $0.toOptional().map { String(describing: $0) } }
+                    .compactMap { string -> EKeyValue? in
+                        let split = string.split(
+                            separator: ":",
+                            maxSplits: 1
+                        ).map {
+                            $0.trimmingCharacters(in: .whitespacesAndNewlines)
+                        }
+                        guard split.count == 2 else {
+                            return nil
+                        }
+                        return EKeyValue(
+                            key: EString(split[0]),
+                            value: EString(split[1])
+                        )
+                    }
+                return EArray<EKeyValue>(underlying: split)
             default:
                 return nil
             }

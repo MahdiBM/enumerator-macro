@@ -242,6 +242,51 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
+    func testProperlyReadsComments() throws {
+        assertMacroExpansion(
+            #"""
+            @Enumerator("""
+            public var isBusinessLogicError: Bool {
+                switch self {
+                {{#cases}}
+                case let .{{name}}:
+                    return {{bool(business_error(keyValues(comments)))}}
+                {{/cases}}
+                }
+            }
+            """)
+            public enum ErrorMessage {
+                case case1 // business_error
+                case case2
+                case somethingSomething(integration: String)
+                case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
+            }
+            """#,
+            expandedSource: #"""
+            public enum ErrorMessage {
+                case case1 // business_error
+                case case2
+                case somethingSomething(integration: String)
+                case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
+
+                public var isBusinessLogicError: Bool {
+                    switch self {
+                    case .case1:
+                        return true
+                    case .case2:
+                        return false
+                    case .somethingSomething:
+                        return false
+                    case .otherCase:
+                        return true
+                    }
+                }
+            }
+            """#,
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
     func testDiagnosesNotAnEnum() throws {
         assertMacroExpansion(
             #"""

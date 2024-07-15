@@ -16,6 +16,13 @@ final class ConvertToCustomTypesTests: XCTestCase {
         XCTAssertTrue(convertedType is EParameters.Type, "\(converted); \(convertedType)")
     }
 
+    func testConvertsToEOptional() {
+        let value: String? = nil
+        let converted = convertToCustomTypesIfPossible(value)
+        let convertedType = type(of: converted)
+        XCTAssertTrue(convertedType is EOptional<Any>.Type, "\(converted); \(convertedType)")
+    }
+
     func testConvertsToEArray() throws {
         let value: [Int] = [1]
         let converted = convertToCustomTypesIfPossible(value)
@@ -51,7 +58,7 @@ final class ConvertToCustomTypesTests: XCTestCase {
         let array = try XCTUnwrap(converted as? EOptionalsArray<Any>)
         var iterator = array.makeIterator()
         let element = try XCTUnwrap(iterator.next())
-        let unwrappedElement = try XCTUnwrap(element)
+        let unwrappedElement = try XCTUnwrap(element.toOptional())
         let unwrappedElementType = type(of: unwrappedElement)
         XCTAssertTrue(unwrappedElementType is EString.Type, "\(unwrappedElement); \(unwrappedElementType)")
     }
@@ -66,10 +73,10 @@ final class ConvertToCustomTypesTests: XCTestCase {
         var iterator = array.makeIterator()
 
         let element1 = try XCTUnwrap(iterator.next())
-        XCTAssertTrue(element1 == nil)
+        XCTAssertNil(element1.toOptional())
 
         let element2 = try XCTUnwrap(iterator.next())
-        let unwrappedElement2 = try XCTUnwrap(element2)
+        let unwrappedElement2 = try XCTUnwrap(element2.toOptional())
         let unwrappedElement2Type = type(of: unwrappedElement2)
         XCTAssertTrue(unwrappedElement2Type is EString.Type, "\(unwrappedElement2); \(unwrappedElement2Type)")
     }

@@ -38,6 +38,27 @@ extension EString: MustacheTransformable {
                 return self.convertToCamelCase()
             case "withParens":
                 return self.isEmpty ? self : "(\(self))"
+            case "bool":
+                switch self.lowercased() {
+                case "true", "1", "yes", "y", "on", "":
+                    return true
+                default:
+                    return false
+                }
+            case "keyValue":
+                let split = self.split(
+                    separator: ":",
+                    maxSplits: 1
+                ).map {
+                    $0.trimmingCharacters(in: .whitespacesAndNewlines)
+                }
+                guard split.count > 0 else {
+                    return nil
+                }
+                return EKeyValue(
+                    key: EString(split[0]),
+                    value: EString(split.count > 1 ? split[1] : "")
+                )
             default:
                 return nil
             }

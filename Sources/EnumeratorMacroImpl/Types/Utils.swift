@@ -1,5 +1,7 @@
 func convertToCustomTypesIfPossible(_ value: Any) -> Any {
     switch value {
+    case let `optional` as OptionalProtocol:
+        return `optional`.asConvertedOptionalAny()
     case let string as any StringProtocol:
         return EString(string.description)
     case let seq as any Sequence<EParameter>:
@@ -18,7 +20,7 @@ func convertToCustomTypesIfPossible(_ value: Any) -> Any {
 
 enum Elements {
     case anys([Any])
-    case optionalAnys([Any?])
+    case optionalAnys([EOptional<Any>])
 }
 
 private func convertHomogeneousArrayToCustomTypes(_ values: [Any]) -> Elements {
@@ -58,11 +60,21 @@ private func convertHomogeneousArrayToCustomTypes(_ values: [Any]) -> Elements {
 }
 
 private protocol OptionalProtocol {
-    func asConvertedOptionalAny() -> Optional<Any>
+    func asConvertedOptionalAny() -> EOptional<Any>
 }
 
 extension Optional: OptionalProtocol {
-    func asConvertedOptionalAny() -> Optional<Any> {
-        self.map { convertToCustomTypesIfPossible($0) }
+    func asConvertedOptionalAny() -> EOptional<Any> {
+        EOptional(self).map {
+            convertToCustomTypesIfPossible($0)
+        }
+    }
+}
+
+extension EOptional: OptionalProtocol {
+    func asConvertedOptionalAny() -> EOptional<Any> {
+        self.map {
+            convertToCustomTypesIfPossible($0)
+        }
     }
 }
