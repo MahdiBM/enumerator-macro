@@ -33,8 +33,12 @@ extension EParameters: MustacheTransformable {
         } else {
             switch name {
             case "names":
-                let names = self.map(\.name)
-                let array = EOptionalsArray(underlying: names)
+                let names = self
+                    .enumerated()
+                    .map { idx, element in
+                        element.name ?? "param\(idx + 1)"
+                    }
+                let array = EArray(underlying: names)
                 return array
             case "types":
                 let types = self.map(\.type)
