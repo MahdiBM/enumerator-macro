@@ -18,7 +18,7 @@ final class ConvertToCustomTypesTests: XCTestCase {
 
     func testConvertsToEOptional() {
         let value: String? = nil
-        let converted = convertToCustomTypesIfPossible(value)
+        let converted = convertToCustomTypesIfPossible(value as Any)
         let convertedType = type(of: converted)
         XCTAssertTrue(convertedType is EOptional<Any>.Type, "\(converted); \(convertedType)")
     }
