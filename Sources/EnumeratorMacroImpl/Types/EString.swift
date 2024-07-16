@@ -14,6 +14,12 @@ extension EString: CustomStringConvertible {
     }
 }
 
+extension EString: WithNormalizedTypeName {
+    static var normalizedTypeName: String {
+        "String"
+    }
+}
+
 extension EString: CustomReflectable {
     var customMirror: Mirror {
         self.underlying.customMirror
@@ -25,6 +31,7 @@ extension EString: MustacheTransformable {
         if let defaultTransformed = self.underlying.transform(name) {
             return convertToCustomTypesIfPossible(defaultTransformed)
         } else {
+            RenderingContext.current.cleanDiagnostic()
             switch name {
             case "firstCapitalized":
                 if self.isEmpty || self[self.startIndex].isUppercase {
@@ -60,6 +67,12 @@ extension EString: MustacheTransformable {
                     value: EString(split.count > 1 ? split[1] : "")
                 )
             default:
+                RenderingContext.current.addOrReplaceDiagnostic(
+                    .invalidTransform(
+                        transform: name,
+                        normalizedTypeName: Self.normalizedTypeName
+                    )
+                )
                 return nil
             }
         }

@@ -24,8 +24,8 @@ let package = Package(
             "510.0.0" ..< "610.0.0"
         ),
         .package(
-            url: "https://github.com/mahdibm/swift-mustache",
-            branch: "mmbm-swift-6"
+            url: "https://github.com/hummingbird-project/swift-mustache",
+            from: "2.0.0-beta.2"
         ),
     ],
     targets: [

@@ -29,6 +29,12 @@ extension EOptionalsArray: CustomStringConvertible {
     }
 }
 
+extension EOptionalsArray: WithNormalizedTypeName {
+    static var normalizedTypeName: String {
+        "[Optional<\(bestEffortTypeName(Element.self))>]"
+    }
+}
+
 extension EOptionalsArray: CustomReflectable {
     var customMirror: Mirror {
         Mirror(reflecting: self.underlying)
@@ -40,6 +46,7 @@ extension EOptionalsArray: MustacheTransformable {
         if let defaultTransformed = self.underlying.transform(name) {
             return convertToCustomTypesIfPossible(defaultTransformed)
         } else {
+            RenderingContext.current.cleanDiagnostic()
             switch name {
             case "joined":
                 let joined = self.underlying
@@ -68,6 +75,12 @@ extension EOptionalsArray: MustacheTransformable {
                     }
                 return EArray<EKeyValue>(underlying: split)
             default:
+                RenderingContext.current.addOrReplaceDiagnostic(
+                    .invalidTransform(
+                        transform: name,
+                        normalizedTypeName: Self.normalizedTypeName
+                    )
+                )
                 return nil
             }
         }

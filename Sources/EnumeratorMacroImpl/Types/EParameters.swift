@@ -14,6 +14,12 @@ extension EParameters: CustomStringConvertible {
     }
 }
 
+extension EParameters: WithNormalizedTypeName {
+    static var normalizedTypeName: String {
+        "[Parameter]"
+    }
+}
+
 extension EParameters: Sequence, MustacheSequence {
     func makeIterator() -> Array<EParameter>.Iterator {
         self.underlying.makeIterator()
@@ -31,6 +37,7 @@ extension EParameters: MustacheTransformable {
         if let defaultTransformed = self.underlying.transform(name) {
             return convertToCustomTypesIfPossible(defaultTransformed)
         } else {
+            RenderingContext.current.cleanDiagnostic()
             switch name {
             case "names":
                 let names = self
@@ -69,6 +76,12 @@ extension EParameters: MustacheTransformable {
                     return array
                 }
             default:
+                RenderingContext.current.addOrReplaceDiagnostic(
+                    .invalidTransform(
+                        transform: name,
+                        normalizedTypeName: Self.normalizedTypeName
+                    )
+                )
                 return nil
             }
         }

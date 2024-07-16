@@ -24,3 +24,9 @@ struct ECase {
         self.comments = .init(underlying: keyValueParts.map(EString.init))
     }
 }
+
+extension ECase: WithNormalizedTypeName {
+    static var normalizedTypeName: String {
+        "Case"
+    }
+}

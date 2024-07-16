@@ -19,6 +19,12 @@ struct EParameter {
     }
 }
 
+extension EParameter: WithNormalizedTypeName {
+    static var normalizedTypeName: String {
+        "Parameter"
+    }
+}
+
 private extension TypeSyntax {
     var isOptional: Bool {
         switch self.kind {

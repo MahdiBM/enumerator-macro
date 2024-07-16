@@ -48,11 +48,25 @@ extension EnumeratorMacroType: MemberMacro {
         let rendered = templates.compactMap {
             (template, syntax) -> (rendered: String, syntax: StringLiteralExprSyntax)? in
             do {
-                let rendered = try MustacheTemplate(
-                    string: "{{%CONTENT_TYPE:TEXT}}\n" + template
-                ).render([
-                    "cases": cases
-                ])
+                let rendered: String? = try RenderingContext.$current.withValue(.init()) {
+                    let result = try MustacheTemplate(
+                        string: "{{%CONTENT_TYPE:TEXT}}\n" + template
+                    ).render([
+                        "cases": cases
+                    ])
+                    if let diagnostic = RenderingContext.current.diagnostic {
+                        context.addDiagnostics(
+                            from: diagnostic,
+                            node: syntax
+                        )
+                        return nil
+                    } else {
+                        return result
+                    }
+                }
+                guard let rendered else {
+                    return nil
+                }
                 return (rendered, syntax)
             } catch {
                 let message: MacroError

@@ -11,6 +11,7 @@ enum MacroError: Error, CustomStringConvertible {
     case couldNotFindLocationOfNode(syntax: String)
     case mustacheTemplateError(message: String)
     case internalError(String)
+    case invalidTransform(transform: String, normalizedTypeName: String)
 
     var caseName: String {
         switch self {
@@ -32,6 +33,8 @@ enum MacroError: Error, CustomStringConvertible {
             "mustacheTemplateError"
         case .internalError:
             "internalError"
+        case .invalidTransform:
+            "invalidTransform"
         }
     }
 
@@ -55,6 +58,11 @@ enum MacroError: Error, CustomStringConvertible {
             "Error while rendering the template: \(message)"
         case let .internalError(message):
             "An internal error occurred. Please file a bug report at https://github.com/mahdibm/enumerator-macro. Error:\n\(message)"
+        case let .invalidTransform(transform, normalizedTypeName):
+            """
+            Invalid function call detected.
+            '\(normalizedTypeName)' doesn't have a function called '\(transform)'
+            """
         }
     }
 }

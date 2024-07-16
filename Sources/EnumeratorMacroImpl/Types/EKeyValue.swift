@@ -16,6 +16,12 @@ extension EKeyValue: CustomStringConvertible {
     }
 }
 
+extension EKeyValue: WithNormalizedTypeName {
+    static var normalizedTypeName: String {
+        "KeyValue<String, String>"
+    }
+}
+
 extension EKeyValue: MustacheTransformable {
     func transform(_ name: String) -> Any? {
         switch name {
@@ -24,6 +30,12 @@ extension EKeyValue: MustacheTransformable {
         case "value":
             return self.value
         default:
+            RenderingContext.current.addOrReplaceDiagnostic(
+                .invalidTransform(
+                    transform: name,
+                    normalizedTypeName: Self.normalizedTypeName
+                )
+            )
             return nil
         }
     }

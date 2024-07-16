@@ -18,6 +18,11 @@ extension ECases: CustomStringConvertible {
         self.underlying.description
     }
 }
+extension ECases: WithNormalizedTypeName {
+    static var normalizedTypeName: String {
+        "[Case]"
+    }
+}
 
 extension ECases: Sequence, MustacheSequence {
     func makeIterator() -> Array<ECase>.Iterator {
@@ -36,12 +41,19 @@ extension ECases: MustacheTransformable {
         if let defaultTransformed = self.underlying.transform(name) {
             return convertToCustomTypesIfPossible(defaultTransformed)
         } else {
+            RenderingContext.current.cleanDiagnostic()
             switch name {
             case "filterNoParams":
                 return self.filter(\.parameters.underlying.underlying.isEmpty)
             case "filterWithParams":
                 return self.filter({ !$0.parameters.underlying.underlying.isEmpty })
             default:
+                RenderingContext.current.addOrReplaceDiagnostic(
+                    .invalidTransform(
+                        transform: name,
+                        normalizedTypeName: Self.normalizedTypeName
+                    )
+                )
                 return nil
             }
         }

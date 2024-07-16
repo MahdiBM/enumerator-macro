@@ -26,6 +26,12 @@ extension EArray: CustomStringConvertible {
     }
 }
 
+extension EArray: WithNormalizedTypeName {
+    static var normalizedTypeName: String {
+        "[\(bestEffortTypeName(Element.self))]"
+    }
+}
+
 extension EArray: CustomReflectable {
     var customMirror: Mirror {
         Mirror(reflecting: self.underlying)
@@ -37,6 +43,7 @@ extension EArray: MustacheTransformable {
         if let defaultTransformed = self.underlying.transform(name) {
             return convertToCustomTypesIfPossible(defaultTransformed)
         } else {
+            RenderingContext.current.cleanDiagnostic()
             switch name {
             case "joined":
                 let joined = self.underlying
@@ -68,6 +75,12 @@ extension EArray: MustacheTransformable {
                     let value = keyValues.first(where: { $0.key == name })?.value
                     return EOptional(value)
                 }
+                RenderingContext.current.addOrReplaceDiagnostic(
+                    .invalidTransform(
+                        transform: name,
+                        normalizedTypeName: Self.normalizedTypeName
+                    )
+                )
                 return nil
             }
         }

@@ -69,6 +69,12 @@ extension EOptional: CustomStringConvertible {
     }
 }
 
+extension EOptional: WithNormalizedTypeName {
+    static var normalizedTypeName: String {
+        "Optional<\(bestEffortTypeName(Wrapped.self))>"
+    }
+}
+
 extension EOptional: MustacheTransformable {
     func transform(_ name: String) -> Any? {
         switch self {
@@ -79,6 +85,12 @@ extension EOptional: MustacheTransformable {
             case "exists":
                 return false
             default:
+                RenderingContext.current.addOrReplaceDiagnostic(
+                    .invalidTransform(
+                        transform: name,
+                        normalizedTypeName: Self.normalizedTypeName
+                    )
+                )
                 return nil
             }
         case let .some(value):
@@ -87,8 +99,24 @@ extension EOptional: MustacheTransformable {
                 return true
             default:
                 if let value = value as? MustacheTransformable {
-                    return value.transform(name)
+                    if let transformed = value.transform(name) {
+                        return transformed
+                    } else {
+                        RenderingContext.current.addOrReplaceDiagnostic(
+                            .invalidTransform(
+                                transform: name,
+                                normalizedTypeName: bestEffortTypeName(Wrapped.self)
+                            )
+                        )
+                        return nil
+                    }
                 } else {
+                    RenderingContext.current.addOrReplaceDiagnostic(
+                        .invalidTransform(
+                            transform: name,
+                            normalizedTypeName: Self.normalizedTypeName
+                        )
+                    )
                     return nil
                 }
             }
