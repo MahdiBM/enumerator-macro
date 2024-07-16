@@ -41,7 +41,6 @@ extension EnumeratorMacroType: MemberMacro {
             }
             let template = stringLiteral
                 .segments
-                .formatted()
                 .description
             return (template, stringLiteral)
         }
