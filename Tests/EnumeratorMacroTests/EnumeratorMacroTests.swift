@@ -404,13 +404,52 @@ final class EnumeratorMacroTests: XCTestCase {
             diagnostics: [.init(
                 id: .init(
                     domain: "EnumeratorMacro.MacroError",
-                    id: "allArgumentsMustBeStringLiterals"
+                    id: "allArgumentsMustBeNonInterpolatedStringLiterals"
                 ),
                 message: """
-                All arguments must be string literals, but found: myVariable
+                All arguments must be non-interpolated string literals.
                 """,
                 line: 1,
-                column: 1,
+                column: 13,
+                severity: .error
+            )],
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
+    func testDiagnosesStringInterpolationInMustacheTemplate() throws {
+        assertMacroExpansion(
+            #"""
+            @Enumerator("""
+            enum Subtype: String {
+                {{#cases}}
+                case \(name)
+                {{/cases}}
+            }
+            """)
+            enum TestEnum {
+                case a(val1: String, Int)
+                case b
+                case testCase(testValue: String)
+            }
+            """#,
+            expandedSource: #"""
+            enum TestEnum {
+                case a(val1: String, Int)
+                case b
+                case testCase(testValue: String)
+            }
+            """#,
+            diagnostics: [.init(
+                id: .init(
+                    domain: "EnumeratorMacro.MacroError",
+                    id: "allArgumentsMustBeNonInterpolatedStringLiterals"
+                ),
+                message: """
+                All arguments must be non-interpolated string literals.
+                """,
+                line: 4,
+                column: 10,
                 severity: .error
             )],
             macros: EnumeratorMacroEntryPoint.macros

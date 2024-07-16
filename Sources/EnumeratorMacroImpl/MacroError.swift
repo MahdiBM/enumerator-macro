@@ -6,7 +6,7 @@ enum MacroError: Error, CustomStringConvertible {
     case macroDeclarationHasNoArguments
     case unacceptableArguments
     case expectedAtLeastOneArgument
-    case allArgumentsMustBeStringLiterals(violation: String)
+    case allArgumentsMustBeNonInterpolatedStringLiterals
     case renderedSyntaxContainsErrors(String)
     case couldNotFindLocationOfNode(syntax: String)
     case mustacheTemplateError(message: String)
@@ -23,8 +23,8 @@ enum MacroError: Error, CustomStringConvertible {
             "unacceptableArguments"
         case .expectedAtLeastOneArgument:
             "expectedAtLeastOneArgument"
-        case .allArgumentsMustBeStringLiterals:
-            "allArgumentsMustBeStringLiterals"
+        case .allArgumentsMustBeNonInterpolatedStringLiterals:
+            "allArgumentsMustBeNonInterpolatedStringLiterals"
         case .renderedSyntaxContainsErrors:
             "renderedSyntaxContainsErrors"
         case .couldNotFindLocationOfNode:
@@ -48,8 +48,8 @@ enum MacroError: Error, CustomStringConvertible {
             "The arguments passed to the macro were unacceptable"
         case .expectedAtLeastOneArgument:
             "At least one argument of type StaticString is required"
-        case let .allArgumentsMustBeStringLiterals(violation):
-            "All arguments must be string literals, but found: \(violation)"
+        case .allArgumentsMustBeNonInterpolatedStringLiterals:
+            "All arguments must be non-interpolated string literals."
         case let .renderedSyntaxContainsErrors(syntax):
             "Rendered syntax contains errors:\n\(syntax)"
         case let .couldNotFindLocationOfNode(syntax):

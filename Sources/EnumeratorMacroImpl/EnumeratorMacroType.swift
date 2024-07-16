@@ -34,14 +34,27 @@ extension EnumeratorMacroType: MemberMacro {
         if exprList.isEmpty {
             throw MacroError.expectedAtLeastOneArgument
         }
-        let templates = try exprList.compactMap { 
-            element -> (template: String, syntax: StringLiteralExprSyntax) in
+        let templates = exprList.compactMap { 
+            element -> (template: String, syntax: StringLiteralExprSyntax)? in
             guard let stringLiteral = element.expression.as(StringLiteralExprSyntax.self) else {
-                throw MacroError.allArgumentsMustBeStringLiterals(violation: element.description)
+                context.diagnose(
+                    Diagnostic(
+                        node: element.expression,
+                        message: MacroError.allArgumentsMustBeNonInterpolatedStringLiterals
+                    )
+                )
+                return nil
             }
-            let template = stringLiteral
-                .segments
-                .description
+            for segment in stringLiteral.segments where !segment.is(StringSegmentSyntax.self) {
+                context.diagnose(
+                    Diagnostic(
+                        node: segment,
+                        message: MacroError.allArgumentsMustBeNonInterpolatedStringLiterals
+                    )
+                )
+                return nil
+            }
+            let template = stringLiteral.segments.description
             return (template, stringLiteral)
         }
         let rendered = templates.compactMap {
