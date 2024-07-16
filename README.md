@@ -12,10 +12,21 @@
 A utility for creating case-by-case code for your Swift enums using the Mustache templating engine.   
 `EnumeratorMacro` uses [swift-mustache](https://github.com/hummingbird-project/swift-mustache)'s flavor.
 
-This macro will parse your enum code, and pass different info of your enum to the mustache template renderer.   
-This way you can access the enum's info such as each case-name or case-parameters in the template, and create code based on that.
+The macro will parse your enum code, and pass different info of your enum to the mustache template renderer.   
+Then you can access each case-name, case-parameters etc.. in the template, and create code based on that.
 
 This can automate and simplify creation of code that has a repeated pattern, for enums.
+
+## How Does Mustache Templating Work?
+
+It's rather simple.
+* Inject variables using the `{{variableName}}` syntax.
+* Loop though arrays using the `{{#array}} {{/array}}` syntax.
+* Apply if conditions using the `{{#boolean}} {{/boolean}}` syntax.
+* Apply inverted if conditions using the `{{^boolean}} {{/boolean}}` syntax.
+* Apply transformations using the "function call" syntax: `snakedCased(variable)`.
+  *  Available transformations are mentioned below. 
+* See [the reference](https://mustache.github.io/mustache.5.html) and the [swift-mustache docs](https://docs.hummingbird.codes/2.0/documentation/mustache) for more info.
 
 ## Examples
 
@@ -251,13 +262,6 @@ enum TestEnum {
 +    }
 }
 ```
-
-## How Does Mustache Templating Work?
-
-It's rather simple.
-* Inject variables using the `{{variableName}}` syntax.
-* Loop though arrays using the `{{#array}} {{/array}}` syntax.
-* Apply transformations using the "function call" syntax: `snakedCased(variable)`.
 
 ## Available Context Values
 
