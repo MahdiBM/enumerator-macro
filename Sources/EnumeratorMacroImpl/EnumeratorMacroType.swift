@@ -34,7 +34,7 @@ extension EnumeratorMacroType: MemberMacro {
         if exprList.isEmpty {
             throw MacroError.expectedAtLeastOneArgument
         }
-        let templates = exprList.compactMap { 
+        let templates = exprList.compactMap {
             element -> (template: String, syntax: StringLiteralExprSyntax)? in
             guard let stringLiteral = element.expression.as(StringLiteralExprSyntax.self) else {
                 context.diagnose(
@@ -45,6 +45,7 @@ extension EnumeratorMacroType: MemberMacro {
                 )
                 return nil
             }
+            var hadBadSegment = false
             for segment in stringLiteral.segments where !segment.is(StringSegmentSyntax.self) {
                 context.diagnose(
                     Diagnostic(
@@ -52,8 +53,10 @@ extension EnumeratorMacroType: MemberMacro {
                         message: MacroError.allArgumentsMustBeNonInterpolatedStringLiterals
                     )
                 )
-                return nil
+                hadBadSegment = true
             }
+            if hadBadSegment { return nil }
+
             let template = stringLiteral.segments.description
             return (template, stringLiteral)
         }

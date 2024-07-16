@@ -425,6 +425,7 @@ final class EnumeratorMacroTests: XCTestCase {
                 {{#cases}}
                 case \(name)
                 {{/cases}}
+                \(comments)
             }
             """)
             enum TestEnum {
@@ -440,18 +441,32 @@ final class EnumeratorMacroTests: XCTestCase {
                 case testCase(testValue: String)
             }
             """#,
-            diagnostics: [.init(
-                id: .init(
-                    domain: "EnumeratorMacro.MacroError",
-                    id: "allArgumentsMustBeNonInterpolatedStringLiterals"
+            diagnostics: [
+                .init(
+                    id: .init(
+                        domain: "EnumeratorMacro.MacroError",
+                        id: "allArgumentsMustBeNonInterpolatedStringLiterals"
+                    ),
+                    message: """
+                    All arguments must be non-interpolated string literals.
+                    """,
+                    line: 4,
+                    column: 10,
+                    severity: .error
                 ),
-                message: """
-                All arguments must be non-interpolated string literals.
-                """,
-                line: 4,
-                column: 10,
-                severity: .error
-            )],
+                .init(
+                    id: .init(
+                        domain: "EnumeratorMacro.MacroError",
+                        id: "allArgumentsMustBeNonInterpolatedStringLiterals"
+                    ),
+                    message: """
+                    All arguments must be non-interpolated string literals.
+                    """,
+                    line: 6,
+                    column: 5,
+                    severity: .error
+                )
+            ],
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
