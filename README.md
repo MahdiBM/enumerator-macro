@@ -304,8 +304,6 @@ In addition to [`swift-mustache`'s own "functions"/"transforms"](https://docs.hu
     * `names(parameters)` -> `[param1, param2, param3]`.
   * `types`: Returns a string-array of the types of the parameters.
     * Use with `joined`: `joined(types(parameters))` -> `(String, Int, Double)`.
-  * `isOptionals`: Returns a string-array of the types of the parameters.
-    * `isOptionals(parameters)` -> `[true, false, true]`.
   * `namesAndTypes`: Returns a string-array where each element is equivalent to `"\(name): \(type)"`.
     * Use with `joined`: `joined(namesAndTypes(parameters))` -> `(key: String)` or `(key: String, value: Int)`. 
   * `tupleValue`: Returns s string-array suitable to be used for making tuples from the parameters.
