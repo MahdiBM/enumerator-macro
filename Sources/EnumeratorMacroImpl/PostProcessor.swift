@@ -1,6 +1,6 @@
 import SwiftSyntax
 
-final class Rewriter: SyntaxRewriter {
+final class PostProcessor: SyntaxRewriter {
     override func visit(_ node: SwitchCaseSyntax) -> SwitchCaseSyntax {
         self.removeUnusedLet(
             self.removeUnusedArguments(
@@ -45,34 +45,42 @@ final class Rewriter: SyntaxRewriter {
                       let identifier = patternExpr.pattern.as(IdentifierPatternSyntax.self) else {
                     continue
                 }
-                /// The arg is already a wildcard so no need to modify
-                if identifier.identifier.tokenKind == .wildcard {
-                    allArgsAreWildcards = allArgsAreWildcards && true
+                /// Only try to do something if the `tokenKind` is `.identifier`.
+                guard case .identifier = identifier.identifier.tokenKind else {
+                    let isWildCard = identifier.identifier.tokenKind == .wildcard
+                    allArgsAreWildcards = allArgsAreWildcards && isWildCard
                     continue
-                } else {
-                    let presenceDetector = PresenceDetector(toDetect: identifier.identifier.tokenKind)
-                    presenceDetector.walk(node)
-                    if presenceDetector.detectCount < 2 {
-                        didModify = true
-                        allArgsAreWildcards = allArgsAreWildcards && true
-                        let idx = arguments.index(at: idx)
-                        arguments[idx] = arguments[idx].with(
-                            \.expression,
-                             ExprSyntax(
-                                patternExpr.with(
-                                    \.pattern,
-                                     PatternSyntax(
-                                        identifier.with(
-                                            \.identifier,
-                                             .wildcardToken()
-                                        )
-                                     )
-                                )
-                             )
-                        )
-                    } else {
-                        allArgsAreWildcards = false
-                    }
+                }
+
+                let presenceDetector = PresenceDetector(
+                    toDetect: identifier.identifier.tokenKind
+                )
+                presenceDetector.walk(node)
+                guard presenceDetector.detectCount < 2 else {
+                    allArgsAreWildcards = false
+                    continue
+                }
+
+                if presenceDetector.detectCount < 2 {
+                    /// Doesn't logically do anything, so commented out.
+                    /* allArgsAreWildcards = allArgsAreWildcards && true */
+
+                    didModify = true
+                    let idx = arguments.index(at: idx)
+                    arguments[idx] = arguments[idx].with(
+                        \.expression,
+                         ExprSyntax(
+                            patternExpr.with(
+                                \.pattern,
+                                 PatternSyntax(
+                                    identifier.with(
+                                        \.identifier,
+                                         .wildcardToken()
+                                    )
+                                 )
+                            )
+                         )
+                    )
                 }
             }
 

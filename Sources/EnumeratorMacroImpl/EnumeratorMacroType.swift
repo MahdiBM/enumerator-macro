@@ -169,8 +169,8 @@ extension EnumeratorMacroType: MemberMacro {
         }
         let postProcessedSyntaxes = syntaxes.compactMap { 
             (syntax, codeSyntax) -> DeclSyntax? in
-            let rewriter = Rewriter()
-            let newSyntax = rewriter.rewrite(syntax)
+            let postProcessor = PostProcessor()
+            let newSyntax = postProcessor.rewrite(syntax)
             guard let declSyntax = DeclSyntax(newSyntax) else {
                 context.diagnose(
                     Diagnostic(
