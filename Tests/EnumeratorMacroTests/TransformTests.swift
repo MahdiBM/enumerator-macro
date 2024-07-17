@@ -48,19 +48,17 @@ final class TransformTests: XCTestCase {
     }
 
     func testCommentsValueConditionalSection() throws {
-        do {
-            let template = """
-            {{^exists(custom_params(keyValues(comments)))}}
-            thing!
-            {{/exists(custom_params(keyValues(comments)))}}
-            """
-            let render = try MustacheTemplate(
-                string: "{{%CONTENT_TYPE:TEXT}}\n" + template
-            ).render(
-                testCases[2]
-            )
-            XCTAssertEqual(render, "thing!\n")
-        }
+        let template = """
+        {{^exists(custom_params(keyValues(comments)))}}
+        thing!
+        {{/exists(custom_params(keyValues(comments)))}}
+        """
+        let render = try MustacheTemplate(
+            string: "{{%CONTENT_TYPE:TEXT}}\n" + template
+        ).render(
+            testCases[2]
+        )
+        XCTAssertEqual(render, "thing!\n")
     }
 
     let testCases: [ECase] = [

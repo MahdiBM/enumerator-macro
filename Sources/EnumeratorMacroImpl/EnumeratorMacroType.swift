@@ -82,7 +82,8 @@ extension EnumeratorMacroType: MemberMacro {
                 guard let rendered else {
                     return nil
                 }
-                return (rendered, syntax)
+                let noEmptyLines = rendered.split(separator: "\n").joined(separator: "\n")
+                return (noEmptyLines, syntax)
             } catch {
                 let message: MacroError
                 let errorSyntax: SyntaxProtocol

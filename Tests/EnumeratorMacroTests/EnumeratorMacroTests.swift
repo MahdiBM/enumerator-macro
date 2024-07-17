@@ -15,6 +15,9 @@ final class EnumeratorMacroTests: XCTestCase {
                 {{#cases}}
                 case .{{name}}:
                     "{{name}}"
+
+
+            
                 {{/cases}}
                 }
             }
