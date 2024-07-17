@@ -5,7 +5,7 @@ import SwiftSyntaxMacrosTestSupport
 import XCTest
 
 final class EnumeratorMacroTests: XCTestCase {
-    func testCreatesCaseName() throws {
+    func testCreatesCaseName() {
         assertMacroExpansion(
             #"""
             @Enumerator(
@@ -15,9 +15,6 @@ final class EnumeratorMacroTests: XCTestCase {
                 {{#cases}}
                 case .{{name}}:
                     "{{name}}"
-
-
-            
                 {{/cases}}
                 }
             }
@@ -47,7 +44,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testCreatesACopyOfSelf() throws {
+    func testCreatesACopyOfSelf() {
         assertMacroExpansion(
             #"""
             @Enumerator("""
@@ -80,7 +77,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testCreatesDeclarationsForCaseChecking() throws {
+    func testCreatesDeclarationsForCaseChecking() {
         assertMacroExpansion(
             #"""
             @Enumerator("""
@@ -139,7 +136,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testCreatesSubtypeWithMultiMacroArguments() throws {
+    func testCreatesSubtypeWithMultiMacroArguments() {
         assertMacroExpansion(
             #"""
             @Enumerator("""
@@ -193,7 +190,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testCreatesGetCaseValueFunctions() throws {
+    func testCreatesGetCaseValueFunctions() {
         assertMacroExpansion(
             #"""
             @Enumerator("""
@@ -245,7 +242,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testProperlyReadsComments() throws {
+    func testProperlyReadsComments() {
         assertMacroExpansion(
             #"""
             @Enumerator("""
@@ -298,7 +295,50 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testDiagnosesNotAnEnum() throws {
+    func removesExcessiveTrivia() {
+        assertMacroExpansion(
+            #"""
+            @Enumerator(
+            """
+            var caseName: String {
+                switch self {
+                {{#cases}}
+                case .{{name}}:
+                    "{{name}}"
+
+
+
+                {{/cases}}
+                }
+            }
+            """
+            )
+            enum TestEnum {
+                case a
+                case b
+            }
+            """#,
+            expandedSource: #"""
+            enum TestEnum {
+                case a
+                case b
+
+                var caseName: String {
+                    switch self {
+                    case .a:
+                        "a"
+                    case .b:
+                        "b"
+                    }
+                }
+            }
+            """#,
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
+
+    func testDiagnosesNotAnEnum() {
         assertMacroExpansion(
             #"""
             @Enumerator("""
@@ -333,7 +373,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testDiagnosesNoArguments() throws {
+    func testDiagnosesNoArguments() {
         assertMacroExpansion(
             #"""
             @Enumerator
@@ -362,7 +402,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testDiagnosesEmptyArguments() throws {
+    func testDiagnosesEmptyArguments() {
         assertMacroExpansion(
             #"""
             @Enumerator
@@ -391,7 +431,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testDiagnosesUnacceptableArguments() throws {
+    func testDiagnosesUnacceptableArguments() {
         assertMacroExpansion(
             #"""
             @Enumerator(myVariable)
@@ -420,7 +460,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testDiagnosesStringInterpolationInMustacheTemplate() throws {
+    func testDiagnosesStringInterpolationInMustacheTemplate() {
         assertMacroExpansion(
             #"""
             @Enumerator("""
@@ -474,7 +514,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testDiagnosesBadMustacheTemplate() throws {
+    func testDiagnosesBadMustacheTemplate() {
         assertMacroExpansion(
             #"""
             @Enumerator("""
@@ -513,7 +553,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testDiagnosesErroneousSwiftCode() throws {
+    func testDiagnosesErroneousSwiftCode() {
         assertMacroExpansion(
             #"""
             @Enumerator("""
@@ -640,7 +680,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testRemovesUnusedLetInSwitchStatements() throws {
+    func testRemovesUnusedLetInSwitchStatements() {
         assertMacroExpansion(
             #"""
             @Enumerator("""
@@ -679,7 +719,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testRemovesArgumentInSwitchStatements() throws {
+    func testRemovesArgumentInSwitchStatements() {
         assertMacroExpansion(
             #"""
             @Enumerator("""
@@ -718,7 +758,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testRemovesArgumentInSwitchStatementsWithMultipleArgumentsWhereOneArgIsUsed() throws {
+    func testRemovesArgumentInSwitchStatementsWithMultipleArgumentsWhereOneArgIsUsed() {
         assertMacroExpansion(
             #"""
             @Enumerator("""
@@ -757,7 +797,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-//    func testAppliesFixIts() throws {
+//    func testAppliesFixIts() {
 //        assertMacroExpansion(
 //            #"""
 //            @Enumerator("""

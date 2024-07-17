@@ -82,8 +82,7 @@ extension EnumeratorMacroType: MemberMacro {
                 guard let rendered else {
                     return nil
                 }
-                let noEmptyLines = rendered.split(separator: "\n").joined(separator: "\n")
-                return (noEmptyLines, syntax)
+                return (rendered, syntax)
             } catch {
                 let message: MacroError
                 let errorSyntax: SyntaxProtocol
@@ -168,11 +167,17 @@ extension EnumeratorMacroType: MemberMacro {
                 ($0, result.codeSyntax)
             }
         }
-        let postProcessedSyntaxes = syntaxes.compactMap { 
+        let postProcessedSyntaxes = syntaxes.compactMap {
             (syntax, codeSyntax) -> DeclSyntax? in
-            let postProcessor = PostProcessor()
-            let newSyntax = postProcessor.rewrite(syntax)
-            guard let declSyntax = DeclSyntax(newSyntax) else {
+            var processedSyntax = Syntax(syntax)
+
+            let excessiveTriviaRemover = ExcessiveTriviaRemover()
+            processedSyntax = excessiveTriviaRemover.rewrite(processedSyntax)
+
+            let switchRewriter = SwitchRewriter()
+            processedSyntax = switchRewriter.rewrite(processedSyntax)
+
+            guard let declSyntax = DeclSyntax(processedSyntax) else {
                 context.diagnose(
                     Diagnostic(
                         node: codeSyntax,

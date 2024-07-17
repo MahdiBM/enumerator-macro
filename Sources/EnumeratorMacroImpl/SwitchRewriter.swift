@@ -1,6 +1,6 @@
 import SwiftSyntax
 
-final class PostProcessor: SyntaxRewriter {
+final class SwitchRewriter: SyntaxRewriter {
     override func visit(_ node: SwitchCaseSyntax) -> SwitchCaseSyntax {
         self.removeUnusedLet(
             self.removeUnusedArguments(
