@@ -331,6 +331,10 @@ Here, I've supposedly forgot to write the `:` between `caseName` and `String`.
 
 <kbd> <img width="768" alt="Screenshot 2024-07-13 at 12 10 19 AM" src="https://github.com/user-attachments/assets/97f177a4-e5a0-437f-b3f9-3e9ef902e744"> </kbd>
 
+Or in certain circumstances, `EnumeratorMacro` can catch an invalid function being used:
+
+<kbd> <img width="824" alt="Screenshot 2024-07-17 at 6 44 41 PM" src="https://github.com/user-attachments/assets/d664830d-1897-4099-86b2-1c32d3f6def1"> </kbd>
+
 </details>
 
 ## How To Add EnumeratorMacro To Your Project
