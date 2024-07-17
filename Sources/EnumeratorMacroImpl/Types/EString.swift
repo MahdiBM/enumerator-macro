@@ -50,12 +50,7 @@ extension EString: EMustacheTransformable {
         case "withParens":
             return self.isEmpty ? self : "(\(self))"
         case "bool":
-            switch self.lowercased() {
-            case "true", "1", "yes", "y", "on", "":
-                return true
-            default:
-                return false
-            }
+            return Bool(self)
         case "keyValue":
             let split = self.split(
                 separator: ":",

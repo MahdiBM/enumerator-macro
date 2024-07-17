@@ -16,7 +16,7 @@ final class EParameterTests: XCTestCase {
 
         XCTAssertEqual(parameter.name.toOptional()?.underlying, name)
         XCTAssertEqual(parameter.type.underlying, type)
-        XCTAssertEqual(parameter.isOptional.underlying, false)
+        XCTAssertEqual(parameter.isOptional, false)
     }
 
     func testParameterWithSecondName() throws {
@@ -31,7 +31,7 @@ final class EParameterTests: XCTestCase {
 
         XCTAssertEqual(parameter.name.toOptional()?.underlying, secondName)
         XCTAssertEqual(parameter.type.underlying, type)
-        XCTAssertEqual(parameter.isOptional.underlying, false)
+        XCTAssertEqual(parameter.isOptional, false)
     }
 
     func testParameterWithOptionalType() throws {
@@ -45,7 +45,7 @@ final class EParameterTests: XCTestCase {
 
         XCTAssertEqual(parameter.name.toOptional()?.underlying, name)
         XCTAssertEqual(parameter.type.underlying, type)
-        XCTAssertEqual(parameter.isOptional.underlying, true)
+        XCTAssertEqual(parameter.isOptional, true)
     }
 
     func testParameterWithImplicitlyOptionalType() throws {
@@ -59,7 +59,7 @@ final class EParameterTests: XCTestCase {
 
         XCTAssertEqual(parameter.name.toOptional()?.underlying, name)
         XCTAssertEqual(parameter.type.underlying, type)
-        XCTAssertEqual(parameter.isOptional.underlying, true)
+        XCTAssertEqual(parameter.isOptional, true)
     }
 
     func testParameterWithSpelledOutOptionalType() throws {
@@ -73,7 +73,7 @@ final class EParameterTests: XCTestCase {
 
         XCTAssertEqual(parameter.name.toOptional()?.underlying, name)
         XCTAssertEqual(parameter.type.underlying, type)
-        XCTAssertEqual(parameter.isOptional.underlying, true)
+        XCTAssertEqual(parameter.isOptional, true)
     }
 
     private func makeParameter(

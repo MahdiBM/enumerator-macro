@@ -80,8 +80,7 @@ extension EArray: EMustacheTransformable {
             return EArray<EKeyValue>(underlying: split)
         default:
             if let keyValues = self as? EArray<EKeyValue> {
-                let value = keyValues.first(where: { $0.key == name })?.value
-                return EOptional(value)
+                return keyValues.underlying.first(named: EString(name))
             }
             RenderingContext.current.addOrReplaceDiagnostic(
                 .invalidTransform(

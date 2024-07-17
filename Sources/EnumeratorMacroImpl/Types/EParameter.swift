@@ -3,19 +3,19 @@ import SwiftSyntax
 struct EParameter {
     let name: EOptional<EString>
     let type: EString
-    let isOptional: EBool
+    let isOptional: Bool
 
     init(parameter: EnumCaseParameterSyntax) {
         let parameterName = parameter.secondName ?? parameter.firstName
         self.name = .init(parameterName.map { .init($0.trimmedDescription) })
         self.type = .init(parameter.type.trimmedDescription)
-        self.isOptional = EBool(parameter.type.isOptional)
+        self.isOptional = parameter.type.isOptional
     }
 
     init(name: EString?, type: EString, isOptional: Bool = false) {
         self.name = .init(name)
         self.type = type
-        self.isOptional = EBool(isOptional)
+        self.isOptional = isOptional
     }
 }
 

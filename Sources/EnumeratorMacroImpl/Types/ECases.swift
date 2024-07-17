@@ -4,6 +4,10 @@ import SwiftSyntax
 struct ECases {
     fileprivate let underlying: EArray<ECase>
 
+    init(underlying: [ECase]) {
+        self.underlying = .init(underlying: underlying)
+    }
+
     init(elements: [EnumCaseElementSyntax]) throws {
         self.underlying = .init(
             underlying: try elements.enumerated().map { idx, element in
