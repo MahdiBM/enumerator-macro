@@ -290,23 +290,23 @@ Although not visible when writing templates, each underlying value that is passe
 In addition to [`swift-mustache`'s own "functions"/"transforms"](https://docs.hummingbird.codes/2.0/documentation/hummingbird/transforms/), `EnumeratorMacro` supports these transformations for each type:
 
 * `String`:
-  * `capitalized`: Capitalizes the first letter.
-  * `snakeCased`: Converts the string from camelCase to snake_case.
-  * `camelCased`: Converts the string from snake_case to camelCase.
-  * `withParens`: If the string is not empty, surrounds it in parenthesis.
+  * `capitalized() -> String`: Capitalizes the first letter.
+  * `snakeCased() -> String`: Converts the string from camelCase to snake_case.
+  * `camelCased() -> String`: Converts the string from snake_case to camelCase.
+  * `withParens() -> String`: If the string is not empty, surrounds it in parenthesis.
 * `Array`:
-  * `joined`: Equivalent to `.joined(separator: ", ")`
+  * `joined() -> String`: Equivalent to `.joined(separator: ", ")`
 * `[Case]` (`cases`):
-  * `filterNoParams`: Filters-in the cases with no parameters.
-  * `filterWithParams`: Filters-in the cases with one or more parameters.
+  * `filterNoParams() -> [Case]`: Filters-in the cases with no parameters.
+  * `filterWithParams() -> [Case]`: Filters-in the cases with one or more parameters.
 * `[Parameter]` (`parameters`):
-  * `names`: Returns a string-array of the names of the parameters.
+  * `names() -> [String]`: Returns the names of the parameters.
     * `names(parameters)` -> `[param1, param2, param3]`.
-  * `types`: Returns a string-array of the types of the parameters.
+  * `types() -> [String]`: Returns the types of the parameters.
     * Use with `joined`: `joined(types(parameters))` -> `(String, Int, Double)`.
-  * `namesAndTypes`: Returns a string-array where each element is equivalent to `"\(name): \(type)"`.
+  * `namesAndTypes() -> [String]`: Returns a string-array where each element is equivalent to `"\(name): \(type)"`.
     * Use with `joined`: `joined(namesAndTypes(parameters))` -> `(key: String)` or `(key: String, value: Int)`. 
-  * `tupleValue`: Returns s string-array suitable to be used for making tuples from the parameters.
+  * `tupleValue() -> String`: Suitable to be used for making tuples from the parameters.
     * Use with `withParens`: `withParens(tupleValue(parameters))` -> `(String)` or `(key: String, value: Int)`. 
 
 Feel free to suggest a function if you think it'll solve a problem.
