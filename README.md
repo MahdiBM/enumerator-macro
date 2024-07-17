@@ -129,7 +129,7 @@ enum TestEnum {
 ```swift
 @Enumerator("""
 {{#cases}}
-var is{{firstCapitalized(name)}}: Bool {
+var is{{capitalized(name)}}: Bool {
     switch self {
     case .{{name}}: return true
     default: return false
@@ -219,7 +219,7 @@ enum TestEnum {
 @Enumerator("""
 {{#cases}}
 {{^empty(parameters)}}
-func get{{firstCapitalized(name)}}() -> ({{joined(tupleValue(parameters))}})? {
+func get{{capitalized(name)}}() -> ({{joined(tupleValue(parameters))}})? {
     switch self {
     case let .{{name}}{{withParens(joined(names(parameters)))}}:
         return {{withParens(joined(names(parameters)))}}
@@ -290,7 +290,7 @@ Although not visible when writing templates, each underlying value that is passe
 In addition to [`swift-mustache`'s own "functions"/"transforms"](https://docs.hummingbird.codes/2.0/documentation/hummingbird/transforms/), `EnumeratorMacro` supports these transformations for each type:
 
 * `String`:
-  * `firstCapitalized`: Capitalizes the first letter.
+  * `capitalized`: Capitalizes the first letter.
   * `snakeCased`: Converts the string from camelCase to snake_case.
   * `camelCased`: Converts the string from snake_case to camelCase.
   * `withParens`: If the string is not empty, surrounds it in parenthesis.

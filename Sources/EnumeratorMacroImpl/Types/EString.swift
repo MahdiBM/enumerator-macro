@@ -26,55 +26,58 @@ extension EString: CustomReflectable {
     }
 }
 
-extension EString: MustacheTransformable {
+extension EString: EMustacheTransformable {
     func transform(_ name: String) -> Any? {
-        if let defaultTransformed = self.underlying.transform(name) {
-            return convertToCustomTypesIfPossible(defaultTransformed)
-        } else {
-            RenderingContext.current.cleanDiagnostic()
-            switch name {
-            case "firstCapitalized":
-                if self.isEmpty || self[self.startIndex].isUppercase {
-                    return self
-                }
-                let modified = self[self.startIndex].uppercased() + self[self.index(after: self.startIndex)...]
-                return EString(modified)
-            case "snakeCased":
-                return self.convertedToSnakeCase()
-            case "camelCased":
-                return self.convertToCamelCase()
-            case "withParens":
-                return self.isEmpty ? self : "(\(self))"
-            case "bool":
-                switch self.lowercased() {
-                case "true", "1", "yes", "y", "on", "":
-                    return true
-                default:
-                    return false
-                }
-            case "keyValue":
-                let split = self.split(
-                    separator: ":",
-                    maxSplits: 1
-                ).map {
-                    $0.trimmingCharacters(in: .whitespacesAndNewlines)
-                }
-                guard split.count > 0 else {
-                    return nil
-                }
-                return EKeyValue(
-                    key: EString(split[0]),
-                    value: EString(split.count > 1 ? split[1] : "")
-                )
+        switch name {
+        case "empty":
+            return self.isEmpty
+        case "capitalized":
+            if self.isEmpty || self[self.startIndex].isUppercase {
+                return self
+            }
+            let modified = self[self.startIndex].uppercased() + self[self.index(after: self.startIndex)...]
+            return EString(modified)
+        case "lowercased":
+            return EString(self.lowercased())
+        case "uppercased":
+            return EString(self.uppercased())
+        case "reversed":
+            return EString(self.reversed())
+        case "snakeCased":
+            return self.convertedToSnakeCase()
+        case "camelCased":
+            return self.convertToCamelCase()
+        case "withParens":
+            return self.isEmpty ? self : "(\(self))"
+        case "bool":
+            switch self.lowercased() {
+            case "true", "1", "yes", "y", "on", "":
+                return true
             default:
-                RenderingContext.current.addOrReplaceDiagnostic(
-                    .invalidTransform(
-                        transform: name,
-                        normalizedTypeName: Self.normalizedTypeName
-                    )
-                )
+                return false
+            }
+        case "keyValue":
+            let split = self.split(
+                separator: ":",
+                maxSplits: 1
+            ).map {
+                $0.trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+            guard split.count > 0 else {
                 return nil
             }
+            return EKeyValue(
+                key: EString(split[0]),
+                value: EString(split.count > 1 ? split[1] : "")
+            )
+        default:
+            RenderingContext.current.addOrReplaceDiagnostic(
+                .invalidTransform(
+                    transform: name,
+                    normalizedTypeName: Self.normalizedTypeName
+                )
+            )
+            return nil
         }
     }
 }

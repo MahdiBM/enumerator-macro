@@ -4,10 +4,6 @@ final class RenderingContext: @unchecked Sendable {
 
     var diagnostic: MacroError?
 
-    func cleanDiagnostic() {
-        self.diagnostic = nil
-    }
-
     func addOrReplaceDiagnostic(_ error: MacroError) {
         self.diagnostic = error
     }

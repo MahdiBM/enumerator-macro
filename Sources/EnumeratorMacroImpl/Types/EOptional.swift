@@ -1,6 +1,6 @@
 import Mustache
 
-enum EOptional<Wrapped> {
+enum EOptional<Wrapped: Comparable> {
     case none
     case some(Wrapped)
 
@@ -75,11 +75,28 @@ extension EOptional: WithNormalizedTypeName {
     }
 }
 
-extension EOptional: MustacheTransformable {
+extension EOptional: Comparable {
+    static func < (lhs: EOptional<Wrapped>, rhs: EOptional<Wrapped>) -> Bool {
+        switch (lhs, rhs) {
+        case let (.some(lhs), .some(rhs)):
+            return lhs < rhs
+        case (.some, .none):
+            return false
+        case (.none, .some):
+            return true
+        case (.none, .none):
+            return false
+        }
+    }
+}
+
+extension EOptional: EMustacheTransformable {
     func transform(_ name: String) -> Any? {
         switch self {
         case .none:
             switch name {
+            case "empty":
+                return true
             case "bool":
                 return false
             case "exists":
@@ -98,18 +115,9 @@ extension EOptional: MustacheTransformable {
             case "exists":
                 return true
             default:
-                if let value = value as? MustacheTransformable {
-                    if let transformed = value.transform(name) {
-                        return transformed
-                    } else {
-                        RenderingContext.current.addOrReplaceDiagnostic(
-                            .invalidTransform(
-                                transform: name,
-                                normalizedTypeName: bestEffortTypeName(Wrapped.self)
-                            )
-                        )
-                        return nil
-                    }
+                if let value = value as? EMustacheTransformable {
+                    /// The underlying type is in charge of adding a diagnostic, if needed.
+                    return value.transform(name)
                 } else {
                     RenderingContext.current.addOrReplaceDiagnostic(
                         .invalidTransform(

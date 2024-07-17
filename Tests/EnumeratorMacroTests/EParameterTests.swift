@@ -14,9 +14,9 @@ final class EParameterTests: XCTestCase {
             type: type
         )
 
-        XCTAssertEqual(parameter.name?.underlying, name)
+        XCTAssertEqual(parameter.name.toOptional()?.underlying, name)
         XCTAssertEqual(parameter.type.underlying, type)
-        XCTAssertEqual(parameter.isOptional, false)
+        XCTAssertEqual(parameter.isOptional.underlying, false)
     }
 
     func testParameterWithSecondName() throws {
@@ -29,9 +29,9 @@ final class EParameterTests: XCTestCase {
             type: type
         )
 
-        XCTAssertEqual(parameter.name?.underlying, secondName)
+        XCTAssertEqual(parameter.name.toOptional()?.underlying, secondName)
         XCTAssertEqual(parameter.type.underlying, type)
-        XCTAssertEqual(parameter.isOptional, false)
+        XCTAssertEqual(parameter.isOptional.underlying, false)
     }
 
     func testParameterWithOptionalType() throws {
@@ -43,9 +43,9 @@ final class EParameterTests: XCTestCase {
             type: type
         )
 
-        XCTAssertEqual(parameter.name?.underlying, name)
+        XCTAssertEqual(parameter.name.toOptional()?.underlying, name)
         XCTAssertEqual(parameter.type.underlying, type)
-        XCTAssertEqual(parameter.isOptional, true)
+        XCTAssertEqual(parameter.isOptional.underlying, true)
     }
 
     func testParameterWithImplicitlyOptionalType() throws {
@@ -57,9 +57,9 @@ final class EParameterTests: XCTestCase {
             type: type
         )
 
-        XCTAssertEqual(parameter.name?.underlying, name)
+        XCTAssertEqual(parameter.name.toOptional()?.underlying, name)
         XCTAssertEqual(parameter.type.underlying, type)
-        XCTAssertEqual(parameter.isOptional, true)
+        XCTAssertEqual(parameter.isOptional.underlying, true)
     }
 
     func testParameterWithSpelledOutOptionalType() throws {
@@ -71,9 +71,9 @@ final class EParameterTests: XCTestCase {
             type: type
         )
 
-        XCTAssertEqual(parameter.name?.underlying, name)
+        XCTAssertEqual(parameter.name.toOptional()?.underlying, name)
         XCTAssertEqual(parameter.type.underlying, type)
-        XCTAssertEqual(parameter.isOptional, true)
+        XCTAssertEqual(parameter.isOptional.underlying, true)
     }
 
     private func makeParameter(

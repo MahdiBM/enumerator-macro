@@ -18,6 +18,7 @@ extension ECases: CustomStringConvertible {
         self.underlying.description
     }
 }
+
 extension ECases: WithNormalizedTypeName {
     static var normalizedTypeName: String {
         "[Case]"
@@ -36,26 +37,24 @@ extension ECases: CustomReflectable {
     }
 }
 
-extension ECases: MustacheTransformable {
+extension ECases: EMustacheTransformable {
     func transform(_ name: String) -> Any? {
-        if let defaultTransformed = self.underlying.transform(name) {
-            return convertToCustomTypesIfPossible(defaultTransformed)
-        } else {
-            RenderingContext.current.cleanDiagnostic()
-            switch name {
-            case "filterNoParams":
-                return self.filter(\.parameters.underlying.underlying.isEmpty)
-            case "filterWithParams":
-                return self.filter({ !$0.parameters.underlying.underlying.isEmpty })
-            default:
-                RenderingContext.current.addOrReplaceDiagnostic(
-                    .invalidTransform(
-                        transform: name,
-                        normalizedTypeName: Self.normalizedTypeName
-                    )
-                )
-                return nil
+        switch name {
+        case "filterNoParams":
+            return self.filter(\.parameters.underlying.underlying.isEmpty)
+        case "filterWithParams":
+            return self.filter({ !$0.parameters.underlying.underlying.isEmpty })
+        default:
+            if let transformed = self.underlying.transform(name) {
+                return transformed
             }
+            RenderingContext.current.addOrReplaceDiagnostic(
+                .invalidTransform(
+                    transform: name,
+                    normalizedTypeName: Self.normalizedTypeName
+                )
+            )
+            return nil
         }
     }
 }

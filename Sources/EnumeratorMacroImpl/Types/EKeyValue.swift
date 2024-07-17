@@ -22,7 +22,17 @@ extension EKeyValue: WithNormalizedTypeName {
     }
 }
 
-extension EKeyValue: MustacheTransformable {
+extension EKeyValue: Comparable {
+    static func < (lhs: EKeyValue, rhs: EKeyValue) -> Bool {
+        lhs.key < rhs.key
+    }
+
+    static func == (lhs: EKeyValue, rhs: EKeyValue) -> Bool {
+        lhs.key == rhs.key
+    }
+}
+
+extension EKeyValue: EMustacheTransformable {
     func transform(_ name: String) -> Any? {
         switch name {
         case "key":

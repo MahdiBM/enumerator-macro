@@ -30,3 +30,13 @@ extension ECase: WithNormalizedTypeName {
         "Case"
     }
 }
+
+extension ECase: Comparable {
+    static func < (lhs: ECase, rhs: ECase) -> Bool {
+        lhs.name < rhs.name
+    }
+
+    static func == (lhs: ECase, rhs: ECase) -> Bool {
+        lhs.name == rhs.name
+    }
+}

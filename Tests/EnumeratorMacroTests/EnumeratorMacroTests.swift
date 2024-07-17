@@ -82,7 +82,7 @@ final class EnumeratorMacroTests: XCTestCase {
             #"""
             @Enumerator("""
             {{#cases}}
-            var is{{firstCapitalized(name)}}: Bool {
+            var is{{capitalized(name)}}: Bool {
                 switch self {
                 case .{{name}}:
                     return true
@@ -196,7 +196,7 @@ final class EnumeratorMacroTests: XCTestCase {
             @Enumerator("""
             {{#cases}}
             {{^empty(parameters)}}
-            func get{{firstCapitalized(name)}}() -> ({{joined(tupleValue(parameters))}})? {
+            func get{{capitalized(name)}}() -> ({{joined(tupleValue(parameters))}})? {
                 switch self {
                 case let .{{name}}{{withParens(joined(names(parameters)))}}:
                     return {{withParens(joined(names(parameters)))}}
@@ -786,7 +786,7 @@ final class EnumeratorMacroTests: XCTestCase {
 
 @Enumerator("""
 {{#cases}}
-var is{{firstCapitalized(name)}}: Bool {
+var is{{capitalized(name)}}: Bool {
     switch self {
     case .{{name}}:
         return true

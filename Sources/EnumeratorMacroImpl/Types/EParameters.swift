@@ -32,30 +32,37 @@ extension EParameters: CustomReflectable {
     }
 }
 
-extension EParameters: MustacheTransformable {
+extension EParameters: EMustacheTransformable {
     func transform(_ name: String) -> Any? {
-        if let defaultTransformed = self.underlying.transform(name) {
-            return convertToCustomTypesIfPossible(defaultTransformed)
-        } else {
-            RenderingContext.current.cleanDiagnostic()
-            switch name {
-            case "names":
-                let names = self
-                    .enumerated()
-                    .map { idx, element in
-                        element.name ?? "param\(idx + 1)"
-                    }
-                let array = EArray(underlying: names)
-                return array
-            case "types":
-                let types = self.map(\.type)
-                let array = EArray(underlying: types)
-                return array
-            case "isOptionals":
-                let types = self.map(\.isOptional)
-                let array = EArray(underlying: types)
-                return array
-            case "namesAndTypes":
+        switch name {
+        case "names":
+            let names = self
+                .enumerated()
+                .map { idx, element in
+                    element.name ?? "param\(idx + 1)"
+                }
+            let array = EArray(underlying: names)
+            return array
+        case "types":
+            let types = self.map(\.type)
+            let array = EArray(underlying: types)
+            return array
+        case "isOptionals":
+            let types = self.map(\.isOptional)
+            let array = EArray(underlying: types)
+            return array
+        case "namesAndTypes":
+            let namesAndTypes = self
+                .enumerated()
+                .map { idx, element in
+                    (element.name ?? "param\(idx + 1)") + ": " + element.type
+                }
+            let array = EArray(underlying: namesAndTypes)
+            return array
+        case "tupleValue":
+            if self.underlying.underlying.count == 1 {
+                return EArray(underlying: [underlying.underlying[0].type])
+            } else {
                 let namesAndTypes = self
                     .enumerated()
                     .map { idx, element in
@@ -63,27 +70,10 @@ extension EParameters: MustacheTransformable {
                     }
                 let array = EArray(underlying: namesAndTypes)
                 return array
-            case "tupleValue":
-                if self.underlying.underlying.count == 1 {
-                    return EArray(underlying: [underlying.underlying[0].type])
-                } else {
-                    let namesAndTypes = self
-                        .enumerated()
-                        .map { idx, element in
-                            (element.name ?? "param\(idx + 1)") + ": " + element.type
-                        }
-                    let array = EArray(underlying: namesAndTypes)
-                    return array
-                }
-            default:
-                RenderingContext.current.addOrReplaceDiagnostic(
-                    .invalidTransform(
-                        transform: name,
-                        normalizedTypeName: Self.normalizedTypeName
-                    )
-                )
-                return nil
             }
+        default:
+            /// The underlying type is in charge of adding a diagnostic, if needed.
+            return self.underlying.transform(name)
         }
     }
 }

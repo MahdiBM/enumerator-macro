@@ -1,27 +1,37 @@
 import SwiftSyntax
 
 struct EParameter {
-    let name: EString?
+    let name: EOptional<EString>
     let type: EString
-    let isOptional: Bool
+    let isOptional: EBool
 
     init(parameter: EnumCaseParameterSyntax) {
         let parameterName = parameter.secondName ?? parameter.firstName
-        self.name = parameterName.map { .init($0.trimmedDescription) }
+        self.name = .init(parameterName.map { .init($0.trimmedDescription) })
         self.type = .init(parameter.type.trimmedDescription)
-        self.isOptional = parameter.type.isOptional
+        self.isOptional = EBool(parameter.type.isOptional)
     }
 
     init(name: EString?, type: EString, isOptional: Bool = false) {
-        self.name = name
+        self.name = .init(name)
         self.type = type
-        self.isOptional = isOptional
+        self.isOptional = EBool(isOptional)
     }
 }
 
 extension EParameter: WithNormalizedTypeName {
     static var normalizedTypeName: String {
         "Parameter"
+    }
+}
+
+extension EParameter: Comparable {
+    static func < (lhs: EParameter, rhs: EParameter) -> Bool {
+        lhs.name < rhs.name
+    }
+
+    static func == (lhs: EParameter, rhs: EParameter) -> Bool {
+        lhs.name == rhs.name
     }
 }
 

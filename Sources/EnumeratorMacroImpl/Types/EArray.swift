@@ -1,7 +1,7 @@
 import Mustache
 import Foundation
 
-struct EArray<Element> {
+struct EArray<Element: Comparable> {
     let underlying: [Element]
 
     init(underlying: [Element]) {
@@ -38,51 +38,58 @@ extension EArray: CustomReflectable {
     }
 }
 
-extension EArray: MustacheTransformable {
+extension EArray: EMustacheTransformable {
     func transform(_ name: String) -> Any? {
-        if let defaultTransformed = self.underlying.transform(name) {
-            return convertToCustomTypesIfPossible(defaultTransformed)
-        } else {
-            RenderingContext.current.cleanDiagnostic()
-            switch name {
-            case "joined":
-                let joined = self.underlying
-                    .map { String(describing: $0) }
-                    .joined(separator: ", ")
-                let string = EString(joined)
-                return string
-            case "keyValues":
-                let split: [EKeyValue] = self.underlying
-                    .map { String(describing: $0) }
-                    .compactMap { string -> EKeyValue? in
-                        let split = string.split(
-                            separator: ":",
-                            maxSplits: 1
-                        ).map {
-                            $0.trimmingCharacters(in: .whitespacesAndNewlines)
-                        }
-                        guard split.count > 0 else {
-                            return nil
-                        }
-                        return EKeyValue(
-                            key: EString(split[0]),
-                            value: EString(split.count > 1 ? split[1] : "")
-                        )
+        switch name {
+        case "first":
+            return self.underlying.first
+        case "last":
+            return self.underlying.last
+        case "reversed":
+            return EOptionalsArray(underlying: self.reversed().map { $0 })
+        case "count":
+            return self.underlying.count
+        case "empty":
+            return self.underlying.isEmpty
+        case "sorted":
+            return EArray(underlying: self.underlying.sorted())
+        case "joined":
+            let joined = self.underlying
+                .map { String(describing: $0) }
+                .joined(separator: ", ")
+            let string = EString(joined)
+            return string
+        case "keyValues":
+            let split: [EKeyValue] = self.underlying
+                .map { String(describing: $0) }
+                .compactMap { string -> EKeyValue? in
+                    let split = string.split(
+                        separator: ":",
+                        maxSplits: 1
+                    ).map {
+                        $0.trimmingCharacters(in: .whitespacesAndNewlines)
                     }
-                return EArray<EKeyValue>(underlying: split)
-            default:
-                if let keyValues = self as? EArray<EKeyValue> {
-                    let value = keyValues.first(where: { $0.key == name })?.value
-                    return EOptional(value)
-                }
-                RenderingContext.current.addOrReplaceDiagnostic(
-                    .invalidTransform(
-                        transform: name,
-                        normalizedTypeName: Self.normalizedTypeName
+                    guard split.count > 0 else {
+                        return nil
+                    }
+                    return EKeyValue(
+                        key: EString(split[0]),
+                        value: EString(split.count > 1 ? split[1] : "")
                     )
-                )
-                return nil
+                }
+            return EArray<EKeyValue>(underlying: split)
+        default:
+            if let keyValues = self as? EArray<EKeyValue> {
+                let value = keyValues.first(where: { $0.key == name })?.value
+                return EOptional(value)
             }
+            RenderingContext.current.addOrReplaceDiagnostic(
+                .invalidTransform(
+                    transform: name,
+                    normalizedTypeName: Self.normalizedTypeName
+                )
+            )
+            return nil
         }
     }
 }
