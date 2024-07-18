@@ -23,7 +23,8 @@ It's rather simple.
 * Apply if conditions using the `{{#boolean}} {{/boolean}}` syntax.
 * Apply inverted if conditions using the `{{^boolean}} {{/boolean}}` syntax.
 * Apply transformations using the "function call" syntax: `snakedCased(variable)`.
-  *  Available transformations are mentioned below. 
+  *  Available transformations are mentioned below.
+* Use `{{! comment here }}` syntax to write comments in the template.
 * See [the reference](https://mustache.github.io/mustache.5.html) and the [swift-mustache docs](https://docs.hummingbird.codes/2.0/documentation/mustache) for more info.
 
 ## General Behavior
