@@ -31,7 +31,6 @@ It's rather simple.
 <details>
   <summary> Click to expand </summary>
 
-
 `EnumeratorMacro` will:
 
 * Remove empty lines from the final generated code, to get rid of possible excessive empty lines.
