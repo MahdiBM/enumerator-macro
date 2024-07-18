@@ -15,8 +15,6 @@ A utility for creating case-by-case code for your Swift enums using the Mustache
 The macro will parse your enum code, and pass different info of your enum to the mustache template renderer.   
 Then you can access each case-name, case-parameters etc.. in the template, and create code based on that.
 
-This can automate and simplify creation of code that has a repeated pattern, for enums.
-
 ## How Does Mustache Templating Work?
 
 It's rather simple.
@@ -27,6 +25,17 @@ It's rather simple.
 * Apply transformations using the "function call" syntax: `snakedCased(variable)`.
   *  Available transformations are mentioned below. 
 * See [the reference](https://mustache.github.io/mustache.5.html) and the [swift-mustache docs](https://docs.hummingbird.codes/2.0/documentation/mustache) for more info.
+
+## General Behavior
+
+<details>
+  <summary> Click to expand </summary>
+    
+`EnumeratorMacro` will:
+* Remove empty lines from the final generated code, to get rid of possible excessive empty lines.
+* 
+
+</details>
 
 ## Examples
 
@@ -218,7 +227,7 @@ enum TestEnum {
 ```swift
 @Enumerator("""
 {{#cases}}
-{{^empty(parameters)}}
+{{^isEmpty(parameters)}}
 func get{{capitalized(name)}}() -> ({{joined(tupleValue(parameters))}})? {
     switch self {
     case let .{{name}}{{withParens(joined(names(parameters)))}}:
@@ -227,7 +236,7 @@ func get{{capitalized(name)}}() -> ({{joined(tupleValue(parameters))}})? {
         return nil
     }
 }
-{{/empty(parameters)}}
+{{/isEmpty(parameters)}}
 {{/cases}}
 """)
 enum TestEnum {
@@ -294,8 +303,24 @@ In addition to [`swift-mustache`'s own "functions"/"transforms"](https://docs.hu
   * `snakeCased() -> String`: Converts the string from camelCase to snake_case.
   * `camelCased() -> String`: Converts the string from snake_case to camelCase.
   * `withParens() -> String`: If the string is not empty, surrounds it in parenthesis.
+* `Int`:
+  * `plusOne() -> Int`: Add one to the integer.
+  * `minusOne() -> Int`: Subtract one from the integer.
+  * `equalZero() -> Bool`: Returns whether the integer is equal to zero.
+  * `odd() -> Bool`: Returns whether the integer is odd or not.
+  * `even() -> Bool`: Returns whether the integer is even or not.
 * `Array`:
+  * `first() -> Element`: Returns the first element of the array.
+  * `last() -> Element`: Returns the last element of the array.
+  * `count() -> Int`:  Returns the number of the elements in the array.
+  * `isEmpty() -> Bool`: Returns whether the array is empty or not.
+  * `reversed() -> Self`: Returns a reversed array.
+  * `sorted() -> Self`: Sorts the elements, if the elements of the array are comparable.
   * `joined() -> String`: Equivalent to `.joined(separator: ", ")`
+  * `keyValues() -> Array<KeyValue>`: Parses the elements of the array as key-value pairs separated by ':'.
+* `KeyValue`:
+  * `key() -> String`: Returns the key. You could use Mustache-native {{key}} syntax as well.
+  * `value() -> String`: Returns the value. You could use Mustache-native {{value}} syntax as well.
 * `[Case]` (`cases`):
   * `filterNoParams() -> [Case]`: Filters-in the cases with no parameters.
   * `filterWithParams() -> [Case]`: Filters-in the cases with one or more parameters.
@@ -329,7 +354,8 @@ Here, I've supposedly forgot to write the `:` between `caseName` and `String`.
 
 <kbd> <img width="768" alt="Screenshot 2024-07-13 at 12 10 19 AM" src="https://github.com/user-attachments/assets/97f177a4-e5a0-437f-b3f9-3e9ef902e744"> </kbd>
 
-Or in certain circumstances, `EnumeratorMacro` can catch an invalid function being used:
+
+`EnumeratorMacro` can also catch an invalid function being used:
 
 <kbd> <img width="824" alt="Screenshot 2024-07-17 at 6 44 41 PM" src="https://github.com/user-attachments/assets/d664830d-1897-4099-86b2-1c32d3f6def1"> </kbd>
 
