@@ -295,7 +295,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func removesExcessiveTrivia() {
+    func testRemovesExcessiveTrivia() {
         assertMacroExpansion(
             #"""
             @Enumerator(
@@ -329,6 +329,44 @@ final class EnumeratorMacroTests: XCTestCase {
                         "a"
                     case .b:
                         "b"
+                    }
+                }
+            }
+            """#,
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
+    func testRemovesLastErroneousCommaInCaseSwitch() {
+        assertMacroExpansion(
+            #"""
+            @Enumerator(
+            """
+            public var constant: String {
+                switch self {
+                case {{#cases}}.{{name}}, {{/cases}}:
+                    "some constant"
+                }
+            }
+            """
+            )
+            enum TestEnum {
+                case a
+                case b
+            }
+            """#,
+            /// It usually contain `case .a, .b,:` which is an error
+            /// because `.b` has a trailing comma after it.
+            /// But the macro should recover from this situation:
+            expandedSource: #"""
+            enum TestEnum {
+                case a
+                case b
+
+                public var constant: String {
+                    switch self {
+                    case .a, .b:
+                        "some constant"
                     }
                 }
             }

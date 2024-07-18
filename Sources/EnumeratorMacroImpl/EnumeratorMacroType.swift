@@ -121,14 +121,39 @@ extension EnumeratorMacroType: MemberMacro {
             let decls = SourceFileSyntax.parse(
                 from: &parser
             ).statements.compactMap { statement -> DeclSyntax? in
-                let diagnostics = ParseDiagnosticsGenerator.diagnostics(for: statement)
-                let hasError = diagnostics.contains(where: { $0.diagMessage.severity == .error })
-                if hasError {
-                    context.diagnose(.init(
-                        node: codeSyntax,
-                        message: MacroError.renderedSyntaxContainsErrors(statement.description)
-                    ))
+                var statement = statement
+
+                var diagnostics = ParseDiagnosticsGenerator.diagnostics(for: statement)
+                if diagnostics.containsError {
+                    /// Try to recover from errors:
+                    let switchRewriter = SwitchErrorsRewriter()
+                    let fixedStatement = switchRewriter.rewrite(statement)
+                    let newDiagnostics = ParseDiagnosticsGenerator.diagnostics(for: fixedStatement)
+                    if !newDiagnostics.containsError {
+                        switch CodeBlockItemSyntax(fixedStatement) {
+                        case let .some(fixedStatement):
+                            statement = fixedStatement
+                            diagnostics = newDiagnostics
+                        case .none:
+                            context.diagnose(
+                                Diagnostic(
+                                    node: codeSyntax,
+                                    message: MacroError.internalError(
+                                        "Could not convert a Syntax to a CodeBlockItemSyntax"
+                                    )
+                                )
+                            )
+                            return nil
+                        }
+                    } else {
+                        /// If not recovered, throw a diagnostic error.
+                        context.diagnose(.init(
+                            node: codeSyntax,
+                            message: MacroError.renderedSyntaxContainsErrors(statement.description)
+                        ))
+                    }
                 }
+
                 for diagnostic in diagnostics {
                     if diagnostic.diagMessage.severity == .error {
                         context.diagnose(.init(
@@ -143,7 +168,7 @@ extension EnumeratorMacroType: MemberMacro {
                         /// TODO: Apply the fixit
                     }
                 }
-                if hasError {
+                if diagnostics.containsError {
                     return nil
                 }
                 switch DeclSyntax(statement.item) {
@@ -174,7 +199,7 @@ extension EnumeratorMacroType: MemberMacro {
             let excessiveTriviaRemover = ExcessiveTriviaRemover()
             processedSyntax = excessiveTriviaRemover.rewrite(processedSyntax)
 
-            let switchRewriter = SwitchRewriter()
+            let switchRewriter = SwitchWarningsRewriter()
             processedSyntax = switchRewriter.rewrite(processedSyntax)
 
             guard let declSyntax = DeclSyntax(processedSyntax) else {
@@ -192,5 +217,11 @@ extension EnumeratorMacroType: MemberMacro {
         }
 
         return postProcessedSyntaxes
+    }
+}
+
+private extension [Diagnostic] {
+    var containsError: Bool {
+        self.contains(where: { $0.diagMessage.severity == .error })
     }
 }

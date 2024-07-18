@@ -33,7 +33,8 @@ It's rather simple.
     
 `EnumeratorMacro` will:
 * Remove empty lines from the final generated code, to get rid of possible excessive empty lines.
-* 
+* Remove last trailing comma in a case switch, which is an error. For easier templating.
+  * Search for the `testRemovesLastErroneousCommaInCaseSwitch()` test for an example.
 
 </details>
 
