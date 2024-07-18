@@ -486,7 +486,7 @@ Although not visible when writing templates, each underlying value that is passe
   * `reversed() -> Self`: Returns a reversed array.
   * `sorted() -> Self`: Sorts the elements, if the elements of the array are comparable.
   * `joined() -> String`: Equivalent to `.joined(separator: ", ")`
-  * `keyValues() -> Array<KeyValue>`: Parses the elements of the array as key-value pairs separated by ':'.
+  * `keyValues() -> [KeyValue]`: Parses the elements of the array as key-value pairs separated by ':'.
 * `Optional`:
   * `exists() -> Bool`: Returns whether this optional value contains anything.
   * `isEmpty() -> Bool`: Returns whether this optional value contains anything.
@@ -496,8 +496,8 @@ Although not visible when writing templates, each underlying value that is passe
 * `KeyValue`:
   * `key() -> String`: Returns the key. You could use Mustache-native {{key}} syntax as well.
   * `value() -> String`: Returns the value. You could use Mustache-native {{value}} syntax as well.
-* `Array<KeyValue>`:
-  * Imagine a `Array<KeyValue>` as a `Dictonary<String, String>`.
+* `[KeyValue]`:
+  * Imagine a `[KeyValue]` as a `Dictonary<String, String>`.
   * You can use function names as a way of subscripting.
   * For example `business_error(myKeyValues)` will find an element in `myKeyValues` where `key` == `business_error`, and will return the `value` as an `String?`.
 * `[Parameter]` (`parameters`):
@@ -505,7 +505,7 @@ Although not visible when writing templates, each underlying value that is passe
     * `names(parameters)` -> `[param1, param2, param3]`.
   * `types() -> [String]`: Returns the types of the parameters.
     * Use with `joined`: `joined(types(parameters))` -> `(String, Int, Double)`.
-  * `namesAndTypes() -> [String]`: Returns a string-array where each element is equivalent to `"\(name): \(type)"`.
+  * `namesAndTypes() -> [String]`: Returns an array where each element is equivalent to `"\(name): \(type)"`.
     * Use with `joined`: `joined(namesAndTypes(parameters))` -> `(key: String)` or `(key: String, value: Int)`. 
   * `tupleValue() -> String`: Suitable to be used for making tuples from the parameters.
     * Use with `withParens`: `withParens(tupleValue(parameters))` -> `(String)` or `(key: String, value: Int)`. 
