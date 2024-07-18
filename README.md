@@ -51,7 +51,7 @@ It's rather simple.
 var caseName: String {
     switch self {
     {{#cases}}
-    case .{{name}}: "{{name}}"
+    case .{{name}}: "{{snakeCased(name)}}"
     {{/cases}}
     }
 }
@@ -73,7 +73,7 @@ enum TestEnum {
 +        switch self {
 +        case .a: "a"
 +        case .b: "b"
-+        case .testCase: "testCase"
++        case .testCase: "test_case"
 +        }
 +    }
 }
@@ -190,23 +190,28 @@ enum TestEnum {
 
 </details>
     
-### Create a Copy of The Enum
+### Create Get-Case-Value Functions
 
 <details>
   <summary> Click to expand </summary>
-    
-Not very practical but I'll leave it here for showcase for now.
 
 ```swift
 @Enumerator("""
-enum Copy {
-    {{#cases}}
-    case {{name}}{{withParens(joined(namesAndTypes(parameters)))}}
-    {{/cases}}
+{{#cases}}
+{{^isEmpty(parameters)}}
+func get{{capitalized(name)}}() -> ({{joined(tupleValue(parameters))}})? {
+    switch self {
+    case let .{{name}}{{withParens(joined(names(parameters)))}}:
+        return {{withParens(joined(names(parameters)))}}
+    default:
+        return nil
+    }
 }
+{{/isEmpty(parameters)}}
+{{/cases}}
 """)
 enum TestEnum {
-    case a(val1: String, val2: Int)
+    case a(val1: String, Int)
     case b
     case testCase(testValue: String)
 }
@@ -218,10 +223,23 @@ enum TestEnum {
     case b
     case testCase(testValue: String)
 
-+    enum Copy {
-+        case a(val1: String, val2: Int)
-+        case b
-+        case testCase(testValue: String)
+
++    func getA() -> (val1: String, param2: Int)? {
++        switch self {
++        case let .a(val1, param2):
++            return (val1, param2)
++        default:
++            return nil
++        }
++    }
+
++    func getTestCase() -> (String)? {
++        switch self {
++        case let .testCase(testValue):
++            return (testValue)
++        default:
++            return nil
++        }
 +    }
 }
 ```
