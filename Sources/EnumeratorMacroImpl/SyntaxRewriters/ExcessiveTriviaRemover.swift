@@ -17,7 +17,6 @@ final class ExcessiveTriviaRemover: SyntaxRewriter {
     ) -> (modified: Bool, syntax: Syntax) {
         var node = node
         var pieces = node[keyPath: keyPath].pieces
-
         var modified = false
 
         var toBeRemoved: [Int] = []
