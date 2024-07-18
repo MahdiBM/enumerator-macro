@@ -14,7 +14,7 @@ final class EParameterTests: XCTestCase {
             type: type
         )
 
-        XCTAssertEqual(parameter.name.toOptional()?.underlying, name)
+        XCTAssertEqual(parameter.name.underlying, name)
         XCTAssertEqual(parameter.type.underlying, type)
         XCTAssertEqual(parameter.isOptional, false)
     }
@@ -29,7 +29,7 @@ final class EParameterTests: XCTestCase {
             type: type
         )
 
-        XCTAssertEqual(parameter.name.toOptional()?.underlying, secondName)
+        XCTAssertEqual(parameter.name.underlying, secondName)
         XCTAssertEqual(parameter.type.underlying, type)
         XCTAssertEqual(parameter.isOptional, false)
     }
@@ -43,7 +43,7 @@ final class EParameterTests: XCTestCase {
             type: type
         )
 
-        XCTAssertEqual(parameter.name.toOptional()?.underlying, name)
+        XCTAssertEqual(parameter.name.underlying, name)
         XCTAssertEqual(parameter.type.underlying, type)
         XCTAssertEqual(parameter.isOptional, true)
     }
@@ -57,7 +57,7 @@ final class EParameterTests: XCTestCase {
             type: type
         )
 
-        XCTAssertEqual(parameter.name.toOptional()?.underlying, name)
+        XCTAssertEqual(parameter.name.underlying, name)
         XCTAssertEqual(parameter.type.underlying, type)
         XCTAssertEqual(parameter.isOptional, true)
     }
@@ -71,7 +71,7 @@ final class EParameterTests: XCTestCase {
             type: type
         )
 
-        XCTAssertEqual(parameter.name.toOptional()?.underlying, name)
+        XCTAssertEqual(parameter.name.underlying, name)
         XCTAssertEqual(parameter.type.underlying, type)
         XCTAssertEqual(parameter.isOptional, true)
     }
@@ -82,6 +82,7 @@ final class EParameterTests: XCTestCase {
         type: String
     ) throws -> EParameter {
         EParameter(
+            index: .random(in: .min ... .max),
             parameter: EnumCaseParameterSyntax(
                 firstName: firstName,
                 secondName: secondName,

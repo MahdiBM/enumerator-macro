@@ -78,6 +78,7 @@ final class TransformTests: XCTestCase {
             index: 2,
             name: "case3",
             parameters: .init(underlying: [EParameter(
+                index: EInt(0),
                 name: "thing",
                 type: "String",
                 isOptional: false
@@ -89,11 +90,13 @@ final class TransformTests: XCTestCase {
             name: "case4",
             parameters: .init(underlying: [
                 EParameter(
+                    index: EInt(0),
                     name: "error",
                     type: "Error",
                     isOptional: false
                 ),
                 EParameter(
+                    index: EInt(1),
                     name: "critical",
                     type: "Bool",
                     isOptional: false

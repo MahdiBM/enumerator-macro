@@ -1,19 +1,27 @@
 import SwiftSyntax
 
 struct EParameter {
-    let name: EOptional<EString>
+    let index: EInt
+    let name: EString
     let type: EString
     let isOptional: Bool
 
-    init(parameter: EnumCaseParameterSyntax) {
-        let parameterName = parameter.secondName ?? parameter.firstName
-        self.name = .init(parameterName.map { .init($0.trimmedDescription) })
+    init(index: Int, parameter: EnumCaseParameterSyntax) {
+        self.index = EInt(index)
+        let parameterName = (parameter.secondName ?? parameter.firstName)?.trimmedDescription
+        if let parameterName,
+           !parameterName.isEmpty {
+            self.name = .init(parameterName)
+        } else {
+            self.name = .init("param\(index + 1)")
+        }
         self.type = .init(parameter.type.trimmedDescription)
         self.isOptional = parameter.type.isOptional
     }
 
-    init(name: EString?, type: EString, isOptional: Bool = false) {
-        self.name = .init(name)
+    init(index: EInt, name: EString, type: EString, isOptional: Bool) {
+        self.index = index
+        self.name = name
         self.type = type
         self.isOptional = isOptional
     }

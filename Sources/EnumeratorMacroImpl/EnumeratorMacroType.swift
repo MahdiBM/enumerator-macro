@@ -196,18 +196,18 @@ extension EnumeratorMacroType: MemberMacro {
             (syntax, codeSyntax) -> DeclSyntax? in
             var processedSyntax = Syntax(syntax)
 
-            let excessiveTriviaRemover = ExcessiveTriviaRemover()
-            processedSyntax = excessiveTriviaRemover.rewrite(processedSyntax)
-
             let switchRewriter = SwitchWarningsRewriter()
             processedSyntax = switchRewriter.rewrite(processedSyntax)
+
+            let excessiveTriviaRemover = ExcessiveTriviaRemover()
+            processedSyntax = excessiveTriviaRemover.rewrite(processedSyntax)
 
             guard let declSyntax = DeclSyntax(processedSyntax) else {
                 context.diagnose(
                     Diagnostic(
                         node: codeSyntax,
                         message: MacroError.internalError(
-                            "Could not convert a post-processed Syntax to a DeclSyntax"
+                            "Could not convert a post-processed Syntax to DeclSyntax"
                         )
                     )
                 )

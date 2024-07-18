@@ -43,22 +43,7 @@ extension ECases: CustomReflectable {
 
 extension ECases: EMustacheTransformable {
     func transform(_ name: String) -> Any? {
-        switch name {
-        case "filterNoParams":
-            return self.filter(\.parameters.underlying.underlying.isEmpty)
-        case "filterWithParams":
-            return self.filter({ !$0.parameters.underlying.underlying.isEmpty })
-        default:
-            if let transformed = self.underlying.transform(name) {
-                return transformed
-            }
-            RenderingContext.current.addOrReplaceDiagnostic(
-                .invalidTransform(
-                    transform: name,
-                    normalizedTypeName: Self.normalizedTypeName
-                )
-            )
-            return nil
-        }
+        /// The underlying type is in charge of adding a diagnostic, if needed.
+        return self.underlying.transform(name)
     }
 }

@@ -59,10 +59,7 @@ enum MacroError: Error, CustomStringConvertible {
         case let .internalError(message):
             "An internal error occurred. Please file a bug report at https://github.com/mahdibm/enumerator-macro. Error:\n\(message)"
         case let .invalidTransform(transform, normalizedTypeName):
-            """
-            Invalid function call detected.
-            '\(normalizedTypeName)' doesn't have a function called '\(transform)'
-            """
+            "'\(normalizedTypeName)' doesn't have a function called '\(transform)'"
         }
     }
 }

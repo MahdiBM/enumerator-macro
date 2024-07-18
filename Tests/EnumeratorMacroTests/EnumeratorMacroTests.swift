@@ -194,7 +194,7 @@ final class EnumeratorMacroTests: XCTestCase {
         assertMacroExpansion(
             #"""
             @Enumerator("""
-            {{#cases}}
+            {{#cases}} 
             {{^isEmpty(parameters)}}
             func get{{capitalized(name)}}() -> ({{joined(tupleValue(parameters))}})? {
                 switch self {
@@ -204,7 +204,7 @@ final class EnumeratorMacroTests: XCTestCase {
                     return nil
                 }
             }
-            {{/isEmpty(parameters)}}
+            {{/isEmpty(parameters)}} 
             {{/cases}}
             """)
             enum TestEnum {
@@ -242,6 +242,66 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
+    func testCreatesLocalizationParameters() {
+        assertMacroExpansion(
+            #"""
+            @Enumerator("""
+            private var localizationParameters: [Any] {
+                switch self {
+                    {{#cases}} {{^isEmpty(parameters)}}
+
+                    {{^isEmpty(l8n_params(keyValues(comments)))}}
+                case let .{{name}}{{withParens(joined(names(parameters)))}}:
+                    [{{l8n_params(keyValues(comments))}}]
+                    {{/isEmpty(l8n_params(keyValues(comments)))}}
+
+                    {{^exists(l8n_params(keyValues(comments)))}}
+                case let .{{name}}{{withParens(joined(names(parameters)))}}:
+                    [
+                        {{#parameters}}
+                        {{name}}{{#isOptional}} as Any{{/isOptional}},
+                        {{/parameters}}
+                    ]
+                    {{/exists(l8n_params(keyValues(comments)))}}
+
+                    {{/isEmpty(parameters)}} {{/cases}}
+                default:
+                    []
+                }
+            }
+            """)
+            public enum ErrorMessage {
+                case case1 // business_error
+                case case2 // business_error: true
+                case case3 // business_error: false
+                case case4 // business_error: adfasdfdsff
+                case somethingSomething(value1: String, Int) // l8n_params: value
+                case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
+            }
+            """#,
+            expandedSource: #"""
+            public enum ErrorMessage {
+                case case1 // business_error
+                case case2 // business_error: true
+                case case3 // business_error: false
+                case case4 // business_error: adfasdfdsff
+                case somethingSomething(value1: String, Int) // l8n_params: value
+                case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
+
+                private var localizationParameters: [Any] {
+                    switch self {
+                    case .somethingSomething:
+                        [value]
+                    default:
+                        []
+                    }
+                }
+            }
+            """#,
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
     func testProperlyReadsComments() {
         assertMacroExpansion(
             #"""
@@ -260,7 +320,7 @@ final class EnumeratorMacroTests: XCTestCase {
                 case case2 // business_error: true
                 case case3 // business_error: false
                 case case4 // business_error: adfasdfdsff
-                case somethingSomething(integration: String)
+                case somethingSomething(value: String)
                 case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
             }
             """#,
@@ -270,7 +330,7 @@ final class EnumeratorMacroTests: XCTestCase {
                 case case2 // business_error: true
                 case case3 // business_error: false
                 case case4 // business_error: adfasdfdsff
-                case somethingSomething(integration: String)
+                case somethingSomething(value: String)
                 case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
 
                 public var isBusinessLogicError: Bool {
@@ -295,6 +355,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
+    /// Test name is referenced in the README.
     func testRemovesExcessiveTrivia() {
         assertMacroExpansion(
             #"""
@@ -318,6 +379,7 @@ final class EnumeratorMacroTests: XCTestCase {
                 case b
             }
             """#,
+            /// Should not contain those excessive new lines:
             expandedSource: #"""
             enum TestEnum {
                 case a
@@ -337,6 +399,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
+    /// Test name is referenced in the README.
     func testRemovesLastErroneousCommaInCaseSwitch() {
         assertMacroExpansion(
             #"""
@@ -374,7 +437,6 @@ final class EnumeratorMacroTests: XCTestCase {
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
-
 
     func testDiagnosesNotAnEnum() {
         assertMacroExpansion(

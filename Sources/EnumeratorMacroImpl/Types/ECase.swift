@@ -14,7 +14,12 @@ struct ECase {
         self.name = .init(element.name.trimmedDescription)
         let parameters = element.parameterClause?.parameters ?? []
         self.parameters = .init(
-            underlying: parameters.map(EParameter.init(parameter:))
+            underlying: parameters.enumerated().map { idx, parameter in
+                EParameter(
+                    index: idx,
+                    parameter: parameter
+                )
+            }
         )
         let keyValueParts = element.trailingTrivia
             .description
