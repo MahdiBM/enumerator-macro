@@ -296,6 +296,128 @@ enum TestEnum {
 }
 ```
 
+### Using Comments For Code Generation
+
+> [!TIP]
+> You can use comments in front of each case, as values for `EnumeratorMacro` to process.
+
+```swift
+@Enumerator("""
+package var isBusinessError: Bool {
+    switch self {
+    case
+    {{#cases}}{{#bool(business_error(keyValues(comments)))}}
+    .{{name}},
+    {{/bool(business_error(keyValues(comments)))}}{{/cases}}
+    :
+        return true
+    default:
+        return false
+    }
+}
+""")
+public enum ErrorMessage {
+    case case1 // business_error
+    case case2 // business_error: true
+    case case3 // business_error: false
+    case case4 // business_error: adfasdfdsff
+    case somethingSomething(value: String)
+    case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
+}
+```
+Is expanded to:
+```diff
+public enum ErrorMessage {
+    case case1 // business_error
+    case case2 // business_error: true
+    case case3 // business_error: false
+    case case4 // business_error: adfasdfdsff
+    case somethingSomething(value: String)
+    case otherCase(error: Error, isViolation: Bool) // business_error
+
++    package var isBusinessError: Bool {
++        switch self {
++        case
++        .case1,
++        .case2,
++        .otherCase
++        :
++            return true
++        default:
++            return false
++        }
++    }
+}
+```
+
+### Advanced Using Comments For Code Generation
+
+<details>
+  <summary> Click to expand </summary>
+    
+```swift
+@Enumerator("""
+private var localizationParameters: [Any] {
+    switch self {
+    {{#cases}}
+{{! Only create a case for enum cases that have any parameters at all: }}
+    {{^isEmpty(parameters)}}
+
+{{! Create a case for those who have non-empty 'l8n_params' comment: }}
+    {{^isEmpty(l8n_params(keyValues(comments)))}}
+    case let .{{name}}{{withParens(joined(names(parameters)))}}:
+        [{{l8n_params(keyValues(comments))}}]
+    {{/isEmpty(l8n_params(keyValues(comments)))}}
+
+{{! Create a case for those who don't have 'l8n_params' comment at all: }}
+    {{^exists(l8n_params(keyValues(comments)))}}
+    case let .{{name}}{{withParens(joined(names(parameters)))}}:
+        [
+            {{#parameters}}
+            {{name}}{{#isOptional}} as Any{{/isOptional}},
+            {{/parameters}}
+        ]
+    {{/exists(l8n_params(keyValues(comments)))}}
+
+    {{/isEmpty(parameters)}}
+    {{/cases}}
+    default:
+        []
+    }
+}
+""")
+public enum ErrorMessage {
+    case case1 // business_error
+    case case2 // business_error: true
+    case case3 // business_error: false
+    case case4 // business_error: adfasdfdsff
+    case somethingSomething(value1: String, Int) // l8n_params: value
+    case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
+}
+```
+Is expanded to:
+```diff
+public enum ErrorMessage {
+    case case1 // business_error
+    case case2 // business_error: true
+    case case3 // business_error: false
+    case case4 // business_error: adfasdfdsff
+    case somethingSomething(value1: String, Int) // l8n_params: value
+    case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
+
+    private var localizationParameters: [Any] {
+        switch self {
+        case .somethingSomething:
+            [value]
+        default:
+            []
+        }
+    }
+}
+```
+
+</details>
+
 ## Available Context Values
 
 Here's a sample context object:
@@ -305,12 +427,25 @@ Here's a sample context object:
     "cases": [
         {
             "index": 0,
-            "name": "caseName",
-            "parameters": {
-                "name": "parameterName",
-                "type": "parameterType",
-                "isOptional": true
-            }
+            "name": "somethingWentWrong",
+            "parameters": [
+                {
+                    "index": 0,
+                    "name": "error",
+                    "type": "Error?",
+                    "isOptional": true
+                },
+                {
+                    "index": 1,
+                    "name": "statusCode",
+                    "type": "String",
+                    "isOptional": false
+                }
+            ],
+            "comments": [
+                "business_error",
+                "l8n_params: error as Any, statusCode"
+            ]
         }
     ]
 }
@@ -334,17 +469,27 @@ In addition to [`swift-mustache`'s own "functions"/"transforms"](https://docs.hu
   * `odd() -> Bool`: Returns whether the integer is odd or not.
   * `even() -> Bool`: Returns whether the integer is even or not.
 * `Array`:
-  * `first() -> Element`: Returns the first element of the array.
-  * `last() -> Element`: Returns the last element of the array.
+  * `first() -> Element?`: Returns the first element of the array.
+  * `last() -> Element?`: Returns the last element of the array.
   * `count() -> Int`:  Returns the number of the elements in the array.
   * `isEmpty() -> Bool`: Returns whether the array is empty or not.
   * `reversed() -> Self`: Returns a reversed array.
   * `sorted() -> Self`: Sorts the elements, if the elements of the array are comparable.
   * `joined() -> String`: Equivalent to `.joined(separator: ", ")`
   * `keyValues() -> Array<KeyValue>`: Parses the elements of the array as key-value pairs separated by ':'.
+* `Optional`:
+  * `exists() -> Bool`: Returns whether this optional value contains anything.
+  * `isEmpty() -> Bool`: Returns whether this optional value contains anything.
+    * If a value exists, the call will be forwarded to that.
+    * For example `Optional<String>.some("")` will return `true` for `isEmpty` becasue although the optional exists, the string value is empty.
+  * `Optional` is a see-through value like in Swift. You can use any functions that are available for the wrapperd type, when you're sure the value exists.
 * `KeyValue`:
   * `key() -> String`: Returns the key. You could use Mustache-native {{key}} syntax as well.
   * `value() -> String`: Returns the value. You could use Mustache-native {{value}} syntax as well.
+* `Array<KeyValue>`:
+  * Imagine a `Array<KeyValue>` as a `Dictonary<String, String>`.
+  * You can use function names as a way of subscripting.
+  * For example `business_error(myKeyValues)` will find an element in `myKeyValues` where `key` == `business_error`, and will return the `value` as an `String?`.
 * `[Parameter]` (`parameters`):
   * `names() -> [String]`: Returns the names of the parameters.
     * `names(parameters)` -> `[param1, param2, param3]`.
