@@ -46,7 +46,7 @@ It's rather simple.
 ## Examples
 
 > [!NOTE]
-> The below examples will get more complicated slowly but surely.
+> The examples will get more advanced as you scroll.
 
 ### Derive Case Names
 ```swift
