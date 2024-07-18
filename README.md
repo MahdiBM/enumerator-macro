@@ -345,9 +345,6 @@ In addition to [`swift-mustache`'s own "functions"/"transforms"](https://docs.hu
 * `KeyValue`:
   * `key() -> String`: Returns the key. You could use Mustache-native {{key}} syntax as well.
   * `value() -> String`: Returns the value. You could use Mustache-native {{value}} syntax as well.
-* `[Case]` (`cases`):
-  * `filterNoParams() -> [Case]`: Filters-in the cases with no parameters.
-  * `filterWithParams() -> [Case]`: Filters-in the cases with one or more parameters.
 * `[Parameter]` (`parameters`):
   * `names() -> [String]`: Returns the names of the parameters.
     * `names(parameters)` -> `[param1, param2, param3]`.
