@@ -110,7 +110,7 @@ extension EOptional: EMustacheTransformable {
         switch self {
         case .none:
             switch name {
-            case "empty":
+            case "isEmpty":
                 return true
             case "bool":
                 return false

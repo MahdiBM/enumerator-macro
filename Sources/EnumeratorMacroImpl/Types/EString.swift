@@ -29,7 +29,7 @@ extension EString: CustomReflectable {
 extension EString: EMustacheTransformable {
     func transform(_ name: String) -> Any? {
         switch name {
-        case "empty":
+        case "isEmpty":
             return self.isEmpty
         case "capitalized":
             if self.isEmpty || self[self.startIndex].isUppercase {

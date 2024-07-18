@@ -49,7 +49,7 @@ extension EArray: EMustacheTransformable {
             return EOptionalsArray(underlying: self.reversed().map { $0 })
         case "count":
             return self.underlying.count
-        case "empty":
+        case "isEmpty":
             return self.underlying.isEmpty
         case "joined":
             let joined = self.underlying
@@ -79,7 +79,9 @@ extension EArray: EMustacheTransformable {
         default:
             if let keyValues = self as? EArray<EKeyValue> {
                 /// Don't throw even if the key doesn't exist.
-                return keyValues.underlying.first(named: EString(name))
+                return EOptional(
+                    keyValues.underlying.first(where: { $0.key.underlying == name })?.value
+                )
             }
             if let comparable = self as? EComparableSequence {
                 /// The underlying type is in charge of adding a diagnostic, if needed.

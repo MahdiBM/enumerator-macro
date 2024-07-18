@@ -195,7 +195,7 @@ final class EnumeratorMacroTests: XCTestCase {
             #"""
             @Enumerator("""
             {{#cases}}
-            {{^empty(parameters)}}
+            {{^isEmpty(parameters)}}
             func get{{capitalized(name)}}() -> ({{joined(tupleValue(parameters))}})? {
                 switch self {
                 case let .{{name}}{{withParens(joined(names(parameters)))}}:
@@ -204,7 +204,7 @@ final class EnumeratorMacroTests: XCTestCase {
                     return nil
                 }
             }
-            {{/empty(parameters)}}
+            {{/isEmpty(parameters)}}
             {{/cases}}
             """)
             enum TestEnum {

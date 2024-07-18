@@ -5,7 +5,7 @@ import XCTest
 final class TransformTests: XCTestCase {
     func testCommentsValueIsEmptyBecauseDoesNotExist() throws {
         do {
-            let template = "{{empty(custom_params(keyValues(comments)))}}"
+            let template = "{{isEmpty(custom_params(keyValues(comments)))}}"
             let render = try MustacheTemplate(
                 string: "{{%CONTENT_TYPE:TEXT}}\n" + template
             ).render(
@@ -27,7 +27,7 @@ final class TransformTests: XCTestCase {
 
     func testCommentsValueIsEmptyButExists() throws {
         do {
-            let template = "{{empty(custom_params(keyValues(comments)))}}"
+            let template = "{{isEmpty(custom_params(keyValues(comments)))}}"
             let render = try MustacheTemplate(
                 string: "{{%CONTENT_TYPE:TEXT}}\n" + template
             ).render(
