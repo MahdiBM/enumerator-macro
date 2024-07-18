@@ -38,7 +38,7 @@ It's rather simple.
   * Search for the `testRemovesExcessiveTrivia()` test for an example. 
 * Remove last trailing comma in a case switch, which is an error. For easier templating.
   * Search for the `testRemovesLastErroneousCommaInCaseSwitch()` test for an example.
-* Emit helpful diagnostices whenever possible.
+* Emit helpful diagnostics whenever possible.
   * See the [Error Handling](#error-handling) section for more info.
 
 </details>
@@ -347,7 +347,7 @@ Feel free to suggest a function if you think it'll solve a problem.
 <details>
   <summary> Click to expand </summary>
     
-In case there is an error in the expanded macro code, or in any other step of the code generation, `EnumeratorMacro` will try to emit diagnosis pointing to the line of the code which is the source of the issue.
+In case there is an error in the expanded macro code, or in any other step of the code generation, `EnumeratorMacro` will try to emit diagnostics pointing to the line of the code which is the source of the issue.
 
 For example, `EnumeratorMacro` will properly forward template render errors from the template engine to your source code.
 In the example below, I've mistakenly written `{{cases}` instead of `{{cases}}`:
