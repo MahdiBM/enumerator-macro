@@ -242,29 +242,87 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testCreatesLocalizationParameters() {
+    func testProperlyReadsBoolComments() {
+        assertMacroExpansion(
+            #"""
+            @Enumerator("""
+            package var isBusinessError: Bool {
+                switch self {
+                case
+                {{#cases}}{{#bool(business_error(keyValues(comments)))}}
+                .{{name}},
+                {{/bool(business_error(keyValues(comments)))}}{{/cases}}
+                :
+                    return true
+                default:
+                    return false
+                }
+            }
+            """)
+            public enum ErrorMessage {
+                case case1 // business_error
+                case case2 // business_error: true
+                case case3 // business_error: false
+                case case4 // business_error: adfasdfdsff
+                case somethingSomething(value: String)
+                case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
+            }
+            """#,
+            expandedSource: #"""
+            public enum ErrorMessage {
+                case case1 // business_error
+                case case2 // business_error: true
+                case case3 // business_error: false
+                case case4 // business_error: adfasdfdsff
+                case somethingSomething(value: String)
+                case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
+
+                package var isBusinessError: Bool {
+                    switch self {
+                    case
+                    .case1,
+                    .case2,
+                    .otherCase
+                    :
+                        return true
+                    default:
+                        return false
+                    }
+                }
+            }
+            """#,
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
+    func testProperlyReadsLocalizationComments() {
         assertMacroExpansion(
             #"""
             @Enumerator("""
             private var localizationParameters: [Any] {
                 switch self {
-                    {{#cases}} {{^isEmpty(parameters)}}
+                {{#cases}}
+            {{! Only create a case for enum cases that have any parameters at all: }}
+                {{^isEmpty(parameters)}}
 
-                    {{^isEmpty(l8n_params(keyValues(comments)))}}
+            {{! Create a case for those who have non-empty 'l8n_params' comment: }}
+                {{^isEmpty(l8n_params(keyValues(comments)))}}
                 case let .{{name}}{{withParens(joined(names(parameters)))}}:
                     [{{l8n_params(keyValues(comments))}}]
-                    {{/isEmpty(l8n_params(keyValues(comments)))}}
+                {{/isEmpty(l8n_params(keyValues(comments)))}}
 
-                    {{^exists(l8n_params(keyValues(comments)))}}
+            {{! Create a case for those who don't have 'l8n_params' comment at all: }}
+                {{^exists(l8n_params(keyValues(comments)))}}
                 case let .{{name}}{{withParens(joined(names(parameters)))}}:
                     [
                         {{#parameters}}
                         {{name}}{{#isOptional}} as Any{{/isOptional}},
                         {{/parameters}}
                     ]
-                    {{/exists(l8n_params(keyValues(comments)))}}
+                {{/exists(l8n_params(keyValues(comments)))}}
 
-                    {{/isEmpty(parameters)}} {{/cases}}
+                {{/isEmpty(parameters)}}
+                {{/cases}}
                 default:
                     []
                 }
@@ -294,59 +352,6 @@ final class EnumeratorMacroTests: XCTestCase {
                         [value]
                     default:
                         []
-                    }
-                }
-            }
-            """#,
-            macros: EnumeratorMacroEntryPoint.macros
-        )
-    }
-
-    func testProperlyReadsComments() {
-        assertMacroExpansion(
-            #"""
-            @Enumerator("""
-            public var isBusinessLogicError: Bool {
-                switch self {
-                {{#cases}}
-                case let .{{name}}:
-                    return {{bool(business_error(keyValues(comments)))}}
-                {{/cases}}
-                }
-            }
-            """)
-            public enum ErrorMessage {
-                case case1 // business_error
-                case case2 // business_error: true
-                case case3 // business_error: false
-                case case4 // business_error: adfasdfdsff
-                case somethingSomething(value: String)
-                case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
-            }
-            """#,
-            expandedSource: #"""
-            public enum ErrorMessage {
-                case case1 // business_error
-                case case2 // business_error: true
-                case case3 // business_error: false
-                case case4 // business_error: adfasdfdsff
-                case somethingSomething(value: String)
-                case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
-
-                public var isBusinessLogicError: Bool {
-                    switch self {
-                    case .case1:
-                        return true
-                    case .case2:
-                        return true
-                    case .case3:
-                        return false
-                    case .case4:
-                        return false
-                    case .somethingSomething:
-                        return false
-                    case .otherCase:
-                        return true
                     }
                 }
             }
