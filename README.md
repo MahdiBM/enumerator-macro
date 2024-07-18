@@ -30,9 +30,12 @@ It's rather simple.
 
 <details>
   <summary> Click to expand </summary>
-    
+
+
 `EnumeratorMacro` will:
+
 * Remove empty lines from the final generated code, to get rid of possible excessive empty lines.
+  * Search for the `testRemovesExcessiveTrivia()` test for an example. 
 * Remove last trailing comma in a case switch, which is an error. For easier templating.
   * Search for the `testRemovesLastErroneousCommaInCaseSwitch()` test for an example.
 
