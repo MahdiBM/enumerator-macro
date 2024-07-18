@@ -308,6 +308,8 @@ enum TestEnum {
 
 > [!TIP]
 > You can use comments in front of each case, as values for `EnumeratorMacro` to process.
+> Use `;` to divide the comments, and use `:` to separate the `key` and tthe possible `value`.
+> Example: `myKey1; myKey2: value; myKey3`.
 
 ```swift
 @Enumerator("""
@@ -341,7 +343,7 @@ public enum ErrorMessage {
     case case3 // business_error: false
     case case4 // business_error: adfasdfdsff
     case somethingSomething(value: String)
-    case otherCase(error: Error, isViolation: Bool) // business_error
+    case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
 
 +    package var isBusinessError: Bool {
 +        switch self {
@@ -463,7 +465,7 @@ Here's a sample context object:
 
 Although not visible when writing templates, each underlying value that is passed to the template engine has an actual type.
 
-In addition to [`swift-mustache`'s own "functions"/"transforms"](https://docs.hummingbird.codes/2.0/documentation/hummingbird/transforms/), `EnumeratorMacro` supports these transformations for each type:
+`EnumeratorMacro` supports these transformations for each type:
 
 * `String`:
   * `capitalized() -> String`: Capitalizes the first letter.
