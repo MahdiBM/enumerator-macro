@@ -1,7 +1,7 @@
 import Mustache
 import Foundation
 
-struct EArray<Element: Comparable> {
+struct EArray<Element> {
     let underlying: [Element]
 
     init(underlying: [Element]) {
@@ -51,8 +51,6 @@ extension EArray: EMustacheTransformable {
             return self.underlying.count
         case "empty":
             return self.underlying.isEmpty
-        case "sorted":
-            return EArray(underlying: self.underlying.sorted())
         case "joined":
             let joined = self.underlying
                 .map { String(describing: $0) }
@@ -80,8 +78,30 @@ extension EArray: EMustacheTransformable {
             return EArray<EKeyValue>(underlying: split)
         default:
             if let keyValues = self as? EArray<EKeyValue> {
+                /// Don't throw even if the key doesn't exist.
                 return keyValues.underlying.first(named: EString(name))
             }
+            if let comparable = self as? EComparableSequence {
+                /// The underlying type is in charge of adding a diagnostic, if needed.
+                return comparable.comparableTransform(name)
+            }
+            RenderingContext.current.addOrReplaceDiagnostic(
+                .invalidTransform(
+                    transform: name,
+                    normalizedTypeName: Self.normalizedTypeName
+                )
+            )
+            return nil
+        }
+    }
+}
+
+extension EArray: EComparableSequence where Element: Comparable {
+    func comparableTransform(_ name: String) -> Any? {
+        switch name {
+        case "sorted":
+            return EArray(underlying: self.underlying.sorted())
+        default:
             RenderingContext.current.addOrReplaceDiagnostic(
                 .invalidTransform(
                     transform: name,

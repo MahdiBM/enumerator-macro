@@ -1,6 +1,6 @@
 import Mustache
 
-enum EOptional<Wrapped: Comparable> {
+enum EOptional<Wrapped> {
     case none
     case some(Wrapped)
 
@@ -75,7 +75,22 @@ extension EOptional: WithNormalizedTypeName {
     }
 }
 
-extension EOptional: Comparable {
+extension EOptional: Equatable where Wrapped: Equatable {
+    static func < (lhs: EOptional<Wrapped>, rhs: EOptional<Wrapped>) -> Bool {
+        switch (lhs, rhs) {
+        case let (.some(lhs), .some(rhs)):
+            return lhs == rhs
+        case (.some, .none):
+            return false
+        case (.none, .some):
+            return false
+        case (.none, .none):
+            return true
+        }
+    }
+}
+
+extension EOptional: Comparable where Wrapped: Comparable {
     static func < (lhs: EOptional<Wrapped>, rhs: EOptional<Wrapped>) -> Bool {
         switch (lhs, rhs) {
         case let (.some(lhs), .some(rhs)):

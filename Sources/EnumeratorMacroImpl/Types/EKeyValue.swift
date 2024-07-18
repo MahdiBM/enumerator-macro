@@ -53,10 +53,10 @@ extension EKeyValue: EMustacheTransformable {
 
 extension EKeyValue {
     struct Value {
-        fileprivate let base: EKeyValue?
+        fileprivate let base: EOptional<EKeyValue>
 
         init(base: EKeyValue?) {
-            self.base = base
+            self.base = .init(base)
         }
     }
 }
@@ -69,9 +69,17 @@ extension [EKeyValue] {
     }
 }
 
+extension [EOptional<EKeyValue>] {
+    func first(named name: EString) -> EKeyValue.Value {
+        EKeyValue.Value(
+            base: self.first(where: { $0.toOptional()?.key == .some(name) })?.toOptional()
+        )
+    }
+}
+
 extension EKeyValue.Value: CustomStringConvertible {
     var description: String {
-        String(describing: self.base?.value)
+        String(describing: self.base.map(\.value))
     }
 }
 
@@ -83,11 +91,11 @@ extension EKeyValue.Value: WithNormalizedTypeName {
 
 extension EKeyValue.Value: Comparable {
     static func < (lhs: EKeyValue.Value, rhs: EKeyValue.Value) -> Bool {
-        EOptional(lhs.base?.value) < EOptional(rhs.base?.value)
+        lhs.base.map(\.value) < rhs.base.map(\.value)
     }
 
     static func == (lhs: EKeyValue.Value, rhs: EKeyValue.Value) -> Bool {
-        lhs.base?.value == rhs.base?.value
+        lhs.base.map(\.value) == rhs.base.map(\.value)
     }
 }
 

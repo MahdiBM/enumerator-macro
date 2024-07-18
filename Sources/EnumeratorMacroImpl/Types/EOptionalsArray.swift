@@ -1,6 +1,6 @@
 import Mustache
 
-struct EOptionalsArray<Element: Comparable> {
+struct EOptionalsArray<Element> {
     fileprivate let underlying: [EOptional<Element>]
 
     init(underlying: [Element?]) {
@@ -54,8 +54,6 @@ extension EOptionalsArray: EMustacheTransformable {
             return self.underlying.count
         case "empty":
             return self.underlying.isEmpty
-        case "sorted":
-            return EOptionalsArray(underlying: self.underlying.sorted())
         case "joined":
             let joined = self.underlying
                 .enumerated()
@@ -82,6 +80,31 @@ extension EOptionalsArray: EMustacheTransformable {
                     )
                 }
             return EArray<EKeyValue>(underlying: split)
+        default:
+            if let keyValues = self as? EOptionalsArray<EKeyValue> {
+                /// Don't throw even if the key doesn't exist.
+                return keyValues.underlying.first(named: EString(name))
+            }
+            if let comparable = self as? EComparableSequence {
+                /// The underlying type is in charge of adding a diagnostic, if needed.
+                return comparable.comparableTransform(name)
+            }
+            RenderingContext.current.addOrReplaceDiagnostic(
+                .invalidTransform(
+                    transform: name,
+                    normalizedTypeName: Self.normalizedTypeName
+                )
+            )
+            return nil
+        }
+    }
+}
+
+extension EOptionalsArray: EComparableSequence where Element: Comparable {
+    func comparableTransform(_ name: String) -> Any? {
+        switch name {
+        case "sorted":
+            return EOptionalsArray(underlying: self.underlying.sorted())
         default:
             RenderingContext.current.addOrReplaceDiagnostic(
                 .invalidTransform(
