@@ -45,6 +45,9 @@ It's rather simple.
 
 ## Examples
 
+> [!NOTE]
+> The below examples will get more complicated slowly but surely.
+
 ### Derive Case Names
 ```swift
 @Enumerator("""
@@ -248,6 +251,9 @@ enum TestEnum {
 
 ###  Create Functions For Each Case
 
+<details>
+  <summary> Click to expand </summary>
+    
 ```swift
 @Enumerator("""
 {{#cases}}
@@ -295,6 +301,8 @@ enum TestEnum {
 +    }
 }
 ```
+
+</details>
 
 ### Using Comments For Code Generation
 
