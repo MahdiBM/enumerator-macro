@@ -1,7 +1,7 @@
 import SwiftSyntax
 
 final class ExcessiveTriviaRemover: SyntaxRewriter {
-    /// Remove empty lines if there are more than 1 lines stacked together.
+    /// Remove empty lines.
     override func visitAny(_ node: Syntax) -> Syntax? {
         var node = node
 
