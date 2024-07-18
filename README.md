@@ -38,6 +38,8 @@ It's rather simple.
   * Search for the `testRemovesExcessiveTrivia()` test for an example. 
 * Remove last trailing comma in a case switch, which is an error. For easier templating.
   * Search for the `testRemovesLastErroneousCommaInCaseSwitch()` test for an example.
+* Emit helpful diagnostices whenever possible.
+  * See the [Error Handling](#error-handling) section for more info.
 
 </details>
 
