@@ -4,9 +4,20 @@ struct EKeyValue {
     let key: EString
     let value: EString
 
-    init(key: EString, value: EString) {
-        self.key = key
-        self.value = value
+    init? (from string: String) {
+        let split = string.split(
+            separator: ":",
+            maxSplits: 1
+        ).map {
+            $0.trimmingCharacters(in: .whitespacesAndNewlines)
+        }.filter {
+            !$0.isEmpty
+        }
+        guard split.count > 0 else {
+            return nil
+        }
+        self.key = EString(split[0])
+        self.value = EString(split.count > 1 ? split[1] : "")
     }
 }
 

@@ -60,21 +60,7 @@ extension EArray: EMustacheTransformable {
         case "keyValues":
             let split: [EKeyValue] = self.underlying
                 .map { String(describing: $0) }
-                .compactMap { string -> EKeyValue? in
-                    let split = string.split(
-                        separator: ":",
-                        maxSplits: 1
-                    ).map {
-                        $0.trimmingCharacters(in: .whitespacesAndNewlines)
-                    }
-                    guard split.count > 0 else {
-                        return nil
-                    }
-                    return EKeyValue(
-                        key: EString(split[0]),
-                        value: EString(split.count > 1 ? split[1] : "")
-                    )
-                }
+                .compactMap(EKeyValue.init(from:))
             return EArray<EKeyValue>(underlying: split)
         default:
             if let keyValues = self as? EArray<EKeyValue> {

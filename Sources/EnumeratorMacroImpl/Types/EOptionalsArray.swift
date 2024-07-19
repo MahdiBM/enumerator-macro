@@ -64,21 +64,7 @@ extension EOptionalsArray: EMustacheTransformable {
         case "keyValues":
             let split: [EKeyValue] = self.underlying
                 .compactMap { $0.toOptional().map { String(describing: $0) } }
-                .compactMap { string -> EKeyValue? in
-                    let split = string.split(
-                        separator: ":",
-                        maxSplits: 1
-                    ).map {
-                        $0.trimmingCharacters(in: .whitespacesAndNewlines)
-                    }
-                    guard split.count == 2 else {
-                        return nil
-                    }
-                    return EKeyValue(
-                        key: EString(split[0]),
-                        value: EString(split[1])
-                    )
-                }
+                .compactMap(EKeyValue.init(from:))
             return EArray<EKeyValue>(underlying: split)
         default:
             if let keyValues = self as? EOptionalsArray<EKeyValue> {

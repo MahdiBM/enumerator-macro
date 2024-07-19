@@ -52,19 +52,7 @@ extension EString: EMustacheTransformable {
         case "bool":
             return Bool(self)
         case "keyValue":
-            let split = self.split(
-                separator: ":",
-                maxSplits: 1
-            ).map {
-                $0.trimmingCharacters(in: .whitespacesAndNewlines)
-            }
-            guard split.count > 0 else {
-                return nil
-            }
-            return EKeyValue(
-                key: EString(split[0]),
-                value: EString(split.count > 1 ? split[1] : "")
-            )
+            return EKeyValue(from: self.underlying)
         default:
             RenderingContext.current.addOrReplaceDiagnostic(
                 .invalidTransform(

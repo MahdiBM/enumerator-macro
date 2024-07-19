@@ -1,6 +1,7 @@
 import EnumeratorMacro
 import EnumeratorMacroImpl
 import SwiftSyntaxMacros
+import SwiftDiagnostics
 import SwiftSyntaxMacrosTestSupport
 import XCTest
 
@@ -360,6 +361,108 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
+    func testReadsAllowedCommentsArgument() {
+        let diagnosticNote = DiagnosticSpec(
+            id: .init(
+                domain: "EnumeratorMacro.MacroError",
+                id: "declaredHere"
+            ),
+            message: "Allowed comments declared here",
+            line: 2,
+            column: 22,
+            severity: .note
+        )
+        let keyNotFoundId = MessageID(
+            domain: "EnumeratorMacro.MacroError",
+            id: "commentKeyNotAllowed"
+        )
+        let keyNotFoundMessage = """
+        Comment key 'business_error' is not allowed by the macro declaration
+        """
+        assertMacroExpansion(
+            #"""
+            @Enumerator(
+                allowedComments: ["biz_error"],
+                """
+                package var isBusinessError: Bool {
+                    switch self {
+                    case
+                    {{#cases}}{{#bool(business_error(keyValues(comments)))}}
+                    .{{name}},
+                    {{/bool(business_error(keyValues(comments)))}}{{/cases}}
+                    :
+                        return true
+                    default:
+                        return false
+                    }
+                }
+                """
+            )
+            public enum ErrorMessage {
+                case case1 // business_error
+                case case2 // business_error: true
+                case case3 // business_error: false
+                case case4 // business_error: adfasdfdsff
+                case somethingSomething(value: String)
+                case otherCase(error: Error, isViolation: Bool) // business_error;
+            }
+            """#,
+            expandedSource: #"""
+            public enum ErrorMessage {
+                case case1 // business_error
+                case case2 // business_error: true
+                case case3 // business_error: false
+                case case4 // business_error: adfasdfdsff
+                case somethingSomething(value: String)
+                case otherCase(error: Error, isViolation: Bool) // business_error;
+            }
+            """#,
+            diagnostics: [
+                .init(
+                    id: keyNotFoundId,
+                    message: keyNotFoundMessage,
+                    line: 19,
+                    column: 10,
+                    severity: .error
+                ),
+                diagnosticNote,
+                .init(
+                    id: keyNotFoundId,
+                    message: keyNotFoundMessage,
+                    line: 20,
+                    column: 10,
+                    severity: .error
+                ),
+                diagnosticNote,
+                .init(
+                    id: keyNotFoundId,
+                    message: keyNotFoundMessage,
+                    line: 21,
+                    column: 10,
+                    severity: .error
+                ),
+                diagnosticNote,
+                .init(
+                    id: keyNotFoundId,
+                    message: keyNotFoundMessage,
+                    line: 22,
+                    column: 10,
+                    severity: .error
+                ),
+                diagnosticNote,
+                .init(
+                    id: keyNotFoundId,
+                    message: keyNotFoundMessage,
+                    line: 24,
+                    column: 10,
+                    severity: .error
+                ),
+                diagnosticNote
+            ],
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
     /// Test name is referenced in the README.
     func testRemovesExcessiveTrivia() {
         assertMacroExpansion(
@@ -552,10 +655,10 @@ final class EnumeratorMacroTests: XCTestCase {
             diagnostics: [.init(
                 id: .init(
                     domain: "EnumeratorMacro.MacroError",
-                    id: "allArgumentsMustBeNonInterpolatedStringLiterals"
+                    id: "invalidArgument"
                 ),
                 message: """
-                All arguments must be non-interpolated string literals.
+                Invalid argument received
                 """,
                 line: 1,
                 column: 13,
@@ -593,10 +696,10 @@ final class EnumeratorMacroTests: XCTestCase {
                 .init(
                     id: .init(
                         domain: "EnumeratorMacro.MacroError",
-                        id: "allArgumentsMustBeNonInterpolatedStringLiterals"
+                        id: "expectedNonInterpolatedStringLiteral"
                     ),
                     message: """
-                    All arguments must be non-interpolated string literals.
+                    Expected a non-interpolated string literal
                     """,
                     line: 4,
                     column: 10,
@@ -605,10 +708,10 @@ final class EnumeratorMacroTests: XCTestCase {
                 .init(
                     id: .init(
                         domain: "EnumeratorMacro.MacroError",
-                        id: "allArgumentsMustBeNonInterpolatedStringLiterals"
+                        id: "expectedNonInterpolatedStringLiteral"
                     ),
                     message: """
-                    All arguments must be non-interpolated string literals.
+                    Expected a non-interpolated string literal
                     """,
                     line: 6,
                     column: 5,

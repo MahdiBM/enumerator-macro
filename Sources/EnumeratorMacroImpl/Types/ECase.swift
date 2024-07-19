@@ -4,6 +4,7 @@ import Foundation
 import Mustache
 
 struct ECase {
+    let node: EnumCaseElementSyntax
     let name: EString
     let parameters: EParameters
     let comments: EArray<EString>
@@ -17,6 +18,7 @@ struct ECase {
         isFirst: Bool,
         isLast: Bool
     ) throws {
+        self.node = element
         self.index = EInt(index)
         self.isFirst = isFirst
         self.isLast = isLast
@@ -41,10 +43,12 @@ struct ECase {
             .replacingOccurrences(of: "//", with: "") /// remove comment signs
             .split(separator: ";") /// separator of parameters
             .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
         self.comments = .init(underlying: keyValueParts.map(EString.init(stringLiteral:)))
     }
 
     init(
+        node: EnumCaseElementSyntax,
         name: EString,
         parameters: EParameters,
         comments: [EString],
@@ -52,6 +56,7 @@ struct ECase {
         isFirst: Bool,
         isLast: Bool
     ) {
+        self.node = node
         self.name = name
         self.parameters = parameters
         self.comments = .init(underlying: comments)

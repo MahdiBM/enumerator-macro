@@ -28,39 +28,45 @@ extension EnumeratorMacroType: MemberMacro {
         guard let arguments = node.arguments else {
             throw MacroError.macroDeclarationHasNoArguments
         }
-        guard let exprList = arguments.as(LabeledExprListSyntax.self) else {
-            throw MacroError.unacceptableArguments
-        }
-        if exprList.isEmpty {
-            throw MacroError.expectedAtLeastOneArgument
-        }
-        let templates = exprList.compactMap {
-            element -> (template: String, syntax: StringLiteralExprSyntax)? in
-            guard let stringLiteral = element.expression.as(StringLiteralExprSyntax.self) else {
-                context.diagnose(
-                    Diagnostic(
-                        node: element.expression,
-                        message: MacroError.allArgumentsMustBeNonInterpolatedStringLiterals
-                    )
-                )
-                return nil
-            }
-            var hadBadSegment = false
-            for segment in stringLiteral.segments where !segment.is(StringSegmentSyntax.self) {
-                context.diagnose(
-                    Diagnostic(
-                        node: segment,
-                        message: MacroError.allArgumentsMustBeNonInterpolatedStringLiterals
-                    )
-                )
-                hadBadSegment = true
-            }
-            if hadBadSegment { return nil }
+        let parsedArguments = try Arguments(
+            arguments: arguments,
+            context: context
+        )
+        if let allowedComments = parsedArguments.allowedComments,
+           !allowedComments.keys.isEmpty {
 
-            let template = stringLiteral.segments.description
-            return (template, stringLiteral)
+            var containedDisallowedComment = false
+            for casee in cases {
+                for comment in casee.comments {
+                    guard let keyValue = EKeyValue(from: comment.underlying) else {
+                        continue
+                    }
+                    let key = keyValue.key.underlying
+                    guard allowedComments.keys.contains(key) else {
+                        containedDisallowedComment = true
+                        context.diagnose(
+                            Diagnostic(
+                                node: casee.node,
+                                message: MacroError.commentKeyNotAllowed(key: key)
+                            )
+                        )
+                        context.diagnose(
+                            Diagnostic(
+                                node: allowedComments.node,
+                                message: MacroError.declaredHere(name: "Allowed comments")
+                            )
+                        )
+                        continue
+                    }
+                }
+            }
+
+            if containedDisallowedComment {
+                return []
+            }
         }
-        let rendered = templates.compactMap {
+
+        let rendered = parsedArguments.templates.compactMap {
             (template, syntax) -> (rendered: String, syntax: StringLiteralExprSyntax)? in
             do {
                 let rendered: String? = try RenderingContext.$current.withValue(.init()) {

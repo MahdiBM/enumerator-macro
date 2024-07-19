@@ -306,13 +306,17 @@ enum TestEnum {
 
 ### Using Comments For Code Generation
 
+> [!NOTE]
+> You can use comments in front of each case, as values for `EnumeratorMacro` to process.   
+> Use `;` to divide the comments, and use `:` to separate the `key` and tthe possible `value`.   
+> Example: `myKey1; myKey2: value; myKey3`.   
+
 > [!TIP]
-> You can use comments in front of each case, as values for `EnumeratorMacro` to process.
-> Use `;` to divide the comments, and use `:` to separate the `key` and tthe possible `value`.
-> Example: `myKey1; myKey2: value; myKey3`.
+> You should declare a `allowedComments` argument to enforce that only certain comments are used, so you avoid typo bugs.
 
 ```swift
-@Enumerator("""
+@Enumerator(allowedComments: ["business_error", "l8n_params"],
+"""
 package var isBusinessError: Bool {
     switch self {
     case
@@ -366,7 +370,8 @@ public enum ErrorMessage {
   <summary> Click to expand </summary>
     
 ```swift
-@Enumerator("""
+@Enumerator(allowedComments: ["business_error", "l8n_params"],
+"""
 private var localizationParameters: [Any] {
     switch self {
     {{#cases}}

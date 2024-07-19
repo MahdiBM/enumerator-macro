@@ -63,6 +63,7 @@ final class TransformTests: XCTestCase {
 
     let testCases: [ECase] = [
         ECase(
+            node: .init(name: .identifier("empty")),
             name: "case1",
             parameters: .init(underlying: []),
             comments: ["bool_value"],
@@ -71,6 +72,7 @@ final class TransformTests: XCTestCase {
             isLast: false
         ),
         ECase(
+            node: .init(name: .identifier("empty")),
             name: "case2",
             parameters: .init(underlying: []),
             comments: [],
@@ -79,6 +81,7 @@ final class TransformTests: XCTestCase {
             isLast: false
         ),
         ECase(
+            node: .init(name: .identifier("empty")),
             name: "case3",
             parameters: .init(underlying: [EParameter(
                 name: "thing",
@@ -94,6 +97,7 @@ final class TransformTests: XCTestCase {
             isLast: false
         ),
         ECase(
+            node: .init(name: .identifier("empty")),
             name: "case4",
             parameters: .init(underlying: [
                 EParameter(
