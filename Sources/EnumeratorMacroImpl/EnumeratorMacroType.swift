@@ -32,6 +32,8 @@ extension EnumeratorMacroType: MemberMacro {
             arguments: arguments,
             context: context
         )
+
+        /// Validate comments
         if let allowedComments = parsedArguments.allowedComments,
            !allowedComments.keys.isEmpty {
 

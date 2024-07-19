@@ -5,7 +5,7 @@ enum MacroError: Error, CustomStringConvertible {
     case isNotEnum
     case macroDeclarationHasNoArguments
     case unacceptableArguments
-    case expectedAtLeastOneArgument
+    case expectedAtLeastOneValidArgument
     case invalidArgument
     case expectedNonInterpolatedStringLiteral
     case renderedSyntaxContainsErrors(String)
@@ -24,8 +24,8 @@ enum MacroError: Error, CustomStringConvertible {
             "macroDeclarationHasNoArguments"
         case .unacceptableArguments:
             "unacceptableArguments"
-        case .expectedAtLeastOneArgument:
-            "expectedAtLeastOneArgument"
+        case .expectedAtLeastOneValidArgument:
+            "expectedAtLeastOneValidArgument"
         case .invalidArgument:
             "invalidArgument"
         case .expectedNonInterpolatedStringLiteral:
@@ -55,8 +55,8 @@ enum MacroError: Error, CustomStringConvertible {
             "The macro declaration needs to have at least 1 String-Literal argument"
         case .unacceptableArguments:
             "The arguments passed to the macro were unacceptable"
-        case .expectedAtLeastOneArgument:
-            "At least one argument of type StaticString is required"
+        case .expectedAtLeastOneValidArgument:
+            "At least one valid argument is required"
         case .invalidArgument:
             "Invalid argument received"
         case .expectedNonInterpolatedStringLiteral:

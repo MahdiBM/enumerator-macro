@@ -20,7 +20,7 @@ struct Arguments {
             throw MacroError.unacceptableArguments
         }
         if exprList.isEmpty {
-            throw MacroError.expectedAtLeastOneArgument
+            throw MacroError.expectedAtLeastOneValidArgument
         }
         for element in exprList {
             switch element.expression.kind {
