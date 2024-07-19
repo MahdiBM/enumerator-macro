@@ -63,46 +63,60 @@ final class TransformTests: XCTestCase {
 
     let testCases: [ECase] = [
         ECase(
-            index: 0,
             name: "case1",
             parameters: .init(underlying: []),
-            comments: ["bool_value"]
+            comments: ["bool_value"],
+            index: 0,
+            isFirst: true,
+            isLast: false
         ),
         ECase(
-            index: 1,
             name: "case2",
             parameters: .init(underlying: []),
-            comments: []
+            comments: [],
+            index: 1,
+            isFirst: false,
+            isLast: false
         ),
         ECase(
-            index: 2,
             name: "case3",
             parameters: .init(underlying: [EParameter(
-                index: EInt(0),
                 name: "thing",
                 type: "String",
-                isOptional: false
+                isOptional: false,
+                index: 0,
+                isFirst: true,
+                isLast: true
             )]),
-            comments: []
+            comments: [],
+            index: 2,
+            isFirst: false,
+            isLast: false
         ),
         ECase(
-            index: 3,
             name: "case4",
             parameters: .init(underlying: [
                 EParameter(
-                    index: EInt(0),
                     name: "error",
                     type: "Error",
-                    isOptional: false
+                    isOptional: false,
+                    index: 0,
+                    isFirst: true,
+                    isLast: false
                 ),
                 EParameter(
-                    index: EInt(1),
                     name: "critical",
                     type: "Bool",
-                    isOptional: false
+                    isOptional: false,
+                    index: 1,
+                    isFirst: false,
+                    isLast: true
                 )
             ]),
-            comments: ["bool_value", "custom_params:"]
+            comments: ["bool_value", "custom_params:"],
+            index: 3,
+            isFirst: false,
+            isLast: true
         )
     ]
 }

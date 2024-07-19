@@ -82,12 +82,14 @@ final class EParameterTests: XCTestCase {
         type: String
     ) throws -> EParameter {
         EParameter(
-            index: .random(in: .min ... .max),
-            parameter: EnumCaseParameterSyntax(
+            from: EnumCaseParameterSyntax(
                 firstName: firstName,
                 secondName: secondName,
                 type: try makeTypeSyntax(for: type)
-            )
+            ),
+            index: .random(in: .min ... .max),
+            isFirst: .random(),
+            isLast: .random()
         )
     }
 

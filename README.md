@@ -436,26 +436,32 @@ Here's a sample context object:
 {
     "cases": [
         {
-            "index": 0,
             "name": "somethingWentWrong",
             "parameters": [
                 {
-                    "index": 0,
                     "name": "error",
                     "type": "Error?",
-                    "isOptional": true
+                    "isOptional": true,
+                    "index": 0,
+                    "isFirst": true,
+                    "isLast": false
                 },
                 {
-                    "index": 1,
                     "name": "statusCode",
                     "type": "String",
-                    "isOptional": false
+                    "isOptional": false,
+                    "index": 1,
+                    "isFirst": false,
+                    "isLast": true
                 }
             ],
             "comments": [
                 "business_error",
                 "l8n_params: error as Any, statusCode"
-            ]
+            ],
+            "index": 0,
+            "isFirst": true,
+            "isLast": true
         }
     ]
 }

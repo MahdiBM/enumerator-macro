@@ -5,9 +5,19 @@ struct EParameter {
     let name: EString
     let type: EString
     let isOptional: Bool
+    let isFirst: Bool
+    let isLast: Bool
 
-    init(index: Int, parameter: EnumCaseParameterSyntax) {
+    init(
+        from parameter: EnumCaseParameterSyntax,
+        index: Int,
+        isFirst: Bool,
+        isLast: Bool
+    ) {
         self.index = EInt(index)
+        self.isFirst = isFirst
+        self.isLast = isLast
+
         let parameterName = (parameter.secondName ?? parameter.firstName)?.trimmedDescription
         if let parameterName,
            !parameterName.isEmpty {
@@ -19,11 +29,20 @@ struct EParameter {
         self.isOptional = parameter.type.isOptional
     }
 
-    init(index: EInt, name: EString, type: EString, isOptional: Bool) {
-        self.index = index
+    init(
+        name: EString,
+        type: EString,
+        isOptional: Bool,
+        index: Int,
+        isFirst: Bool,
+        isLast: Bool
+    ) {
         self.name = name
         self.type = type
         self.isOptional = isOptional
+        self.index = EInt(index)
+        self.isFirst = isFirst
+        self.isLast = isLast
     }
 }
 

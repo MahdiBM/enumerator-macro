@@ -9,9 +9,17 @@ struct ECases {
     }
 
     init(elements: [EnumCaseElementSyntax]) throws {
+        let lastIdx = elements.count - 1
         self.underlying = .init(
-            underlying: try elements.enumerated().map { idx, element in
-                try ECase(index: idx, from: element)
+            underlying: try elements.enumerated().map {
+                idx,
+                element in
+                try ECase(
+                    from: element,
+                    index: idx,
+                    isFirst: idx == 0,
+                    isLast: idx == lastIdx
+                )
             }
         )
     }
