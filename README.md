@@ -315,21 +315,23 @@ enum TestEnum {
 > You should declare a `allowedComments` argument to enforce that only certain comments are used, so you avoid typo bugs.
 
 ```swift
-@Enumerator(allowedComments: ["business_error", "l8n_params"],
-"""
-package var isBusinessError: Bool {
-    switch self {
-    case
-    {{#cases}}{{#bool(business_error(keyValues(comments)))}}
-    .{{name}},
-    {{/bool(business_error(keyValues(comments)))}}{{/cases}}
-    :
-        return true
-    default:
-        return false
+@Enumerator(
+    allowedComments: ["business_error", "l8n_params"],
+    """
+    package var isBusinessError: Bool {
+        switch self {
+        case
+        {{#cases}}{{#bool(business_error(keyValues(comments)))}}
+        .{{name}},
+        {{/bool(business_error(keyValues(comments)))}}{{/cases}}
+        :
+            return true
+        default:
+            return false
+        }
     }
-}
-""")
+    """
+)
 public enum ErrorMessage {
     case case1 // business_error
     case case2 // business_error: true
@@ -370,37 +372,39 @@ public enum ErrorMessage {
   <summary> Click to expand </summary>
     
 ```swift
-@Enumerator(allowedComments: ["business_error", "l8n_params"],
-"""
-private var localizationParameters: [Any] {
-    switch self {
-    {{#cases}}
-{{! Only create a case for enum cases that have any parameters at all: }}
-    {{^isEmpty(parameters)}}
-
-{{! Create a case for those who have non-empty 'l8n_params' comment: }}
-    {{^isEmpty(l8n_params(keyValues(comments)))}}
-    case let .{{name}}{{withParens(joined(names(parameters)))}}:
-        [{{l8n_params(keyValues(comments))}}]
-    {{/isEmpty(l8n_params(keyValues(comments)))}}
-
-{{! Create a case for those who don't have 'l8n_params' comment at all: }}
-    {{^exists(l8n_params(keyValues(comments)))}}
-    case let .{{name}}{{withParens(joined(names(parameters)))}}:
-        [
-            {{#parameters}}
-            {{name}}{{#isOptional}} as Any{{/isOptional}},
-            {{/parameters}}
-        ]
-    {{/exists(l8n_params(keyValues(comments)))}}
-
-    {{/isEmpty(parameters)}}
-    {{/cases}}
-    default:
-        []
+@Enumerator(
+    allowedComments: ["business_error", "l8n_params"],
+    """
+    private var localizationParameters: [Any] {
+        switch self {
+        {{#cases}}
+    {{! Only create a case for enum cases that have any parameters at all: }}
+        {{^isEmpty(parameters)}}
+    
+    {{! Create a case for those who have non-empty 'l8n_params' comment: }}
+        {{^isEmpty(l8n_params(keyValues(comments)))}}
+        case let .{{name}}{{withParens(joined(names(parameters)))}}:
+            [{{l8n_params(keyValues(comments))}}]
+        {{/isEmpty(l8n_params(keyValues(comments)))}}
+    
+    {{! Create a case for those who don't have 'l8n_params' comment at all: }}
+        {{^exists(l8n_params(keyValues(comments)))}}
+        case let .{{name}}{{withParens(joined(names(parameters)))}}:
+            [
+                {{#parameters}}
+                {{name}}{{#isOptional}} as Any{{/isOptional}},
+                {{/parameters}}
+            ]
+        {{/exists(l8n_params(keyValues(comments)))}}
+    
+        {{/isEmpty(parameters)}}
+        {{/cases}}
+        default:
+            []
+        }
     }
-}
-""")
+    """
+)
 public enum ErrorMessage {
     case case1 // business_error
     case case2 // business_error: true

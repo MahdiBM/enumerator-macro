@@ -383,7 +383,7 @@ final class EnumeratorMacroTests: XCTestCase {
             #"""
             @Enumerator(
                 allowedComments: ["biz_error"],
-                """
+                templates: """
                 package var isBusinessError: Bool {
                     switch self {
                     case
