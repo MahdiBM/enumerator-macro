@@ -1,5 +1,6 @@
 import Mustache
 import SwiftSyntax
+import SwiftSyntaxMacros
 
 struct ECases {
     fileprivate let underlying: EArray<ECase>
@@ -22,6 +23,29 @@ struct ECases {
                 )
             }
         )
+    }
+
+    func checkCommentsOnlyContainAllowedKeys(
+        arguments: Arguments,
+        context: some MacroExpansionContext
+    ) -> Bool {
+        guard let allowedComments = arguments.allowedComments,
+              !allowedComments.keys.isEmpty else {
+            return true
+        }
+        var allGood = true
+        for casee in self.underlying {
+            for comment in casee.comments {
+                if !comment.checkKeyIsAllowedInComments(
+                    allowedComments: allowedComments,
+                    node: casee.node,
+                    context: context
+                ) {
+                    allGood = false
+                }
+            }
+        }
+        return allGood
     }
 }
 

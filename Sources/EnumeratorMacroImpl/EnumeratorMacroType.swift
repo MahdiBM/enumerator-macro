@@ -33,55 +33,34 @@ extension EnumeratorMacroType: MemberMacro {
             context: context
         )
 
-        /// Validate comments
-        if let allowedComments = parsedArguments.allowedComments,
-           !allowedComments.keys.isEmpty {
-
-            var containedDisallowedComment = false
-            for casee in cases {
-                for comment in casee.comments {
-                    guard let keyValue = EKeyValue(from: comment.underlying) else {
-                        continue
-                    }
-                    let key = keyValue.key.underlying
-                    guard allowedComments.keys.contains(key) else {
-                        containedDisallowedComment = true
-                        context.diagnose(
-                            Diagnostic(
-                                node: casee.node,
-                                message: MacroError.commentKeyNotAllowed(key: key)
-                            )
-                        )
-                        context.diagnose(
-                            Diagnostic(
-                                node: allowedComments.node,
-                                message: MacroError.declaredHere(name: "Allowed comments")
-                            )
-                        )
-                        continue
-                    }
-                }
-            }
-
-            if containedDisallowedComment {
-                return []
-            }
+        guard cases.checkCommentsOnlyContainAllowedKeys(
+            arguments: parsedArguments,
+            context: context
+        ) else {
+            return []
         }
 
         let rendered = parsedArguments.templates.compactMap {
             (template, syntax) -> (rendered: String, syntax: StringLiteralExprSyntax)? in
+            let renderingContext = RenderingContext(
+                node: Syntax(syntax),
+                context: context,
+                allowedComments: parsedArguments.allowedComments
+            )
             do {
-                let rendered: String? = try RenderingContext.$current.withValue(.init()) {
+                let rendered: String? = try RenderingContext.$current.withValue(renderingContext) {
                     let result = try MustacheTemplate(
                         string: "{{%CONTENT_TYPE:TEXT}}\n" + template
                     ).render([
                         "cases": cases
                     ])
-                    if let diagnostic = RenderingContext.current.diagnostic {
+                    if let diagnostic = renderingContext.diagnostic {
                         context.addDiagnostics(
                             from: diagnostic,
                             node: syntax
                         )
+                        return nil
+                    } else if renderingContext.threwAllowedCommentsError {
                         return nil
                     } else {
                         return result
@@ -92,6 +71,10 @@ extension EnumeratorMacroType: MemberMacro {
                 }
                 return (rendered, syntax)
             } catch {
+                if renderingContext.threwAllowedCommentsError {
+                    return nil
+                }
+
                 let message: MacroError
                 let errorSyntax: SyntaxProtocol
                 if let parserError = error as? MustacheTemplate.ParserError {

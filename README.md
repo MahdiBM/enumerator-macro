@@ -321,9 +321,9 @@ enum TestEnum {
     package var isBusinessError: Bool {
         switch self {
         case
-        {{#cases}}{{#bool(business_error(keyValues(comments)))}}
+        {{#cases}}{{#bool(business_error(comments))}}
         .{{name}},
-        {{/bool(business_error(keyValues(comments)))}}{{/cases}}
+        {{/bool(business_error(comments))}}{{/cases}}
         :
             return true
         default:
@@ -382,20 +382,20 @@ public enum ErrorMessage {
         {{^isEmpty(parameters)}}
     
     {{! Create a case for those who have non-empty 'l8n_params' comment: }}
-        {{^isEmpty(l8n_params(keyValues(comments)))}}
+        {{^isEmpty(l8n_params(comments))}}
         case let .{{name}}{{withParens(joined(names(parameters)))}}:
-            [{{l8n_params(keyValues(comments))}}]
-        {{/isEmpty(l8n_params(keyValues(comments)))}}
+            [{{l8n_params(comments)}}]
+        {{/isEmpty(l8n_params(comments))}}
     
     {{! Create a case for those who don't have 'l8n_params' comment at all: }}
-        {{^exists(l8n_params(keyValues(comments)))}}
+        {{^exists(l8n_params(comments))}}
         case let .{{name}}{{withParens(joined(names(parameters)))}}:
             [
                 {{#parameters}}
                 {{name}}{{#isOptional}} as Any{{/isOptional}},
                 {{/parameters}}
             ]
-        {{/exists(l8n_params(keyValues(comments)))}}
+        {{/exists(l8n_params(comments))}}
     
         {{/isEmpty(parameters)}}
         {{/cases}}

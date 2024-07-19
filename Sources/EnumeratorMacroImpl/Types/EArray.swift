@@ -46,7 +46,7 @@ extension EArray: EMustacheTransformable {
         case "last":
             return self.underlying.last
         case "reversed":
-            return EOptionalsArray(underlying: self.reversed().map { $0 })
+            return EArray(underlying: self.reversed().map { $0 })
         case "count":
             return self.underlying.count
         case "isEmpty":
@@ -64,6 +64,7 @@ extension EArray: EMustacheTransformable {
             return EArray<EKeyValue>(underlying: split)
         default:
             if let keyValues = self as? EArray<EKeyValue> {
+                
                 /// Don't throw even if the key doesn't exist.
                 return EOptional(
                     keyValues.underlying.first(where: { $0.key.underlying == name })?.value

@@ -72,9 +72,9 @@ enum MacroError: Error, CustomStringConvertible {
         case let .invalidTransform(transform, normalizedTypeName):
             "'\(normalizedTypeName)' doesn't have a function called '\(transform)'"
         case let .commentKeyNotAllowed(key):
-            "Comment key '\(key)' is not allowed by the macro declaration"
+            "Comment key '\(key)' is not allowed by the 'allowedComments' of the macro declaration"
         case let .declaredHere(name):
-            "\(name) declared here"
+            "\(name) declared here:"
         }
     }
 }

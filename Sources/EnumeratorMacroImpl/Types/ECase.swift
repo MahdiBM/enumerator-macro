@@ -7,7 +7,7 @@ struct ECase {
     let node: EnumCaseElementSyntax
     let name: EString
     let parameters: EParameters
-    let comments: EArray<EString>
+    let comments: EComments
     let index: EInt
     let isFirst: Bool
     let isLast: Bool
@@ -37,21 +37,24 @@ struct ECase {
             }
         )
 
-        let keyValueParts = element.trailingTrivia
+        let keyValues: [EKeyValue] = element.trailingTrivia
             .description
             .replacingOccurrences(of: "///", with: "") /// remove comment signs
             .replacingOccurrences(of: "//", with: "") /// remove comment signs
             .split(separator: ";") /// separator of parameters
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }
-        self.comments = .init(underlying: keyValueParts.map(EString.init(stringLiteral:)))
+            .compactMap {
+                EKeyValue(from: $0)
+            }
+        self.comments = .init(underlying: keyValues)
     }
 
     init(
         node: EnumCaseElementSyntax,
         name: EString,
         parameters: EParameters,
-        comments: [EString],
+        comments: [EKeyValue],
         index: Int,
         isFirst: Bool,
         isLast: Bool

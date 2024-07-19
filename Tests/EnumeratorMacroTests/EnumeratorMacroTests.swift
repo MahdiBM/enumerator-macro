@@ -250,9 +250,9 @@ final class EnumeratorMacroTests: XCTestCase {
             package var isBusinessError: Bool {
                 switch self {
                 case
-                {{#cases}}{{#bool(business_error(keyValues(comments)))}}
+                {{#cases}}{{#bool(business_error(comments))}}
                 .{{name}},
-                {{/bool(business_error(keyValues(comments)))}}{{/cases}}
+                {{/bool(business_error(comments))}}{{/cases}}
                 :
                     return true
                 default:
@@ -307,20 +307,20 @@ final class EnumeratorMacroTests: XCTestCase {
                 {{^isEmpty(parameters)}}
 
             {{! Create a case for those who have non-empty 'l8n_params' comment: }}
-                {{^isEmpty(l8n_params(keyValues(comments)))}}
+                {{^isEmpty(l8n_params(comments))}}
                 case let .{{name}}{{withParens(joined(names(parameters)))}}:
-                    [{{l8n_params(keyValues(comments))}}]
-                {{/isEmpty(l8n_params(keyValues(comments)))}}
+                    [{{l8n_params(comments)}}]
+                {{/isEmpty(l8n_params(comments))}}
 
             {{! Create a case for those who don't have 'l8n_params' comment at all: }}
-                {{^exists(l8n_params(keyValues(comments)))}}
+                {{^exists(l8n_params(comments))}}
                 case let .{{name}}{{withParens(joined(names(parameters)))}}:
                     [
                         {{#parameters}}
                         {{name}}{{#isOptional}} as Any{{/isOptional}},
                         {{/parameters}}
                     ]
-                {{/exists(l8n_params(keyValues(comments)))}}
+                {{/exists(l8n_params(comments))}}
 
                 {{/isEmpty(parameters)}}
                 {{/cases}}
@@ -361,13 +361,13 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testReadsAllowedCommentsArgument() {
+    func testEnforcesAllowedCommentsArgument() {
         let diagnosticNote = DiagnosticSpec(
             id: .init(
                 domain: "EnumeratorMacro.MacroError",
                 id: "declaredHere"
             ),
-            message: "Allowed comments declared here",
+            message: "'allowedComments' declared here:",
             line: 2,
             column: 22,
             severity: .note
@@ -377,7 +377,7 @@ final class EnumeratorMacroTests: XCTestCase {
             id: "commentKeyNotAllowed"
         )
         let keyNotFoundMessage = """
-        Comment key 'business_error' is not allowed by the macro declaration
+        Comment key 'business_error' is not allowed by the 'allowedComments' of the macro declaration
         """
         assertMacroExpansion(
             #"""
@@ -387,9 +387,9 @@ final class EnumeratorMacroTests: XCTestCase {
                 package var isBusinessError: Bool {
                     switch self {
                     case
-                    {{#cases}}{{#bool(business_error(keyValues(comments)))}}
+                    {{#cases}}{{#bool(business_error(comments))}}
                     .{{name}},
-                    {{/bool(business_error(keyValues(comments)))}}{{/cases}}
+                    {{/bool(business_error(comments))}}{{/cases}}
                     :
                         return true
                     default:
@@ -455,6 +455,116 @@ final class EnumeratorMacroTests: XCTestCase {
                     message: keyNotFoundMessage,
                     line: 24,
                     column: 10,
+                    severity: .error
+                ),
+                diagnosticNote
+            ],
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
+    func testEnforcesAllowedCommentsArgumentInTemplate() {
+        let diagnosticNote = DiagnosticSpec(
+            id: .init(
+                domain: "EnumeratorMacro.MacroError",
+                id: "declaredHere"
+            ),
+            message: "'allowedComments' declared here:",
+            line: 2,
+            column: 22,
+            severity: .note
+        )
+        let keyNotFoundId = MessageID(
+            domain: "EnumeratorMacro.MacroError",
+            id: "commentKeyNotAllowed"
+        )
+        let keyNotFoundMessage = """
+        Comment key 'biz_error' is not allowed by the 'allowedComments' of the macro declaration
+        """
+        assertMacroExpansion(
+            #"""
+            @Enumerator(
+                allowedComments: ["business_error"],
+                templates: """
+                package var isBusinessError: Bool {
+                    switch self {
+                    case
+                    {{#cases}}{{#bool(biz_error(comments))}}
+                    .{{name}},
+                    {{/bool(biz_error(comments))}}{{/cases}}
+                    :
+                        return true
+                    default:
+                        return false
+                    }
+                }
+                """
+            )
+            public enum ErrorMessage {
+                case case1 // business_error
+                case case2 // business_error: true
+                case case3 // business_error: false
+                case case4 // business_error: adfasdfdsff
+                case somethingSomething(value: String)
+                case otherCase(error: Error, isViolation: Bool) // business_error;
+            }
+            """#,
+            expandedSource: #"""
+            public enum ErrorMessage {
+                case case1 // business_error
+                case case2 // business_error: true
+                case case3 // business_error: false
+                case case4 // business_error: adfasdfdsff
+                case somethingSomething(value: String)
+                case otherCase(error: Error, isViolation: Bool) // business_error;
+            }
+            """#,
+            diagnostics: [
+                .init(
+                    id: keyNotFoundId,
+                    message: keyNotFoundMessage,
+                    line: 3,
+                    column: 16,
+                    severity: .error
+                ),
+                diagnosticNote,
+                .init(
+                    id: keyNotFoundId,
+                    message: keyNotFoundMessage,
+                    line: 3,
+                    column: 16,
+                    severity: .error
+                ),
+                diagnosticNote,
+                .init(
+                    id: keyNotFoundId,
+                    message: keyNotFoundMessage,
+                    line: 3,
+                    column: 16,
+                    severity: .error
+                ),
+                diagnosticNote,
+                .init(
+                    id: keyNotFoundId,
+                    message: keyNotFoundMessage,
+                    line: 3,
+                    column: 16,
+                    severity: .error
+                ),
+                diagnosticNote,
+                .init(
+                    id: keyNotFoundId,
+                    message: keyNotFoundMessage,
+                    line: 3,
+                    column: 16,
+                    severity: .error
+                ),
+                diagnosticNote,
+                .init(
+                    id: keyNotFoundId,
+                    message: keyNotFoundMessage,
+                    line: 3,
+                    column: 16,
                     severity: .error
                 ),
                 diagnosticNote

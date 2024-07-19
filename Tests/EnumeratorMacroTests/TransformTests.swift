@@ -5,7 +5,7 @@ import XCTest
 final class TransformTests: XCTestCase {
     func testCommentsValueIsEmptyBecauseDoesNotExist() throws {
         do {
-            let template = "{{isEmpty(custom_params(keyValues(comments)))}}"
+            let template = "{{isEmpty(custom_params(comments))}}"
             let render = try MustacheTemplate(
                 string: "{{%CONTENT_TYPE:TEXT}}\n" + template
             ).render(
@@ -15,7 +15,7 @@ final class TransformTests: XCTestCase {
         }
 
         do {
-            let template = "{{exists(custom_params(keyValues(comments)))}}"
+            let template = "{{exists(custom_params(comments))}}"
             let render = try MustacheTemplate(
                 string: "{{%CONTENT_TYPE:TEXT}}\n" + template
             ).render(
@@ -27,7 +27,7 @@ final class TransformTests: XCTestCase {
 
     func testCommentsValueIsEmptyButExists() throws {
         do {
-            let template = "{{isEmpty(custom_params(keyValues(comments)))}}"
+            let template = "{{isEmpty(custom_params(comments))}}"
             let render = try MustacheTemplate(
                 string: "{{%CONTENT_TYPE:TEXT}}\n" + template
             ).render(
@@ -37,7 +37,7 @@ final class TransformTests: XCTestCase {
         }
 
         do {
-            let template = "{{exists(custom_params(keyValues(comments)))}}"
+            let template = "{{exists(custom_params(comments))}}"
             let render = try MustacheTemplate(
                 string: "{{%CONTENT_TYPE:TEXT}}\n" + template
             ).render(
@@ -49,9 +49,9 @@ final class TransformTests: XCTestCase {
 
     func testCommentsValueConditionalSection() throws {
         let template = """
-        {{^exists(custom_params(keyValues(comments)))}}
+        {{^exists(custom_params(comments))}}
         thing!
-        {{/exists(custom_params(keyValues(comments)))}}
+        {{/exists(custom_params(comments))}}
         """
         let render = try MustacheTemplate(
             string: "{{%CONTENT_TYPE:TEXT}}\n" + template
@@ -66,7 +66,7 @@ final class TransformTests: XCTestCase {
             node: .init(name: .identifier("empty")),
             name: "case1",
             parameters: .init(underlying: []),
-            comments: ["bool_value"],
+            comments: [.init(from: "bool_value")!],
             index: 0,
             isFirst: true,
             isLast: false
@@ -117,7 +117,10 @@ final class TransformTests: XCTestCase {
                     isLast: true
                 )
             ]),
-            comments: ["bool_value", "custom_params:"],
+            comments: [
+                .init(from: "bool_value")!,
+                .init(from: "custom_params:")!
+            ],
             index: 3,
             isFirst: false,
             isLast: true

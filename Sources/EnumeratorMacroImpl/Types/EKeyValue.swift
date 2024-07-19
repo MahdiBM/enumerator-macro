@@ -1,3 +1,6 @@
+import SwiftSyntax
+import SwiftSyntaxMacros
+import SwiftDiagnostics
 import Mustache
 
 struct EKeyValue {
@@ -18,6 +21,29 @@ struct EKeyValue {
         }
         self.key = EString(split[0])
         self.value = EString(split.count > 1 ? split[1] : "")
+    }
+
+    func checkKeyIsAllowedInComments(
+        allowedComments: Arguments.AllowedComments,
+        node: EnumCaseElementSyntax,
+        context: some MacroExpansionContext
+    ) -> Bool {
+        let key = self.key.underlying
+        if !allowedComments.keys.contains(key) {
+            context.addDiagnostics(
+                from: MacroError.commentKeyNotAllowed(key: key),
+                node: node
+            )
+            context.diagnose(
+                Diagnostic(
+                    node: allowedComments.node,
+                    message: MacroError.declaredHere(name: "'allowedComments'")
+                )
+            )
+            return false
+        } else {
+            return true
+        }
     }
 }
 
