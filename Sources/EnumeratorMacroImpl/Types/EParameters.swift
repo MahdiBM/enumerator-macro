@@ -36,11 +36,7 @@ extension EParameters: EMustacheTransformable {
     func transform(_ name: String) -> Any? {
         switch name {
         case "names":
-            let names = self
-                .enumerated()
-                .map { idx, element in
-                    element.name ?? "param\(idx + 1)"
-                }
+            let names = self.map(\.name)
             let array = EArray(underlying: names)
             return array
         case "types":
@@ -48,22 +44,18 @@ extension EParameters: EMustacheTransformable {
             let array = EArray(underlying: types)
             return array
         case "namesAndTypes":
-            let namesAndTypes = self
-                .enumerated()
-                .map { idx, element in
-                    (element.name ?? "param\(idx + 1)") + ": " + element.type
-                }
+            let namesAndTypes = self.map { element in
+                element.name + ": " + element.type
+            }
             let array = EArray(underlying: namesAndTypes)
             return array
         case "tupleValue":
             if self.underlying.underlying.count == 1 {
                 return EArray(underlying: [underlying.underlying[0].type])
             } else {
-                let namesAndTypes = self
-                    .enumerated()
-                    .map { idx, element in
-                        (element.name ?? "param\(idx + 1)") + ": " + element.type
-                    }
+                let namesAndTypes = self.map { element in
+                    element.name + ": " + element.type
+                }
                 let array = EArray(underlying: namesAndTypes)
                 return array
             }
