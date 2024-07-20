@@ -1,3 +1,4 @@
+import SwiftDiagnostics
 import Mustache
 
 struct EOptionalsArray<Element> {
@@ -9,11 +10,6 @@ struct EOptionalsArray<Element> {
 
     init(underlying: [EOptional<Element>]) {
         self.underlying = underlying
-    }
-
-    @available(*, unavailable, message: "Unwrap the optionals-array first")
-    init(underlying: EOptionalsArray<Element>) {
-        fatalError()
     }
 }
 
@@ -62,6 +58,15 @@ extension EOptionalsArray: EMustacheTransformable {
             let string = EString(joined)
             return string
         case "keyValues":
+            if Self.self is EOptionalsArray<EKeyValue>.Type {
+                RenderingContext.current.context.diagnose(
+                    Diagnostic(
+                        node: RenderingContext.current.node,
+                        message: MacroError.redundantKeyValuesFunctionCall
+                    )
+                )
+                return self
+            }
             let split: [EKeyValue] = self.underlying
                 .compactMap { $0.toOptional().map { String(describing: $0) } }
                 .compactMap(EKeyValue.init(from:))

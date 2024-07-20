@@ -1,16 +1,11 @@
+import SwiftDiagnostics
 import Mustache
-import Foundation
 
 struct EArray<Element> {
     let underlying: [Element]
 
     init(underlying: [Element]) {
         self.underlying = underlying
-    }
-
-    @available(*, unavailable, message: "Unwrap the array first")
-    init(underlying: EArray<Element>) {
-        fatalError()
     }
 }
 
@@ -58,6 +53,15 @@ extension EArray: EMustacheTransformable {
             let string = EString(joined)
             return string
         case "keyValues":
+            if Self.self is EArray<EKeyValue>.Type {
+                RenderingContext.current.context.diagnose(
+                    Diagnostic(
+                        node: RenderingContext.current.node,
+                        message: MacroError.redundantKeyValuesFunctionCall
+                    )
+                )
+                return self
+            }
             let split: [EKeyValue] = self.underlying
                 .map { String(describing: $0) }
                 .compactMap(EKeyValue.init(from:))

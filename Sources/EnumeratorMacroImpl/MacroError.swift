@@ -15,6 +15,7 @@ enum MacroError: Error, CustomStringConvertible {
     case invalidTransform(transform: String, normalizedTypeName: String)
     case commentKeyNotAllowed(key: String)
     case declaredHere(name: String)
+    case redundantKeyValuesFunctionCall
 
     var caseName: String {
         switch self {
@@ -44,6 +45,8 @@ enum MacroError: Error, CustomStringConvertible {
             "commentKeyNotAllowed"
         case .declaredHere:
             "declaredHere"
+        case .redundantKeyValuesFunctionCall:
+            "redundantKeyValuesFunctionCall"
         }
     }
 
@@ -75,6 +78,8 @@ enum MacroError: Error, CustomStringConvertible {
             "Comment key '\(key)' is not allowed by the 'allowedComments' of the macro declaration"
         case let .declaredHere(name):
             "\(name) declared here:"
+        case .redundantKeyValuesFunctionCall:
+            "Redundant 'keyValues' function used. The array is already of type '\(EArray<EKeyValue>.self)'"
         }
     }
 }

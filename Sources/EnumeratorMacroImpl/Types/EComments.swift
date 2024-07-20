@@ -60,10 +60,13 @@ extension EComments: EMustacheTransformable {
         case "sorted":
             return EComments(underlying: self.underlying.underlying.sorted())
         case "keyValues":
-            let split: [EKeyValue] = self.underlying.underlying
-                .map { String(describing: $0) }
-                .compactMap(EKeyValue.init(from:))
-            return EComments(underlying: split)
+            RenderingContext.current.context.diagnose(
+                Diagnostic(
+                    node: RenderingContext.current.node,
+                    message: MacroError.redundantKeyValuesFunctionCall
+                )
+            )
+            return self
         default:
             if let context = RenderingContext.current,
                let allowedComments = context.allowedComments,

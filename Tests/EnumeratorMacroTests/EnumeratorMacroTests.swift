@@ -573,6 +573,41 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
+    func testRejectsDoubleKeyValueTransform() {
+        let diagnostic = DiagnosticSpec(
+            id: .init(
+                domain: "EnumeratorMacro.MacroError",
+                id: "redundantKeyValuesFunctionCall"
+            ),
+            message: "Redundant 'keyValues' function used. The array is already of type 'EArray<EKeyValue>'",
+            line: 1,
+            column: 13,
+            severity: .error
+        )
+        assertMacroExpansion(
+            #"""
+            @Enumerator("""
+            /// {{#cases}} {{keyValues(comments)}} {{/cases}}
+            """)
+            public enum ErrorMessage {
+                case case1 // business_error
+                case case2 // business_error: true
+            }
+            """#,
+            expandedSource: #"""
+            public enum ErrorMessage {
+                case case1 // business_error
+                case case2 // business_error: true
+            }
+            """#,
+            diagnostics: [
+                diagnostic,
+                diagnostic
+            ],
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
     /// Test name is referenced in the README.
     func testRemovesExcessiveTrivia() {
         assertMacroExpansion(

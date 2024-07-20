@@ -25,7 +25,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/hummingbird-project/swift-mustache",
-            from: "2.0.0-beta.2"
+            from: "2.0.0-beta.3"
         ),
     ],
     targets: [
