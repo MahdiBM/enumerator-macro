@@ -33,15 +33,15 @@ extension EInt: Comparable {
 extension EInt: EMustacheTransformable {
     func transform(_ name: String) -> Any? {
         switch name {
-        case "equalZero":
+        case "equalsZero":
             return self.underlying == 0
         case "plusOne":
             return EInt(self.underlying + 1)
         case "minusOne":
             return EInt(self.underlying - 1)
-        case "even":
+        case "isEven":
             return (self.underlying & 1) == 0
-        case "odd":
+        case "isOdd":
             return (self.underlying & 1) == 1
         default:
             RenderingContext.current.addOrReplaceDiagnostic(
