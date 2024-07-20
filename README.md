@@ -308,7 +308,7 @@ enum TestEnum {
 
 > [!NOTE]
 > You can use comments in front of each case, as values for `EnumeratorMacro` to process.   
-> Use `;` to divide the comments, and use `:` to separate the `key` and tthe possible `value`.   
+> Use `;` to divide the comments, and use `:` to separate the `key` and the possible `value`.   
 > Example: `myKey1; myKey2: value; myKey3`.   
 
 > [!TIP]
@@ -465,8 +465,14 @@ Here's a sample context object:
                 }
             ],
             "comments": [
-                "business_error",
-                "l8n_params: error as Any, statusCode"
+                {
+                    "key": "business_error",
+                    "value": ""
+                },
+                {
+                    "key": "l8n_params",
+                    "value": "error as Any, statusCode"
+                }
             ],
             "index": 0,
             "isFirst": true,
@@ -490,9 +496,9 @@ Although not visible when writing templates, each underlying value that is passe
 * `Int`:
   * `plusOne() -> Int`: Add one to the integer.
   * `minusOne() -> Int`: Subtract one from the integer.
-  * `equalZero() -> Bool`: Returns whether the integer is equal to zero.
-  * `odd() -> Bool`: Returns whether the integer is odd or not.
-  * `even() -> Bool`: Returns whether the integer is even or not.
+  * `equalsZero() -> Bool`: Returns whether the integer is equal to zero.
+  * `isOdd() -> Bool`: Returns whether the integer is odd or not.
+  * `isEven() -> Bool`: Returns whether the integer is even or not.
 * `Array`:
   * `first() -> Element?`: Returns the first element of the array.
   * `last() -> Element?`: Returns the last element of the array.
@@ -511,7 +517,8 @@ Although not visible when writing templates, each underlying value that is passe
 * `KeyValue`:
   * `key() -> String`: Returns the key. You could use Mustache-native {{key}} syntax as well.
   * `value() -> String`: Returns the value. You could use Mustache-native {{value}} syntax as well.
-* `[KeyValue]`:
+* `[KeyValue]` (`comments`):
+  * All `Array` functions are applicable to `[KeyValue]` as well.
   * Imagine a `[KeyValue]` as a `Dictonary<String, String>`.
   * You can use function names as a way of subscripting.
   * For example `business_error(myKeyValues)` will find an element in `myKeyValues` where `key` == `business_error`, and will return the `value` as an `String?`.
