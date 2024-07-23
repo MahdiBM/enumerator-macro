@@ -1,5 +1,6 @@
 import SwiftSyntax
 
+#if compiler(>=6.0)
 final class PlaceholderDetector: SyntaxVisitor {
     var containedPlaceholder = false
 
@@ -15,3 +16,4 @@ final class PlaceholderDetector: SyntaxVisitor {
         return .visitChildren
     }
 }
+#endif
