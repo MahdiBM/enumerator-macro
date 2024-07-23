@@ -1,4 +1,7 @@
+/// FixItApplier not available in older versions of SwiftSyntax.
+#if compiler(>=6.0)
 @_spi(FixItApplier) import SwiftIDEUtils
+#endif
 import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
@@ -116,6 +119,7 @@ extension EnumeratorMacroType: MemberMacro {
                 var statement = statement
                 var diagnostics = ParseDiagnosticsGenerator.diagnostics(for: statement)
 
+#if compiler(>=6.0)
                 /// Returns if anything changed at all.
                 func tryApplyFixIts() -> Bool {
                     guard diagnostics.contains(where: { !$0.fixIts.isEmpty }) else {
@@ -143,6 +147,7 @@ extension EnumeratorMacroType: MemberMacro {
                         return true
                     }
                 }
+#endif
 
                 /// Returns if anything changed at all.
                 func tryManuallyFixErrors() -> Bool {
@@ -165,9 +170,11 @@ extension EnumeratorMacroType: MemberMacro {
                     }
                 }
 
+#if compiler(>=6.0)
                 if tryApplyFixIts() {
                     diagnostics = ParseDiagnosticsGenerator.diagnostics(for: statement)
                 }
+#endif
 
                 if diagnostics.containsError, tryManuallyFixErrors() {
                     diagnostics = ParseDiagnosticsGenerator.diagnostics(for: statement)
