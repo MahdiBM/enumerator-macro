@@ -33,7 +33,7 @@ extension EnumeratorMacroType: MemberMacro {
             context: context
         )
 
-        guard cases.checkCommentsOnlyContainAllowedKeys(
+        guard cases.checkCommentsOnlyContainAllowedKeysOrDiagnose(
             arguments: parsedArguments,
             context: context
         ) else {

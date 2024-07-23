@@ -25,7 +25,7 @@ struct ECases {
         )
     }
 
-    func checkCommentsOnlyContainAllowedKeys(
+    func checkCommentsOnlyContainAllowedKeysOrDiagnose(
         arguments: Arguments,
         context: some MacroExpansionContext
     ) -> Bool {
