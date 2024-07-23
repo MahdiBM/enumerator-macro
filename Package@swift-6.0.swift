@@ -21,7 +21,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/swiftlang/swift-syntax",
-            "510.0.0" ..< "610.0.0"
+            .upToNextMinor(from: "600.0.0-prerelease-2024-06-12")
         ),
         .package(
             url: "https://github.com/hummingbird-project/swift-mustache",
@@ -34,6 +34,7 @@ let package = Package(
             dependencies: [
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+                .product(name: "SwiftIDEUtils", package: "swift-syntax"),
                 .product(name: "Mustache", package: "swift-mustache"),
             ],
             swiftSettings: swiftSettings
@@ -52,6 +53,7 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftIDEUtils", package: "swift-syntax"),
                 .product(name: "Mustache", package: "swift-mustache"),
             ],
             swiftSettings: swiftSettings

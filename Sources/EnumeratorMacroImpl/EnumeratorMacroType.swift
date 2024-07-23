@@ -1,3 +1,4 @@
+@_spi(FixItApplier) import SwiftIDEUtils
 import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
@@ -113,51 +114,83 @@ extension EnumeratorMacroType: MemberMacro {
                 from: &parser
             ).statements.compactMap { statement -> DeclSyntax? in
                 var statement = statement
-
                 var diagnostics = ParseDiagnosticsGenerator.diagnostics(for: statement)
-                if diagnostics.containsError {
-                    /// Try to recover from errors:
-                    let switchRewriter = SwitchErrorsRewriter()
-                    let fixedStatement = switchRewriter.rewrite(statement)
-                    let newDiagnostics = ParseDiagnosticsGenerator.diagnostics(for: fixedStatement)
-                    if !newDiagnostics.containsError {
-                        switch CodeBlockItemSyntax(fixedStatement) {
-                        case let .some(fixedStatement):
-                            statement = fixedStatement
-                            diagnostics = newDiagnostics
-                        case .none:
-                            context.diagnose(
-                                Diagnostic(
-                                    node: codeSyntax,
-                                    message: MacroError.internalError(
-                                        "Could not convert a Syntax to a CodeBlockItemSyntax"
-                                    )
-                                )
-                            )
-                            return nil
-                        }
+
+                /// Returns if anything changed at all.
+                func tryApplyFixIts() -> Bool {
+                    guard diagnostics.contains(where: { !$0.fixIts.isEmpty }) else {
+                        return false
+                    }
+                    let fixedStatement = FixItApplier.applyFixes(
+                        from: diagnostics,
+                        filterByMessages: nil,
+                        to: statement
+                    )
+                    var parser = Parser(fixedStatement)
+                    let newStatement = CodeBlockItemSyntax.parse(from: &parser)
+                    guard statement != newStatement else {
+                        return false
+                    }
+                    let placeholderDetector = PlaceholderDetector()
+                    placeholderDetector.walk(newStatement)
+                    /// One of the FixIts added a placeholder, so the fixes are unacceptable
+                    /// Known behavior which is fine for now: even if one FixIt is
+                    /// misbehaving, still none of the FixIts will be applied.
+                    if placeholderDetector.containedPlaceholder {
+                        return false
                     } else {
-                        /// If not recovered, throw a diagnostic error.
-                        context.diagnose(.init(
-                            node: codeSyntax,
-                            message: MacroError.renderedSyntaxContainsErrors(statement.description)
-                        ))
+                        statement = newStatement
+                        return true
                     }
                 }
 
-                for diagnostic in diagnostics {
-                    if diagnostic.diagMessage.severity == .error {
-                        context.diagnose(.init(
-                            node: codeSyntax,
-                            position: diagnostic.position,
-                            message: diagnostic.diagMessage,
-                            highlights: diagnostic.highlights,
-                            notes: diagnostic.notes,
-                            fixIts: diagnostic.fixIts
-                        ))
-                    } else if let /*fixIt*/_ = diagnostic.fixIts.first {
-                        /// TODO: Apply the fixit
+                /// Returns if anything changed at all.
+                func tryManuallyFixErrors() -> Bool {
+                    let switchRewriter = SwitchErrorsRewriter()
+                    let fixedStatement = switchRewriter.rewrite(statement)
+                    switch CodeBlockItemSyntax(fixedStatement) {
+                    case let .some(fixedStatement):
+                        statement = fixedStatement
+                        return true
+                    case .none:
+                        context.diagnose(
+                            Diagnostic(
+                                node: codeSyntax,
+                                message: MacroError.internalError(
+                                    "Could not convert a Syntax to a CodeBlockItemSyntax"
+                                )
+                            )
+                        )
+                        return false
                     }
+                }
+
+                if tryApplyFixIts() {
+                    diagnostics = ParseDiagnosticsGenerator.diagnostics(for: statement)
+                }
+
+                if diagnostics.containsError, tryManuallyFixErrors() {
+                    diagnostics = ParseDiagnosticsGenerator.diagnostics(for: statement)
+                }
+
+                if diagnostics.containsError {
+                    /// If still not recovered, throw a diagnostic error.
+                    context.diagnose(.init(
+                        node: codeSyntax,
+                        message: MacroError.renderedSyntaxContainsErrors(statement.description)
+                    ))
+                }
+
+                for diagnostic in diagnostics
+                where diagnostic.diagMessage.severity == .error {
+                    context.diagnose(.init(
+                        node: codeSyntax,
+                        position: diagnostic.position,
+                        message: diagnostic.diagMessage,
+                        highlights: diagnostic.highlights,
+                        notes: diagnostic.notes,
+                        fixIts: diagnostic.fixIts
+                    ))
                 }
                 if diagnostics.containsError {
                     return nil

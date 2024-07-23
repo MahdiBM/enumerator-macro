@@ -1150,34 +1150,33 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-//    func testAppliesFixIts() {
-//        assertMacroExpansion(
-//            #"""
-//            @Enumerator("""
-//            var value: Int {
-//                a 1️⃣\u{a0}+ 2
-//            }
-//            """)
-//            enum TestEnum {
-//                case a(val1: String, Int)
-//                case b
-//                case testCase(testValue: String)
-//            }
-//            """#,
-//            expandedSource: #"""
-//            enum TestEnum {
-//                case a(val1: String, Int)
-//                case b
-//                case testCase(testValue: String)
-//
-//                var value: Int {
-//                    a  + 2
-//                }
-//            }
-//            """#,
-//            macros: EnumeratorMacroEntryPoint.macros
-//        )
-//    }
+    func testAppliesFixIts() {
+        let unterminatedString = """
+        let unterminated = "This is unterminated
+        """
+        assertMacroExpansion(
+            #"""
+            @Enumerator("""
+            \#(unterminatedString)
+            """)
+            enum TestEnum {
+                case a(val1: String, Int)
+                case b
+                case testCase(testValue: String)
+            }
+            """#,
+            expandedSource: #"""
+            enum TestEnum {
+                case a(val1: String, Int)
+                case b
+                case testCase(testValue: String)
+
+                let unterminated = "This is unterminated"
+            }
+            """#,
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
 }
 
 @Enumerator("""
