@@ -38,6 +38,8 @@ It's rather simple.
   * Search for the `testRemovesExcessiveTrivia()` test for an example. 
 * Remove last trailing comma in a case switch, which is an error. For easier templating.
   * Search for the `testRemovesLastErroneousCommaInCaseSwitch()` test for an example.
+* Automatically applies Swift Syntax's `FixIt`s if the `FixIt`s are not known to cause problems.
+  * Search for the `testAppliesFixIts()` test for an example.
 * Emit helpful diagnostics whenever possible.
   * See the [Error Handling](#error-handling) section for more info.
 
