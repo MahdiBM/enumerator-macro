@@ -34,14 +34,10 @@ It's rather simple.
 
 `EnumeratorMacro` will:
 
-* Remove empty lines from the final generated code, to get rid of possible excessive empty lines.
-  * Search for the `testRemovesExcessiveTrivia()` test for an example. 
-* Remove last trailing comma in a case switch, which is an error. For easier templating.
-  * Search for the `testRemovesLastErroneousCommaInCaseSwitch()` test for an example.
-* Automatically applies Swift Syntax's `FixIt`s if the `FixIt`s are not known to cause problems.
-  * Search for the `testAppliesFixIts()` test for an example.
-* Emit helpful diagnostics whenever possible.
-  * See the [Error Handling](#error-handling) section for more info.
+* [Remove empty lines from the final generated code](https://github.com/search?q=repo:MahdiBM/enumerator-macro+%22func+testRemovesExcessiveTrivia()%22&type=code), to get rid of possible excessive empty lines.
+* [Remove last trailing comma in a case switch](https://github.com/search?q=repo:MahdiBM/enumerator-macro+%22func+testRemovesLastErroneousCommaInCaseSwitch()%22&type=code), which is an error. For easier templating.
+* [Automatically applies Swift Syntax's `FixIt`s](https://github.com/search?q=repo:MahdiBM/enumerator-macro+%22func+testAppliesFixIts()%22&type=code) if the `FixIt`s are not known to cause problems.
+* [Emit helpful diagnostics](#error-handling) whenever possible.
 
 </details>
 
