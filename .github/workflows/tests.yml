@@ -28,7 +28,7 @@ jobs:
 
       - name: Restore .build
         id: "restore-cache"
-        uses: runs-on/cache/restore@v4
+        uses: actions/cache/restore@v4
         with:
           path: .build
           # e.g. 'enumerator-macro-debug-build-swiftlang/swift:nightly-6.0-jammy-Linux-c7008df8062ac4d5887ead9e59aa05829e'
@@ -40,7 +40,7 @@ jobs:
 
       - name: Cache .build
         if: steps.restore-cache.outputs.cache-hit != 'true'
-        uses: runs-on/cache/save@v4
+        uses: actions/cache/save@v4
         with:
           path: .build
           key: "${{ github.event.repository.name }}-debug-build-${{ matrix.swift-image }}-${{ runner.os }}-${{ hashFiles('./Package.resolved') }}"
