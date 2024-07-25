@@ -15,28 +15,28 @@ final class EnumeratorMacroTests: XCTestCase {
                 switch self {
                 {{#cases}}
                 case .{{name}}:
-                    "{{name}}"
+                    "{{lowercased(name)}}"
                 {{/cases}}
                 }
             }
             """
             )
             enum TestEnum {
-                case a
-                case b
+                case aBcD
+                case eFgH
             }
             """#,
             expandedSource: #"""
             enum TestEnum {
-                case a
-                case b
+                case aBcD
+                case eFgH
 
                 var caseName: String {
                     switch self {
-                    case .a:
-                        "a"
-                    case .b:
-                        "b"
+                    case .aBcD:
+                        "abcd"
+                    case .eFgH:
+                        "efgh"
                     }
                 }
             }
@@ -143,7 +143,7 @@ final class EnumeratorMacroTests: XCTestCase {
             @Enumerator("""
             enum Subtype: String {
                 {{#cases}}
-                case {{name}}
+                case {{snakeCased(name)}}
                 {{/cases}}
             }
             """,
@@ -152,7 +152,7 @@ final class EnumeratorMacroTests: XCTestCase {
                 switch self {
                 {{#cases}}
                 case .{{name}}:
-                    .{{name}}
+                    .{{snakeCased(name)}}
                 {{/cases}}
                 }
             }
@@ -172,7 +172,7 @@ final class EnumeratorMacroTests: XCTestCase {
                 enum Subtype: String {
                     case a
                     case b
-                    case testCase
+                    case test_case
                 }
 
                 var subtype: Subtype {
@@ -182,7 +182,7 @@ final class EnumeratorMacroTests: XCTestCase {
                     case .b:
                         .b
                     case .testCase:
-                        .testCase
+                        .test_case
                     }
                 }
             }
@@ -618,7 +618,7 @@ final class EnumeratorMacroTests: XCTestCase {
                 switch self {
                 {{#cases}}
                 case .{{name}}:
-                    "{{name}}"
+                    "{{camelCased(name)}}"
 
 
 
@@ -628,22 +628,22 @@ final class EnumeratorMacroTests: XCTestCase {
             """
             )
             enum TestEnum {
-                case a
-                case b
+                case my_case
+                case my_OTHER_case
             }
             """#,
             /// Should not contain those excessive new lines:
             expandedSource: #"""
             enum TestEnum {
-                case a
-                case b
+                case my_case
+                case my_OTHER_case
 
                 var caseName: String {
                     switch self {
-                    case .a:
-                        "a"
-                    case .b:
-                        "b"
+                    case .my_case:
+                        "myCase"
+                    case .my_OTHER_case:
+                        "myOtherCase"
                     }
                 }
             }
@@ -660,7 +660,7 @@ final class EnumeratorMacroTests: XCTestCase {
             """
             public var constant: String {
                 switch self {
-                case {{#cases}}.{{name}}, {{/cases}}:
+                case {{#sorted(cases)}}.{{name}}, {{/sorted(cases)}}:
                     "some constant"
                 }
             }
@@ -668,6 +668,7 @@ final class EnumeratorMacroTests: XCTestCase {
             )
             enum TestEnum {
                 case a
+                case c
                 case b
             }
             """#,
@@ -677,11 +678,12 @@ final class EnumeratorMacroTests: XCTestCase {
             expandedSource: #"""
             enum TestEnum {
                 case a
+                case c
                 case b
 
                 public var constant: String {
                     switch self {
-                    case .a, .b:
+                    case .a, .b, .c:
                         "some constant"
                     }
                 }
