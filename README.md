@@ -2,6 +2,8 @@
     <a href="https://github.com/MahdiBM/enumerator-macro/actions/workflows/tests.yml">
         <img src="https://github.com/MahdiBM/enumerator-macro/actions/workflows/tests.yml/badge.svg" alt="Tests Badge">
     </a>
+    <a href="https://app.codecov.io/gh/MahdiBM/enumerator-macro">
+        <img src="https://codecov.io/github/mahdibm/enumerator-macro/branch/main/graph/badge.svg" alt="Code Coverage">
     </a>
     <a href="https://swift.org">
         <img src="https://img.shields.io/badge/swift-6.0%20%2F%205.10-brightgreen.svg" alt="Latest/Minimum Swift Version">
