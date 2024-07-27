@@ -5,11 +5,11 @@ import SwiftSyntax
 final class RenderingContext: @unchecked Sendable {
     @TaskLocal static var current: RenderingContext!
 
-    let context: any MacroExpansionContext
+    private let context: any MacroExpansionContext
     let node: Syntax
-    var allowedComments: Arguments.AllowedComments?
-    var threwAllowedCommentsError = false
-    var diagnostic: MacroError?
+    let allowedComments: Arguments.AllowedComments?
+    private var emittedAnyDiagnostics: Bool
+    private var functionDiagnostic: MacroError?
 
     init(
         node: Syntax,
@@ -19,10 +19,37 @@ final class RenderingContext: @unchecked Sendable {
         self.node = node
         self.context = context
         self.allowedComments = allowedComments
-        self.diagnostic = nil
+        self.emittedAnyDiagnostics = false
+        self.functionDiagnostic = nil
     }
 
-    func addOrReplaceDiagnostic(_ error: MacroError) {
-        self.diagnostic = error
+    func addOrReplaceFunctionDiagnostic(_ error: MacroError) {
+        self.functionDiagnostic = error
+    }
+
+    func diagnose(
+        error: MacroError,
+        node: any SyntaxProtocol
+    ) {
+        self.context.diagnose(.init(
+            node: node,
+            message: error
+        ))
+        self.emittedAnyDiagnostics = true
+    }
+
+    /// Returns whether there were any diagnostics emitted at all
+    func finishDiagnostics() -> Bool {
+        if let diagnostic = self.functionDiagnostic {
+            self.context.diagnose(.init(
+                node: self.node,
+                message: diagnostic
+            ))
+            return true
+        } else if self.emittedAnyDiagnostics {
+            return true
+        } else {
+            return false
+        }
     }
 }

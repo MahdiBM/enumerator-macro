@@ -44,7 +44,7 @@ extension EInt: EMustacheTransformable {
         case "isOdd":
             return (self.underlying & 1) == 1
         default:
-            RenderingContext.current.addOrReplaceDiagnostic(
+            RenderingContext.current.addOrReplaceFunctionDiagnostic(
                 .invalidTransform(
                     transform: name,
                     normalizedTypeName: Self.normalizedTypeName

@@ -77,7 +77,7 @@ extension EKeyValue: EMustacheTransformable {
         case "value":
             return self.value
         default:
-            RenderingContext.current.addOrReplaceDiagnostic(
+            RenderingContext.current.addOrReplaceFunctionDiagnostic(
                 .invalidTransform(
                     transform: name,
                     normalizedTypeName: Self.normalizedTypeName

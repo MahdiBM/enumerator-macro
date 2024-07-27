@@ -54,7 +54,7 @@ extension EString: EMustacheTransformable {
         case "keyValue":
             return EKeyValue(from: self.underlying)
         default:
-            RenderingContext.current.addOrReplaceDiagnostic(
+            RenderingContext.current.addOrReplaceFunctionDiagnostic(
                 .invalidTransform(
                     transform: name,
                     normalizedTypeName: Self.normalizedTypeName

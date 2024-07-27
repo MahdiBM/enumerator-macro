@@ -58,13 +58,7 @@ extension EnumeratorMacroType: MemberMacro {
                     ).render([
                         "cases": cases
                     ])
-                    if let diagnostic = renderingContext.diagnostic {
-                        context.addDiagnostics(
-                            from: diagnostic,
-                            node: syntax
-                        )
-                        return nil
-                    } else if renderingContext.threwAllowedCommentsError {
+                    if renderingContext.finishDiagnostics() {
                         return nil
                     } else {
                         return result
@@ -75,7 +69,7 @@ extension EnumeratorMacroType: MemberMacro {
                 }
                 return (rendered, syntax)
             } catch {
-                if renderingContext.threwAllowedCommentsError {
+                if renderingContext.finishDiagnostics() {
                     return nil
                 }
 

@@ -54,11 +54,9 @@ extension EArray: EMustacheTransformable {
             return string
         case "keyValues":
             if Self.self is EArray<EKeyValue>.Type {
-                RenderingContext.current.context.diagnose(
-                    Diagnostic(
-                        node: RenderingContext.current.node,
-                        message: MacroError.redundantKeyValuesFunctionCall
-                    )
+                RenderingContext.current.diagnose(
+                    error: .redundantKeyValuesFunctionCall,
+                    node: RenderingContext.current.node
                 )
                 return self
             }
@@ -78,7 +76,7 @@ extension EArray: EMustacheTransformable {
                 /// The underlying type is in charge of adding a diagnostic, if needed.
                 return comparable.comparableTransform(name)
             }
-            RenderingContext.current.addOrReplaceDiagnostic(
+            RenderingContext.current.addOrReplaceFunctionDiagnostic(
                 .invalidTransform(
                     transform: name,
                     normalizedTypeName: Self.normalizedTypeName
@@ -95,7 +93,7 @@ extension EArray: EComparableSequence where Element: Comparable {
         case "sorted":
             return EArray(underlying: self.underlying.sorted())
         default:
-            RenderingContext.current.addOrReplaceDiagnostic(
+            RenderingContext.current.addOrReplaceFunctionDiagnostic(
                 .invalidTransform(
                     transform: name,
                     normalizedTypeName: Self.normalizedTypeName

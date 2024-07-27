@@ -60,11 +60,9 @@ extension EComments: EMustacheTransformable {
         case "sorted":
             return EComments(underlying: self.underlying.underlying.sorted())
         case "keyValues":
-            RenderingContext.current.context.diagnose(
-                Diagnostic(
-                    node: RenderingContext.current.node,
-                    message: MacroError.redundantKeyValuesFunctionCall
-                )
+            RenderingContext.current.diagnose(
+                error: .redundantKeyValuesFunctionCall,
+                node: RenderingContext.current.node
             )
             return self
         default:
@@ -72,17 +70,14 @@ extension EComments: EMustacheTransformable {
                let allowedComments = context.allowedComments,
                !allowedComments.keys.isEmpty,
                !allowedComments.keys.contains(name) {
-                context.context.addDiagnostics(
-                    from: MacroError.commentKeyNotAllowed(key: name),
+                context.diagnose(
+                    error: .commentKeyNotAllowed(key: name),
                     node: context.node
                 )
-                context.context.diagnose(
-                    Diagnostic(
-                        node: allowedComments.node,
-                        message: MacroError.declaredHere(name: "'allowedComments'")
-                    )
+                context.diagnose(
+                    error: .declaredHere(name: "'allowedComments'"),
+                    node: allowedComments.node
                 )
-                context.threwAllowedCommentsError = true
             }
             return EOptional(
                 self.underlying.underlying.first(where: { $0.key.underlying == name })?.value

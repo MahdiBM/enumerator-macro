@@ -117,7 +117,7 @@ extension EOptional: EMustacheTransformable {
             case "exists":
                 return false
             default:
-                RenderingContext.current.addOrReplaceDiagnostic(
+                RenderingContext.current.addOrReplaceFunctionDiagnostic(
                     .invalidTransform(
                         transform: name,
                         normalizedTypeName: Self.normalizedTypeName
@@ -134,7 +134,7 @@ extension EOptional: EMustacheTransformable {
                     /// The underlying type is in charge of adding a diagnostic, if needed.
                     return value.transform(name)
                 } else {
-                    RenderingContext.current.addOrReplaceDiagnostic(
+                    RenderingContext.current.addOrReplaceFunctionDiagnostic(
                         .invalidTransform(
                             transform: name,
                             normalizedTypeName: Self.normalizedTypeName
