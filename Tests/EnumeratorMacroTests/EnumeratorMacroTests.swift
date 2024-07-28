@@ -1153,7 +1153,7 @@ final class EnumeratorMacroTests: XCTestCase {
     }
 
     /// FixItApplier not available in older versions of SwiftSyntax.
-#if compiler(>=6.0)
+#if canImport(SwiftSyntax600)
     /// Test name is referenced in the README.
     func testAppliesFixIts() throws {
         let unterminatedString = """

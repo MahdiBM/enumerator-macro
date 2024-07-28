@@ -21,7 +21,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/swiftlang/swift-syntax",
-            .upToNextMinor(from: "600.0.0-prerelease-2024-06-12")
+            "510.0.0" ..< "601.0.0-latest"
         ),
         .package(
             url: "https://github.com/hummingbird-project/swift-mustache",

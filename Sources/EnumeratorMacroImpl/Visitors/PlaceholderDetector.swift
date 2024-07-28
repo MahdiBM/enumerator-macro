@@ -1,6 +1,6 @@
 import SwiftSyntax
 
-#if compiler(>=6.0)
+#if canImport(SwiftSyntax600)
 final class PlaceholderDetector: SyntaxVisitor {
     var containsPlaceholder = false
 
