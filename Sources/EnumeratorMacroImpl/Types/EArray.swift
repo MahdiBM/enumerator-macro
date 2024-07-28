@@ -66,7 +66,6 @@ extension EArray: EMustacheTransformable {
             return EArray<EKeyValue>(underlying: split)
         default:
             if let keyValues = self as? EArray<EKeyValue> {
-                
                 /// Don't throw even if the key doesn't exist.
                 return EOptional(
                     keyValues.underlying.first(where: { $0.key.underlying == name })?.value

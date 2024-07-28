@@ -131,10 +131,10 @@ extension EnumeratorMacroType: MemberMacro {
                     }
                     let placeholderDetector = PlaceholderDetector()
                     placeholderDetector.walk(newStatement)
-                    /// One of the FixIts added a placeholder, so the fixes are unacceptable
+                    /// One of the FixIts added a placeholder, so the fixes are unacceptable.
                     /// Known behavior which is fine for now: even if one FixIt is
                     /// misbehaving, still none of the FixIts will be applied.
-                    if placeholderDetector.containedPlaceholder {
+                    if placeholderDetector.containsPlaceholder {
                         return false
                     } else {
                         statement = newStatement

@@ -56,6 +56,7 @@ final class SwitchWarningsRewriter: SyntaxRewriter {
                     toDetect: identifier.identifier.tokenKind
                 )
                 presenceDetector.walk(node)
+                /// `1` is normal because it's the declaration of the argument.
                 guard presenceDetector.detectCount < 2 else {
                     allArgsAreWildcards = false
                     continue

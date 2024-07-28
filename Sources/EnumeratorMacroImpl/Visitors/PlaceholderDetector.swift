@@ -2,7 +2,7 @@ import SwiftSyntax
 
 #if compiler(>=6.0)
 final class PlaceholderDetector: SyntaxVisitor {
-    var containedPlaceholder = false
+    var containsPlaceholder = false
 
     override init(viewMode: SyntaxTreeViewMode = .sourceAccurate) {
         super.init(viewMode: viewMode)
@@ -10,7 +10,7 @@ final class PlaceholderDetector: SyntaxVisitor {
     
     override func visit(_ node: TokenSyntax) -> SyntaxVisitorContinueKind {
         if node.isEditorPlaceholder {
-            self.containedPlaceholder = true
+            self.containsPlaceholder = true
             return .skipChildren
         }
         return .visitChildren

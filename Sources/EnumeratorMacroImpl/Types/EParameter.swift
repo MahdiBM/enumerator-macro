@@ -5,8 +5,8 @@ struct EParameter {
     let name: EString
     let type: EString
     let isOptional: Bool
-    let isFirst: Bool
-    let isLast: Bool
+    var isFirst: Bool
+    var isLast: Bool
 
     init(
         from parameter: EnumCaseParameterSyntax,

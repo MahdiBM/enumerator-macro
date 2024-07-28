@@ -317,7 +317,7 @@ final class EnumeratorMacroTests: XCTestCase {
                 case let .{{name}}{{withParens(joined(names(parameters)))}}:
                     [
                         {{#parameters}}
-                        {{name}}{{#isOptional}} as Any{{/isOptional}},
+                        {{name}}{{#isOptional}} as Any{{/isOptional}}{{^isLast}},{{/isLast}}
                         {{/parameters}}
                     ]
                 {{/exists(l8n_params(comments))}}

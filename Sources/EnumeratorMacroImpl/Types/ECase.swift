@@ -9,8 +9,8 @@ struct ECase {
     let parameters: EParameters
     let comments: EComments
     let index: EInt
-    let isFirst: Bool
-    let isLast: Bool
+    var isFirst: Bool
+    var isLast: Bool
 
     init(
         from element: EnumCaseElementSyntax,

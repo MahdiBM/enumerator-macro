@@ -59,6 +59,15 @@ extension EParameters: EMustacheTransformable {
                 let array = EArray(underlying: namesAndTypes)
                 return array
             }
+        case "sorted":
+            var array = self.underlying.underlying
+            if array.isEmpty { return self }
+            array[0].isFirst = false
+            array[array.count - 1].isLast = false
+            array.sort()
+            array[0].isFirst = true
+            array[array.count - 1].isLast = true
+            return Self.init(underlying: array)
         default:
             /// The underlying type is in charge of adding a diagnostic, if needed.
             return self.underlying.transform(name)
