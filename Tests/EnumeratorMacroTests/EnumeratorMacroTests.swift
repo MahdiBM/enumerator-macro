@@ -579,7 +579,7 @@ final class EnumeratorMacroTests: XCTestCase {
                 domain: "EnumeratorMacro.MacroError",
                 id: "redundantKeyValuesFunctionCall"
             ),
-            message: "Redundant 'keyValues' function used. The array is already of type 'EArray<EKeyValue>'",
+            message: "Redundant 'keyValues' function used. The array is already of type '[KeyValue]'",
             line: 1,
             column: 13,
             severity: .error

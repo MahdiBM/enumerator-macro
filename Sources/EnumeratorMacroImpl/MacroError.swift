@@ -79,7 +79,7 @@ enum MacroError: Error, CustomStringConvertible {
         case let .declaredHere(name):
             "\(name) declared here:"
         case .redundantKeyValuesFunctionCall:
-            "Redundant 'keyValues' function used. The array is already of type '\(EArray<EKeyValue>.self)'"
+            "Redundant 'keyValues' function used. The array is already of type '[KeyValue]'"
         }
     }
 }

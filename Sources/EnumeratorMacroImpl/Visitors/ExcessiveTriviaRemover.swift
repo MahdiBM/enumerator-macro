@@ -1,18 +1,21 @@
 import SwiftSyntax
 
 final class ExcessiveTriviaRemover: SyntaxRewriter {
-    /// Remove empty lines.
+    /// Removes empty lines.
     override func visitAny(_ node: Syntax) -> Syntax? {
         var node = node
         let leadingModified, trailingModified: Bool
-        (leadingModified, node) = self.handleTrivia(node, at: \.leadingTrivia)
-        (trailingModified, node) = self.handleTrivia(node, at: \.trailingTrivia)
+        (leadingModified, node) = self.removeEmptyLineTrivia(from: node, at: \.leadingTrivia)
+        (trailingModified, node) = self.removeEmptyLineTrivia(from: node, at: \.trailingTrivia)
         let modified = leadingModified || trailingModified
+        /// Recursively call `rewrite(_:)` if we are not returning `nil`.
+        /// Because `SyntaxRewriter`'s implementation will skip
+        /// calling `visitAny(_:)` on the children of the node.
         return modified ? self.rewrite(node) : nil
     }
 
-    func handleTrivia(
-        _ node: Syntax,
+    func removeEmptyLineTrivia(
+        from node: Syntax,
         at keyPath: WritableKeyPath<Syntax, Trivia>
     ) -> (modified: Bool, syntax: Syntax) {
         var node = node
@@ -29,7 +32,7 @@ final class ExcessiveTriviaRemover: SyntaxRewriter {
                 if previousWasNewLines,
                    idx + 1 < pieces.count,
                    case .newlines = pieces[idx + 1] {
-                    /// Previous and next are both `newlines`.
+                    /// Previous and next are both `newlines`, so remove this `spaces`.
                     toBeRemoved.append(idx)
                 }
                 previousWasNewLines = false
