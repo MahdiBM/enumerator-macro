@@ -45,6 +45,45 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
+    func testCreatesCaseCods() {
+        assertMacroExpansion(
+            #"""
+            @Enumerator(
+            """
+            var caseCode: Int {
+                switch self {
+                {{#cases}}
+                case .{{name}}:
+                    {{dropLast(dropLast(dropLast(dropLast(dropLast(hash(name))))))}}
+                {{/cases}}
+                }
+            }
+            """
+            )
+            enum TestEnum {
+                case aBcD
+                case eFgH
+            }
+            """#,
+            expandedSource: #"""
+            enum TestEnum {
+                case aBcD
+                case eFgH
+            
+                var caseCode: Int {
+                    switch self {
+                    case .aBcD:
+                        40035
+                    case .eFgH:
+                        1856
+                    }
+                }
+            }
+            """#,
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
     func testCreatesACopyOfSelf() {
         assertMacroExpansion(
             #"""

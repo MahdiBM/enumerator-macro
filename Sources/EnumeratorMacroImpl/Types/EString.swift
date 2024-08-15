@@ -51,6 +51,12 @@ extension EString: EMustacheTransformable {
             return self.isEmpty ? self : "(\(self))"
         case "bool":
             return Bool(self)
+        case "hash":
+            return EString(crc32(self.utf8).description)
+        case "dropFirst":
+            return EString(String(self.dropFirst()))
+        case "dropLast":
+            return EString(String(self.dropLast()))
         case "keyValue":
             return EKeyValue(from: self.underlying)
         default:

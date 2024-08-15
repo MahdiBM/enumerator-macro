@@ -49,8 +49,8 @@ final class ExcessiveTriviaRemover: SyntaxRewriter {
             /// Combine consecutive `newlines` into a single one.
             pieces = pieces.reduce(into: [TriviaPiece]()) { result, next in
                 if case let .newlines(countNext) = next,
-                   let last = result.last,
-                   case let .newlines(countLast) = last {
+                   let previous = result.last,
+                   case let .newlines(countLast) = previous {
                     result[result.count - 1] = .newlines(countNext + countLast)
                 } else {
                     result.append(next)

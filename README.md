@@ -490,6 +490,9 @@ Although not visible when writing templates, each underlying value that is passe
 
 * `String`:
   * `capitalized() -> String`: Capitalizes the first letter.
+  * `dropFirst() -> String`: Equivalent to Swift's `.dropFirst()`.
+  * `dropLast() -> String`: Equivalent to Swift's `.dropLast()`.
+  * `hash() -> String`: The hash of the string using the `CRC32` algorithm.
   * `snakeCased() -> String`: Converts the string from camelCase to snake_case.
   * `camelCased() -> String`: Converts the string from snake_case to camelCase.
   * `withParens() -> String`: If the string is not empty, surrounds it in parenthesis.
@@ -499,6 +502,7 @@ Although not visible when writing templates, each underlying value that is passe
   * `equalsZero() -> Bool`: Returns whether the integer is equal to zero.
   * `isOdd() -> Bool`: Returns whether the integer is odd or not.
   * `isEven() -> Bool`: Returns whether the integer is even or not.
+  * `hash() -> String`: The hash of the string representation of the integer using the `CRC32` algorithm.
 * `Array`:
   * `first() -> Element?`: Returns the first element of the array.
   * `last() -> Element?`: Returns the last element of the array.
@@ -506,20 +510,20 @@ Although not visible when writing templates, each underlying value that is passe
   * `isEmpty() -> Bool`: Returns whether the array is empty or not.
   * `reversed() -> Self`: Returns a reversed array.
   * `sorted() -> Self`: Sorts the elements, if the elements of the array are comparable.
-  * `joined() -> String`: Equivalent to `.joined(separator: ", ")`
+  * `joined() -> String`: Equivalent to Swift's `.joined(separator: ", ")`.
   * `keyValues() -> [KeyValue]`: Parses the elements of the array as key-value pairs separated by ':'.
 * `Optional`:
   * `exists() -> Bool`: Returns whether this optional value contains anything.
   * `isEmpty() -> Bool`: Returns whether this optional value contains anything.
     * If a value exists, the call will be forwarded to that.
-    * For example `Optional<String>.some("")` will return `true` for `isEmpty` becasue although the optional exists, the string value is empty.
+    * For example `Optional<String>.some("")` will return `true` for `isEmpty` because although the optional exists, the string value is empty.
   * `Optional` is a see-through value like in Swift. You can use any functions that are available for the wrapperd type, when you're sure the value exists.
 * `KeyValue`:
   * `key() -> String`: Returns the key. You could use Mustache-native {{key}} syntax as well.
   * `value() -> String`: Returns the value. You could use Mustache-native {{value}} syntax as well.
 * `[KeyValue]` (`comments`):
   * All `Array` functions are applicable to `[KeyValue]` as well.
-  * Imagine a `[KeyValue]` as a `Dictonary<String, String>`.
+  * Imagine a `[KeyValue]` as a `Dictionary<String, String>`.
   * You can use function names as a way of subscripting.
   * For example `business_error(myKeyValues)` will find an element in `myKeyValues` where `key` == `business_error`, and will return the `value` as an `String?`.
 * `[Parameter]` (`parameters`):
