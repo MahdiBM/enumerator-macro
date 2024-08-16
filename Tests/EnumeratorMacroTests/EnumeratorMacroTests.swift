@@ -73,9 +73,9 @@ final class EnumeratorMacroTests: XCTestCase {
                 var caseCode: Int {
                     switch self {
                     case .aBcD:
-                        40035
+                        8070
                     case .eFgH:
-                        1856
+                        35847
                     }
                 }
             }
