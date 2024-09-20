@@ -63,7 +63,7 @@ let package = Package(
 
 var swiftSettings: [SwiftSetting] {
     [
-        .enableExperimentalFeature("ExistentialAny"),
+//        .enableUpcomingFeature("ExistentialAny"),
         .enableExperimentalFeature("AccessLevelOnImport"),
     ]
 }
