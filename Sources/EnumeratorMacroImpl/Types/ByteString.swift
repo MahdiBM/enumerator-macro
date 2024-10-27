@@ -127,13 +127,14 @@ extension ByteString: CustomStringConvertible {
     }
 
     /// Return the string decoded as a UTF8 sequence, if possible.
+    @available(*, deprecated, message: "Mahdi: Just so it doesn't emit a warning")
     @inlinable
     var validDescription: String? {
         // FIXME: This is very inefficient, we need a way to pass a buffer. It
         // is also wrong if the string contains embedded '\0' characters.
         let tmp = _bytes + [UInt8(0)]
         return tmp.withUnsafeBufferPointer { ptr in
-            return String(validatingCString: unsafeBitCast(ptr.baseAddress, to: UnsafePointer<CChar>.self))
+            return String(validatingUTF8: unsafeBitCast(ptr.baseAddress, to: UnsafePointer<CChar>.self))
         }
     }
 
