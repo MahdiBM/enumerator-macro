@@ -74,7 +74,7 @@ extension EnumeratorMacroType: MemberMacro {
                 }
 
                 let message: MacroError
-                let errorSyntax: SyntaxProtocol
+                let errorSyntax: any SyntaxProtocol
                 if let parserError = error as? MustacheTemplate.ParserError {
                     message = .mustacheTemplateError(
                         message: String(describing: parserError.error)

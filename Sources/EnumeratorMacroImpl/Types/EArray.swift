@@ -71,7 +71,7 @@ extension EArray: EMustacheTransformable {
                     keyValues.underlying.first(where: { $0.key.underlying == name })?.value
                 )
             }
-            if let comparable = self as? EComparableSequence {
+            if let comparable = self as? (any EComparableSequence) {
                 /// The underlying type is in charge of adding a diagnostic, if needed.
                 return comparable.comparableTransform(name)
             }

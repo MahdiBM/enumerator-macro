@@ -130,7 +130,7 @@ extension EOptional: EMustacheTransformable {
             case "exists":
                 return true
             default:
-                if let value = value as? EMustacheTransformable {
+                if let value = value as? (any EMustacheTransformable) {
                     /// The underlying type is in charge of adding a diagnostic, if needed.
                     return value.transform(name)
                 } else {
