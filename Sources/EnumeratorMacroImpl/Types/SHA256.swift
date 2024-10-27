@@ -34,7 +34,7 @@ extension HashAlgorithm {
 /// cryptographic hash functions (FIPS PUB 180-2).
 ///  Uses CryptoKit where available
 struct SHA256: HashAlgorithm, Sendable {
-    private let underlying: HashAlgorithm
+    private let underlying: any HashAlgorithm
 
     init() {
 #if canImport(CryptoKit)
