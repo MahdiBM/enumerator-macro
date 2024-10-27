@@ -493,6 +493,8 @@ Although not visible when writing templates, each underlying value that is passe
   * `dropFirst() -> String`: Equivalent to Swift's `.dropFirst()`.
   * `dropLast() -> String`: Equivalent to Swift's `.dropLast()`.
   * `hash() -> String`: The hash of the string using the `CRC32` algorithm.
+  * `sha() -> String`: The SHA256 hash of the string using the `SHA256` algorithm.
+    * DO NOT rely on this to be cryptographically secure. 
   * `snakeCased() -> String`: Converts the string from camelCase to snake_case.
   * `camelCased() -> String`: Converts the string from snake_case to camelCase.
   * `withParens() -> String`: If the string is not empty, surrounds it in parenthesis.
@@ -503,6 +505,8 @@ Although not visible when writing templates, each underlying value that is passe
   * `isOdd() -> Bool`: Returns whether the integer is odd or not.
   * `isEven() -> Bool`: Returns whether the integer is even or not.
   * `hash() -> String`: The hash of the string representation of the integer using the `CRC32` algorithm.
+  * `sha() -> String`: The hash of the string using the `SHA256` algorithm.
+    * DO NOT rely on this to be cryptographically secure.
 * `Array`:
   * `first() -> Element?`: Returns the first element of the array.
   * `last() -> Element?`: Returns the last element of the array.

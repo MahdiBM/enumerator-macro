@@ -45,7 +45,7 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
-    func testCreatesCaseCods() {
+    func testCreatesCaseCodes() {
         assertMacroExpansion(
             #"""
             @Enumerator(
@@ -76,6 +76,45 @@ final class EnumeratorMacroTests: XCTestCase {
                         8070
                     case .eFgH:
                         35847
+                    }
+                }
+            }
+            """#,
+            macros: EnumeratorMacroEntryPoint.macros
+        )
+    }
+
+    func testCreatesCaseCodesWithSHA256() {
+        assertMacroExpansion(
+            #"""
+            @Enumerator(
+            """
+            var caseCode: Int {
+                switch self {
+                {{#cases}}
+                case .{{name}}:
+                    {{dropLast(dropLast(dropLast(dropLast(dropLast(sha(name))))))}}
+                {{/cases}}
+                }
+            }
+            """
+            )
+            enum TestEnum {
+                case aBcD
+                case eFgH
+            }
+            """#,
+            expandedSource: #"""
+            enum TestEnum {
+                case aBcD
+                case eFgH
+            
+                var caseCode: Int {
+                    switch self {
+                    case .aBcD:
+                        20316
+                    case .eFgH:
+                        32128
                     }
                 }
             }

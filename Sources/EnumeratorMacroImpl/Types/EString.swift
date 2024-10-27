@@ -53,6 +53,8 @@ extension EString: EMustacheTransformable {
             return Bool(self)
         case "hash":
             return EString(crc32(self.utf8).description)
+        case "sha":
+            return EString(SHA256().hash(self.underlying).decimalRepresentation.prefix(10))
         case "dropFirst":
             return EString(String(self.dropFirst()))
         case "dropLast":

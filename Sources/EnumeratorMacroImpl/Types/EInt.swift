@@ -45,6 +45,8 @@ extension EInt: EMustacheTransformable {
             return (self.underlying & 1) == 1
         case "hash":
             return EString(crc32(self.description.utf8).description)
+        case "sha":
+            return EString(SHA256().hash(self.description).decimalRepresentation.prefix(10))
         default:
             RenderingContext.current.addOrReplaceFunctionDiagnostic(
                 .invalidTransform(
