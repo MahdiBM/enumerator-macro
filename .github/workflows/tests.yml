@@ -15,6 +15,9 @@ jobs:
           - swift:5.10-noble
           - swift:6.0-noble
           - swiftlang/swift:nightly-main-jammy
+        args:
+          - "--enable-code-coverage --parallel"
+          - "-c release -Xswiftc -enable-testing --enable-code-coverage --parallel"
 
     runs-on: ubuntu-latest
 
@@ -46,7 +49,7 @@ jobs:
           key: "${{ github.event.repository.name }}-debug-build-${{ matrix.swift-image }}-${{ runner.os }}-${{ hashFiles('./Package.resolved') }}"
 
       - name: Run tests
-        run: swift test --enable-code-coverage --parallel
+        run: swift test ${{ matrix.args }}
 
       - name: Submit code coverage
         uses: vapor/swift-codecov-action@v0.3
