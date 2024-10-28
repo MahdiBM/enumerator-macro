@@ -20,12 +20,12 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            url: "https://github.com/swiftlang/swift-syntax",
+            url: "https://github.com/swiftlang/swift-syntax.git",
             "509.0.0" ..< "601.0.0-latest"
         ),
         .package(
-            url: "https://github.com/hummingbird-project/swift-mustache",
-            from: "2.0.0-beta.3"
+            url: "https://github.com/hummingbird-project/swift-mustache.git",
+            from: "2.0.0"
         ),
     ],
     targets: [
