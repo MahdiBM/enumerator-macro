@@ -69,7 +69,7 @@ final class EnumeratorMacroTests: XCTestCase {
             enum TestEnum {
                 case aBcD
                 case eFgH
-            
+
                 var caseCode: Int {
                     switch self {
                     case .aBcD:
@@ -108,7 +108,7 @@ final class EnumeratorMacroTests: XCTestCase {
             enum TestEnum {
                 case aBcD
                 case eFgH
-            
+
                 var caseCode: Int {
                     switch self {
                     case .aBcD:
@@ -273,7 +273,7 @@ final class EnumeratorMacroTests: XCTestCase {
         assertMacroExpansion(
             #"""
             @Enumerator("""
-            {{#cases}} 
+            {{#cases}}
             {{^isEmpty(parameters)}}
             func get{{capitalized(name)}}() -> ({{joined(tupleValue(parameters))}})? {
                 switch self {
@@ -283,7 +283,7 @@ final class EnumeratorMacroTests: XCTestCase {
                     return nil
                 }
             }
-            {{/isEmpty(parameters)}} 
+            {{/isEmpty(parameters)}}
             {{/cases}}
             """)
             enum TestEnum {
@@ -1230,6 +1230,10 @@ final class EnumeratorMacroTests: XCTestCase {
         )
     }
 
+    func testRealEnumGeneratesCode() throws {
+        XCTAssertEqual(TestEnum.b.caseName, "b")
+    }
+
     /// FixItApplier not available in older versions of SwiftSyntax.
 #if canImport(SwiftSyntax600)
     /// Test name is referenced in the README.
@@ -1282,6 +1286,16 @@ var isTestCase2: Bool {
         return true
     default:
         return false
+    }
+}
+""")
+@Enumerator("""
+var caseName: Bool {
+    switch self {
+    {{#cases}}
+    case .{{name}}:
+        return "{{name}}"
+    {{/cases}}
     }
 }
 """)

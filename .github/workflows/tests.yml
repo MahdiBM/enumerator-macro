@@ -16,9 +16,11 @@ jobs:
           - swift:6.0-noble
           - swiftlang/swift:nightly-main-jammy
         config:
-          - args: "--enable-code-coverage"
+          - mode: "debug"
+            args: "--enable-code-coverage"
             with_codecov: true
-          - args: "-c release -Xswiftc -enable-testing"
+          - mode: "release"
+            args: "-c release -Xswiftc -enable-testing"
             with_codecov: false
 
     runs-on: ubuntu-latest
@@ -37,8 +39,8 @@ jobs:
         with:
           path: .build
           # e.g. 'enumerator-macro-debug-build-swiftlang/swift:nightly-6.0-jammy-Linux-c7008df8062ac4d5887ead9e59aa05829e'
-          key: "${{ github.event.repository.name }}-debug-build-${{ matrix.swift-image }}-${{ runner.os }}-${{ hashFiles('./Package.resolved') }}"
-          restore-keys: "${{ github.event.repository.name }}-debug-build-${{ matrix.swift-image }}-${{ runner.os }}-"
+          key: "${{ github.event.repository.name }}-${{ matrix.config.mode }}-build-${{ matrix.swift-image }}-${{ runner.os }}-${{ hashFiles('./Package.resolved') }}"
+          restore-keys: "${{ github.event.repository.name }}-${{ matrix.config.mode }}-build-${{ matrix.swift-image }}-${{ runner.os }}-"
 
       - name: Build ${{ github.event.repository.name }}
         run: swift build --build-tests
@@ -48,7 +50,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: .build
-          key: "${{ github.event.repository.name }}-debug-build-${{ matrix.swift-image }}-${{ runner.os }}-${{ hashFiles('./Package.resolved') }}"
+          key: "${{ github.event.repository.name }}-${{ matrix.config.mode }}-build-${{ matrix.swift-image }}-${{ runner.os }}-${{ hashFiles('./Package.resolved') }}"
 
       - name: Run tests
         run: swift test ${{ matrix.config.args }} --parallel
