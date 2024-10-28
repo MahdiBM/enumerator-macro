@@ -1290,7 +1290,7 @@ var isTestCase2: Bool {
 }
 """)
 @Enumerator("""
-var caseName: Bool {
+var caseName: String {
     switch self {
     {{#cases}}
     case .{{name}}:
