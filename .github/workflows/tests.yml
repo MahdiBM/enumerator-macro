@@ -12,20 +12,22 @@ jobs:
       fail-fast: false
       matrix:
         swift-image:
-          - swift:5.10-noble
-          - swift:6.0-noble
-          - swiftlang/swift:nightly-main-jammy
+          - name: swift:5.10-noble
+            continue-on-error: false
+          - name: swift:6.0-noble
+            continue-on-error: false
+          - name: swiftlang/swift:nightly-main-jammy
+            # https://github.com/swiftlang/swift/issues/77242
+            continue-on-error: true
         config:
           - mode: "debug"
-            args: "--enable-code-coverage"
-            with_codecov: true
+            build_args: ""
           - mode: "release"
-            args: "-c release -Xswiftc -enable-testing"
-            with_codecov: false
+            build_args: "-Xswiftc -enable-testing"
 
     runs-on: ubuntu-latest
 
-    container: ${{ matrix.swift-image }}
+    container: ${{ matrix.swift-image.name }}
 
     timeout-minutes: 30
 
@@ -39,24 +41,27 @@ jobs:
         with:
           path: .build
           # e.g. 'enumerator-macro-debug-build-swiftlang/swift:nightly-6.0-jammy-Linux-c7008df8062ac4d5887ead9e59aa05829e'
-          key: "${{ github.event.repository.name }}-${{ matrix.config.mode }}-build-${{ matrix.swift-image }}-${{ runner.os }}-${{ hashFiles('./Package.resolved') }}"
-          restore-keys: "${{ github.event.repository.name }}-${{ matrix.config.mode }}-build-${{ matrix.swift-image }}-${{ runner.os }}-"
+          key: "${{ github.event.repository.name }}-${{ matrix.config.mode }}-build-${{ matrix.swift-image.name }}-${{ runner.os }}-${{ hashFiles('./Package.resolved') }}"
+          restore-keys: "${{ github.event.repository.name }}-${{ matrix.config.mode }}-build-${{ matrix.swift-image.name }}-${{ runner.os }}-"
 
       - name: Build ${{ github.event.repository.name }}
-        run: swift build --build-tests
+        continue-on-error: ${{ matrix.swift-image.continue-on-error }}
+        run: swift build --build-tests -c ${{ matrix.config.mode }} ${{ matrix.config.build_args }}
 
       - name: Cache .build
         if: steps.restore-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
           path: .build
-          key: "${{ github.event.repository.name }}-${{ matrix.config.mode }}-build-${{ matrix.swift-image }}-${{ runner.os }}-${{ hashFiles('./Package.resolved') }}"
+          key: "${{ github.event.repository.name }}-${{ matrix.config.mode }}-build-${{ matrix.swift-image.name }}-${{ runner.os }}-${{ hashFiles('./Package.resolved') }}"
 
       - name: Run tests
-        run: swift test ${{ matrix.config.args }} --parallel
+        continue-on-error: ${{ matrix.swift-image.continue-on-error }}
+        run: swift test --parallel --enable-code-coverage -c ${{ matrix.config.mode }}
 
       - name: Submit code coverage
-        if: matrix.config.with_codecov == 'true'
+        continue-on-error: ${{ matrix.swift-image.continue-on-error }}
         uses: vapor/swift-codecov-action@v0.3
         with:
-          codecov_token: ${{ secrets.CODECOV_TOKEN }}
+          build_parameters: "-c ${{ matrix.config.mode }}"
+          codecov_token: "${{ secrets.CODECOV_TOKEN }}"
