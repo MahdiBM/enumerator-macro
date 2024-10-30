@@ -505,7 +505,7 @@ Although not visible when writing templates, each underlying value that is passe
   * `isOdd() -> Bool`: Returns whether the integer is odd or not.
   * `isEven() -> Bool`: Returns whether the integer is even or not.
   * `hash() -> String`: The hash of the string representation of the integer using the `CRC32` algorithm.
-  * `sha() -> String`: The hash of the string using the `SHA256` algorithm.
+  * `sha() -> String`: The hash of the string representation of the integer using the `SHA256` algorithm.
     * DO NOT rely on this to be cryptographically secure.
 * `Array`:
   * `first() -> Element?`: Returns the first element of the array.
