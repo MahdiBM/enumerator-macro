@@ -124,12 +124,12 @@ private var localizationParameters: [Any] {
     """#
 )
 public enum ErrorMessage {
-    public static let localizationServiceType: LocalizationServiceProtocol.Type? = nil
+    public static let localizationServiceType: (any LocalizationServiceProtocol.Type)? = nil
 
     case allergenAlreadyAdded // business_error
     case alreadyOngoingInventory
     case apiKeyWithoutEnoughPermission(integration: String, other: Bool?, Int)
-    case databaseError(error: Error, isConstraintViolation: Bool) // business_error; l8n_params:
+    case databaseError(error: any Error, isConstraintViolation: Bool) // business_error; l8n_params:
 
     public var caseName: String {
         self.subtype.rawValue
