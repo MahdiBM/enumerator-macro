@@ -32,6 +32,7 @@ let package = Package(
         .macro(
             name: "EnumeratorMacroImpl",
             dependencies: [
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
                 .product(name: "SwiftIDEUtils", package: "swift-syntax"),
