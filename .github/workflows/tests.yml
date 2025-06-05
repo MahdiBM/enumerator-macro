@@ -15,17 +15,21 @@ jobs:
           - name: swift:5.10-noble
             continue-on-error: false
             code_cov_args: ""
+            experimental_args: ""
           - name: swift:6.0-noble
             continue-on-error: false
             code_cov_args: "--enable-code-coverage"
+            experimental_args: ""
           - name: swift:6.1-noble
             continue-on-error: false
             # Some kind of issue with code coverage on 6.1
             code_cov_args: ""
+            experimental_args: "--enable-experimental-prebuilts"
           - name: swiftlang/swift:nightly-main-jammy
             # https://github.com/swiftlang/swift/issues/77242
             continue-on-error: true
             code_cov_args: "--enable-code-coverage"
+            experimental_args: "--enable-experimental-prebuilts"
         config:
           - mode: "debug"
           - mode: "release"
@@ -57,7 +61,7 @@ jobs:
 
       - name: Build ${{ github.event.repository.name }}
         continue-on-error: ${{ matrix.swift-image.continue-on-error }}
-        run: swift build --build-tests -Xswiftc -enable-testing -c ${{ matrix.config.mode }} ${{ matrix.swift-image.code_cov_args }}
+        run: swift build --build-tests -Xswiftc -enable-testing -c ${{ matrix.config.mode }} ${{ matrix.swift-image.code_cov_args }} ${{ matrix.swift-image.experimental_args }}
 
       - name: Cache .build
         if: steps.restore-cache.outputs.cache-hit != 'true'
@@ -68,7 +72,7 @@ jobs:
 
       - name: Run tests
         continue-on-error: ${{ matrix.swift-image.continue-on-error }}
-        run: swift test --skip-build --parallel -c ${{ matrix.config.mode }} ${{ matrix.swift-image.code_cov_args }}
+        run: swift test --skip-build --parallel -c ${{ matrix.config.mode }} ${{ matrix.swift-image.code_cov_args }} ${{ matrix.swift-image.experimental_args }}
 
       - name: Submit code coverage
         continue-on-error: ${{ matrix.swift-image.continue-on-error }}
