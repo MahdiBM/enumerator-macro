@@ -1,9 +1,9 @@
 import EnumeratorMacro
 import EnumeratorMacroImpl
-import SwiftSyntaxMacros
 import SwiftDiagnostics
-import SwiftSyntaxMacrosTestSupport
+import SwiftSyntaxMacros
 import SwiftSyntaxMacrosGenericTestSupport
+import SwiftSyntaxMacrosTestSupport
 import XCTest
 
 final class EnumeratorMacroTests: XCTestCase {
@@ -28,20 +28,20 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            enum TestEnum {
-                case aBcD
-                case eFgH
+                enum TestEnum {
+                    case aBcD
+                    case eFgH
 
-                var caseName: String {
-                    switch self {
-                    case .aBcD:
-                        "abcd"
-                    case .eFgH:
-                        "efgh"
+                    var caseName: String {
+                        switch self {
+                        case .aBcD:
+                            "abcd"
+                        case .eFgH:
+                            "efgh"
+                        }
                     }
                 }
-            }
-            """#,
+                """#,
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -67,20 +67,20 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            enum TestEnum {
-                case aBcD
-                case eFgH
+                enum TestEnum {
+                    case aBcD
+                    case eFgH
 
-                var caseCode: Int {
-                    switch self {
-                    case .aBcD:
-                        8070
-                    case .eFgH:
-                        35847
+                    var caseCode: Int {
+                        switch self {
+                        case .aBcD:
+                            8070
+                        case .eFgH:
+                            35847
+                        }
                     }
                 }
-            }
-            """#,
+                """#,
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -106,20 +106,20 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            enum TestEnum {
-                case aBcD
-                case eFgH
+                enum TestEnum {
+                    case aBcD
+                    case eFgH
 
-                var caseCode: Int {
-                    switch self {
-                    case .aBcD:
-                        20316
-                    case .eFgH:
-                        32128
+                    var caseCode: Int {
+                        switch self {
+                        case .aBcD:
+                            20316
+                        case .eFgH:
+                            32128
+                        }
                     }
                 }
-            }
-            """#,
+                """#,
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -141,18 +141,18 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            enum TestEnum {
-                case a(val1: String, val2: Int)
-                case b
-                case testCase(testValue: String)
-
-                enum CopyOfSelf {
+                enum TestEnum {
                     case a(val1: String, val2: Int)
                     case b
                     case testCase(testValue: String)
+
+                    enum CopyOfSelf {
+                        case a(val1: String, val2: Int)
+                        case b
+                        case testCase(testValue: String)
+                    }
                 }
-            }
-            """#,
+                """#,
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -179,39 +179,39 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            enum TestEnum {
-                case a(val1: String, val2: Int)
-                case b
-                case testCase(testValue: String)
+                enum TestEnum {
+                    case a(val1: String, val2: Int)
+                    case b
+                    case testCase(testValue: String)
 
-                var isA: Bool {
-                    switch self {
-                    case .a:
-                        return true
-                    default:
-                        return false
+                    var isA: Bool {
+                        switch self {
+                        case .a:
+                            return true
+                        default:
+                            return false
+                        }
+                    }
+
+                    var isB: Bool {
+                        switch self {
+                        case .b:
+                            return true
+                        default:
+                            return false
+                        }
+                    }
+
+                    var isTestCase: Bool {
+                        switch self {
+                        case .testCase:
+                            return true
+                        default:
+                            return false
+                        }
                     }
                 }
-
-                var isB: Bool {
-                    switch self {
-                    case .b:
-                        return true
-                    default:
-                        return false
-                    }
-                }
-
-                var isTestCase: Bool {
-                    switch self {
-                    case .testCase:
-                        return true
-                    default:
-                        return false
-                    }
-                }
-            }
-            """#,
+                """#,
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -243,29 +243,29 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            enum TestEnum {
-                case a(val1: String, val2: Int)
-                case b
-                case testCase(testValue: String)
-
-                enum Subtype: String {
-                    case a
+                enum TestEnum {
+                    case a(val1: String, val2: Int)
                     case b
-                    case test_case
-                }
+                    case testCase(testValue: String)
 
-                var subtype: Subtype {
-                    switch self {
-                    case .a:
-                        .a
-                    case .b:
-                        .b
-                    case .testCase:
-                        .test_case
+                    enum Subtype: String {
+                        case a
+                        case b
+                        case test_case
+                    }
+
+                    var subtype: Subtype {
+                        switch self {
+                        case .a:
+                            .a
+                        case .b:
+                            .b
+                        case .testCase:
+                            .test_case
+                        }
                     }
                 }
-            }
-            """#,
+                """#,
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -294,30 +294,30 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            enum TestEnum {
-                case a(val1: String, Int)
-                case b
-                case testCase(testValue: String)
+                enum TestEnum {
+                    case a(val1: String, Int)
+                    case b
+                    case testCase(testValue: String)
 
-                func getA() -> (val1: String, param2: Int)? {
-                    switch self {
-                    case let .a(val1, param2):
-                        return (val1, param2)
-                    default:
-                        return nil
+                    func getA() -> (val1: String, param2: Int)? {
+                        switch self {
+                        case let .a(val1, param2):
+                            return (val1, param2)
+                        default:
+                            return nil
+                        }
+                    }
+
+                    func getTestCase() -> (String)? {
+                        switch self {
+                        case let .testCase(testValue):
+                            return (testValue)
+                        default:
+                            return nil
+                        }
                     }
                 }
-
-                func getTestCase() -> (String)? {
-                    switch self {
-                    case let .testCase(testValue):
-                        return (testValue)
-                    default:
-                        return nil
-                    }
-                }
-            }
-            """#,
+                """#,
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -349,28 +349,28 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            public enum ErrorMessage {
-                case case1 // business_error
-                case case2 // business_error: true
-                case case3 // business_error: false
-                case case4 // business_error: adfasdfdsff
-                case somethingSomething(value: String)
-                case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
+                public enum ErrorMessage {
+                    case case1 // business_error
+                    case case2 // business_error: true
+                    case case3 // business_error: false
+                    case case4 // business_error: adfasdfdsff
+                    case somethingSomething(value: String)
+                    case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
 
-                package var isBusinessError: Bool {
-                    switch self {
-                    case
-                    .case1,
-                    .case2,
-                    .otherCase
-                    :
-                        return true
-                    default:
-                        return false
+                    package var isBusinessError: Bool {
+                        switch self {
+                        case
+                        .case1,
+                        .case2,
+                        .otherCase
+                        :
+                            return true
+                        default:
+                            return false
+                        }
                     }
                 }
-            }
-            """#,
+                """#,
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -418,24 +418,24 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            public enum ErrorMessage {
-                case case1 // business_error
-                case case2 // business_error: true
-                case case3 // business_error: false
-                case case4 // business_error: adfasdfdsff
-                case somethingSomething(value1: String, Int) // l8n_params: value
-                case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
+                public enum ErrorMessage {
+                    case case1 // business_error
+                    case case2 // business_error: true
+                    case case3 // business_error: false
+                    case case4 // business_error: adfasdfdsff
+                    case somethingSomething(value1: String, Int) // l8n_params: value
+                    case otherCase(error: Error, isViolation: Bool) // business_error; l8n_params:
 
-                private var localizationParameters: [Any] {
-                    switch self {
-                    case .somethingSomething:
-                        [value]
-                    default:
-                        []
+                    private var localizationParameters: [Any] {
+                        switch self {
+                        case .somethingSomething:
+                            [value]
+                        default:
+                            []
+                        }
                     }
                 }
-            }
-            """#,
+                """#,
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -456,8 +456,8 @@ final class EnumeratorMacroTests: XCTestCase {
             id: "commentKeyNotAllowed"
         )
         let keyNotFoundMessage = """
-        Comment key 'business_error' is not allowed by the 'allowedComments' of the macro declaration
-        """
+            Comment key 'business_error' is not allowed by the 'allowedComments' of the macro declaration
+            """
         assertMacroExpansion(
             #"""
             @Enumerator(
@@ -487,15 +487,15 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            public enum ErrorMessage {
-                case case1 // business_error
-                case case2 // business_error: true
-                case case3 // business_error: false
-                case case4 // business_error: adfasdfdsff
-                case somethingSomething(value: String)
-                case otherCase(error: Error, isViolation: Bool) // business_error;
-            }
-            """#,
+                public enum ErrorMessage {
+                    case case1 // business_error
+                    case case2 // business_error: true
+                    case case3 // business_error: false
+                    case case4 // business_error: adfasdfdsff
+                    case somethingSomething(value: String)
+                    case otherCase(error: Error, isViolation: Bool) // business_error;
+                }
+                """#,
             diagnostics: [
                 .init(
                     id: keyNotFoundId,
@@ -536,7 +536,7 @@ final class EnumeratorMacroTests: XCTestCase {
                     column: 10,
                     severity: .error
                 ),
-                diagnosticNote
+                diagnosticNote,
             ],
             macros: EnumeratorMacroEntryPoint.macros
         )
@@ -558,8 +558,8 @@ final class EnumeratorMacroTests: XCTestCase {
             id: "commentKeyNotAllowed"
         )
         let keyNotFoundMessage = """
-        Comment key 'biz_error' is not allowed by the 'allowedComments' of the macro declaration
-        """
+            Comment key 'biz_error' is not allowed by the 'allowedComments' of the macro declaration
+            """
         assertMacroExpansion(
             #"""
             @Enumerator(
@@ -589,15 +589,15 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            public enum ErrorMessage {
-                case case1 // business_error
-                case case2 // business_error: true
-                case case3 // business_error: false
-                case case4 // business_error: adfasdfdsff
-                case somethingSomething(value: String)
-                case otherCase(error: Error, isViolation: Bool) // business_error;
-            }
-            """#,
+                public enum ErrorMessage {
+                    case case1 // business_error
+                    case case2 // business_error: true
+                    case case3 // business_error: false
+                    case case4 // business_error: adfasdfdsff
+                    case somethingSomething(value: String)
+                    case otherCase(error: Error, isViolation: Bool) // business_error;
+                }
+                """#,
             diagnostics: [
                 .init(
                     id: keyNotFoundId,
@@ -646,7 +646,7 @@ final class EnumeratorMacroTests: XCTestCase {
                     column: 16,
                     severity: .error
                 ),
-                diagnosticNote
+                diagnosticNote,
             ],
             macros: EnumeratorMacroEntryPoint.macros
         )
@@ -658,7 +658,8 @@ final class EnumeratorMacroTests: XCTestCase {
                 domain: "EnumeratorMacro.MacroError",
                 id: "redundantKeyValuesFunctionCall"
             ),
-            message: "Redundant 'keyValues' function used. The array is already of type '[KeyValue]'",
+            message:
+                "Redundant 'keyValues' function used. The array is already of type '[KeyValue]'",
             line: 1,
             column: 13,
             severity: .error
@@ -674,14 +675,14 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            public enum ErrorMessage {
-                case case1 // business_error
-                case case2 // business_error: true
-            }
-            """#,
+                public enum ErrorMessage {
+                    case case1 // business_error
+                    case case2 // business_error: true
+                }
+                """#,
             diagnostics: [
                 diagnostic,
-                diagnostic
+                diagnostic,
             ],
             macros: EnumeratorMacroEntryPoint.macros
         )
@@ -713,20 +714,20 @@ final class EnumeratorMacroTests: XCTestCase {
             """#,
             /// Should not contain those excessive new lines:
             expandedSource: #"""
-            enum TestEnum {
-                case my_case
-                case my_OTHER_case
+                enum TestEnum {
+                    case my_case
+                    case my_OTHER_case
 
-                var caseName: String {
-                    switch self {
-                    case .my_case:
-                        "myCase"
-                    case .my_OTHER_case:
-                        "myOtherCase"
+                    var caseName: String {
+                        switch self {
+                        case .my_case:
+                            "myCase"
+                        case .my_OTHER_case:
+                            "myOtherCase"
+                        }
                     }
                 }
-            }
-            """#,
+                """#,
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -755,19 +756,19 @@ final class EnumeratorMacroTests: XCTestCase {
             /// because `.b` has a trailing comma after it.
             /// But the macro should recover from this situation:
             expandedSource: #"""
-            enum TestEnum {
-                case a
-                case c
-                case b
+                enum TestEnum {
+                    case a
+                    case c
+                    case b
 
-                public var constant: String {
-                    switch self {
-                    case .a, .b, .c:
-                        "some constant"
+                    public var constant: String {
+                        switch self {
+                        case .a, .b, .c:
+                            "some constant"
+                        }
                     }
                 }
-            }
-            """#,
+                """#,
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -787,22 +788,24 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            struct TestString {
-                let value: String
-            }
-            """#,
-            diagnostics: [.init(
-                id: .init(
-                    domain: "EnumeratorMacro.MacroError",
-                    id: "isNotEnum"
-                ),
-                message: """
-                Only enums are supported
-                """,
-                line: 1,
-                column: 1,
-                severity: .error
-            )],
+                struct TestString {
+                    let value: String
+                }
+                """#,
+            diagnostics: [
+                .init(
+                    id: .init(
+                        domain: "EnumeratorMacro.MacroError",
+                        id: "isNotEnum"
+                    ),
+                    message: """
+                        Only enums are supported
+                        """,
+                    line: 1,
+                    column: 1,
+                    severity: .error
+                )
+            ],
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -816,22 +819,24 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            enum TestEnum {
-                case a
-            }
-            """#,
-            diagnostics: [.init(
-                id: .init(
-                    domain: "EnumeratorMacro.MacroError",
-                    id: "macroDeclarationHasNoArguments"
-                ),
-                message: """
-                The macro declaration needs to have at least 1 String-Literal argument
-                """,
-                line: 1,
-                column: 1,
-                severity: .error
-            )],
+                enum TestEnum {
+                    case a
+                }
+                """#,
+            diagnostics: [
+                .init(
+                    id: .init(
+                        domain: "EnumeratorMacro.MacroError",
+                        id: "macroDeclarationHasNoArguments"
+                    ),
+                    message: """
+                        The macro declaration needs to have at least 1 String-Literal argument
+                        """,
+                    line: 1,
+                    column: 1,
+                    severity: .error
+                )
+            ],
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -845,22 +850,24 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            enum TestEnum {
-                case a
-            }
-            """#,
-            diagnostics: [.init(
-                id: .init(
-                    domain: "EnumeratorMacro.MacroError",
-                    id: "macroDeclarationHasNoArguments"
-                ),
-                message: """
-                The macro declaration needs to have at least 1 String-Literal argument
-                """,
-                line: 1,
-                column: 1,
-                severity: .error
-            )],
+                enum TestEnum {
+                    case a
+                }
+                """#,
+            diagnostics: [
+                .init(
+                    id: .init(
+                        domain: "EnumeratorMacro.MacroError",
+                        id: "macroDeclarationHasNoArguments"
+                    ),
+                    message: """
+                        The macro declaration needs to have at least 1 String-Literal argument
+                        """,
+                    line: 1,
+                    column: 1,
+                    severity: .error
+                )
+            ],
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -874,22 +881,24 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            enum TestEnum {
-                case a
-            }
-            """#,
-            diagnostics: [.init(
-                id: .init(
-                    domain: "EnumeratorMacro.MacroError",
-                    id: "invalidArgument"
-                ),
-                message: """
-                Invalid argument received
-                """,
-                line: 1,
-                column: 13,
-                severity: .error
-            )],
+                enum TestEnum {
+                    case a
+                }
+                """#,
+            diagnostics: [
+                .init(
+                    id: .init(
+                        domain: "EnumeratorMacro.MacroError",
+                        id: "invalidArgument"
+                    ),
+                    message: """
+                        Invalid argument received
+                        """,
+                    line: 1,
+                    column: 13,
+                    severity: .error
+                )
+            ],
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -912,12 +921,12 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            enum TestEnum {
-                case a(val1: String, Int)
-                case b
-                case testCase(testValue: String)
-            }
-            """#,
+                enum TestEnum {
+                    case a(val1: String, Int)
+                    case b
+                    case testCase(testValue: String)
+                }
+                """#,
             diagnostics: [
                 .init(
                     id: .init(
@@ -925,8 +934,8 @@ final class EnumeratorMacroTests: XCTestCase {
                         id: "expectedNonInterpolatedStringLiteral"
                     ),
                     message: """
-                    Expected a non-interpolated string literal
-                    """,
+                        Expected a non-interpolated string literal
+                        """,
                     line: 4,
                     column: 10,
                     severity: .error
@@ -937,12 +946,12 @@ final class EnumeratorMacroTests: XCTestCase {
                         id: "expectedNonInterpolatedStringLiteral"
                     ),
                     message: """
-                    Expected a non-interpolated string literal
-                    """,
+                        Expected a non-interpolated string literal
+                        """,
                     line: 6,
                     column: 5,
                     severity: .error
-                )
+                ),
             ],
             macros: EnumeratorMacroEntryPoint.macros
         )
@@ -965,24 +974,26 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            enum TestEnum {
-                case a(val1: String, Int)
-                case b
-                case testCase(testValue: String)
-            }
-            """#,
-            diagnostics: [.init(
-                id: .init(
-                    domain: "EnumeratorMacro.MacroError",
-                    id: "mustacheTemplateError"
-                ),
-                message: """
-                Error while rendering the template: unfinishedName
-                """,
-                line: 3,
-                column: 1,
-                severity: .error
-            )],
+                enum TestEnum {
+                    case a(val1: String, Int)
+                    case b
+                    case testCase(testValue: String)
+                }
+                """#,
+            diagnostics: [
+                .init(
+                    id: .init(
+                        domain: "EnumeratorMacro.MacroError",
+                        id: "mustacheTemplateError"
+                    ),
+                    message: """
+                        Error while rendering the template: unfinishedName
+                        """,
+                    line: 3,
+                    column: 1,
+                    severity: .error
+                )
+            ],
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -1004,12 +1015,12 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            enum TestEnum {
-                case a(val1: String, Int)
-                case b
-                case testCase(testValue: String)
-            }
-            """#,
+                enum TestEnum {
+                    case a(val1: String, Int)
+                    case b
+                    case testCase(testValue: String)
+                }
+                """#,
             diagnostics: [
                 .init(
                     id: .init(
@@ -1017,13 +1028,13 @@ final class EnumeratorMacroTests: XCTestCase {
                         id: "renderedSyntaxContainsErrors"
                     ),
                     message: """
-                    Rendered syntax contains errors:
-                    enum Subtype: String {
-                        case "a"
-                        case "b"
-                        case "testCase"
-                    }
-                    """,
+                        Rendered syntax contains errors:
+                        enum Subtype: String {
+                            case "a"
+                            case "b"
+                            case "testCase"
+                        }
+                        """,
                     line: 1,
                     column: 13,
                     severity: .error
@@ -1034,14 +1045,16 @@ final class EnumeratorMacroTests: XCTestCase {
                         id: "MissingNodesError"
                     ),
                     message: """
-                    expected identifier in enum case
-                    """,
+                        expected identifier in enum case
+                        """,
                     line: 2,
                     column: 17,
                     severity: .error,
-                    fixIts: [.init(
-                        message: "insert identifier"
-                    )]
+                    fixIts: [
+                        .init(
+                            message: "insert identifier"
+                        )
+                    ]
                 ),
                 .init(
                     id: .init(
@@ -1049,8 +1062,8 @@ final class EnumeratorMacroTests: XCTestCase {
                         id: "UnexpectedNodesError"
                     ),
                     message: """
-                    unexpected code '"a"' before enum case
-                    """,
+                        unexpected code '"a"' before enum case
+                        """,
                     line: 2,
                     column: 17,
                     severity: .error
@@ -1061,14 +1074,16 @@ final class EnumeratorMacroTests: XCTestCase {
                         id: "MissingNodesError"
                     ),
                     message: """
-                    expected identifier in enum case
-                    """,
+                        expected identifier in enum case
+                        """,
                     line: 3,
                     column: 7,
                     severity: .error,
-                    fixIts: [.init(
-                        message: "insert identifier"
-                    )]
+                    fixIts: [
+                        .init(
+                            message: "insert identifier"
+                        )
+                    ]
                 ),
                 .init(
                     id: .init(
@@ -1076,8 +1091,8 @@ final class EnumeratorMacroTests: XCTestCase {
                         id: "UnexpectedNodesError"
                     ),
                     message: """
-                    unexpected code '"b"' before enum case
-                    """,
+                        unexpected code '"b"' before enum case
+                        """,
                     line: 3,
                     column: 7,
                     severity: .error
@@ -1088,14 +1103,16 @@ final class EnumeratorMacroTests: XCTestCase {
                         id: "MissingNodesError"
                     ),
                     message: """
-                    expected identifier in enum case
-                    """,
+                        expected identifier in enum case
+                        """,
                     line: 4,
                     column: 5,
                     severity: .error,
-                    fixIts: [.init(
-                        message: "insert identifier"
-                    )]
+                    fixIts: [
+                        .init(
+                            message: "insert identifier"
+                        )
+                    ]
                 ),
                 .init(
                     id: .init(
@@ -1103,8 +1120,8 @@ final class EnumeratorMacroTests: XCTestCase {
                         id: "UnexpectedNodesError"
                     ),
                     message: """
-                    unexpected code '"testCase"' in enum
-                    """,
+                        unexpected code '"testCase"' in enum
+                        """,
                     line: 4,
                     column: 5,
                     severity: .error
@@ -1134,21 +1151,21 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            enum TestEnum {
-                case a(val1: String, Int)
-                case b
-                case testCase(testValue: String)
+                enum TestEnum {
+                    case a(val1: String, Int)
+                    case b
+                    case testCase(testValue: String)
 
-                var isTestCase: Bool {
-                    switch self {
-                    case .testCase:
-                        return true
-                    default:
-                        return false
+                    var isTestCase: Bool {
+                        switch self {
+                        case .testCase:
+                            return true
+                        default:
+                            return false
+                        }
                     }
                 }
-            }
-            """#,
+                """#,
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -1173,21 +1190,21 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            enum TestEnum {
-                case a(val1: String, Int)
-                case b
-                case testCase(testValue: String)
+                enum TestEnum {
+                    case a(val1: String, Int)
+                    case b
+                    case testCase(testValue: String)
 
-                var isTestCase: Bool {
-                    switch self {
-                    case .testCase:
-                        return true
-                    default:
-                        return false
+                    var isTestCase: Bool {
+                        switch self {
+                        case .testCase:
+                            return true
+                        default:
+                            return false
+                        }
                     }
                 }
-            }
-            """#,
+                """#,
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -1212,21 +1229,21 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            enum TestEnum {
-                case a(val1: String, Int)
-                case b
-                case testCase(testValue: String)
+                enum TestEnum {
+                    case a(val1: String, Int)
+                    case b
+                    case testCase(testValue: String)
 
-                var isTestCase: Bool {
-                    switch self {
-                    case let .a(x, _):
-                        return x
-                    default:
-                        return false
+                    var isTestCase: Bool {
+                        switch self {
+                        case let .a(x, _):
+                            return x
+                        default:
+                            return false
+                        }
                     }
                 }
-            }
-            """#,
+                """#,
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
@@ -1236,12 +1253,12 @@ final class EnumeratorMacroTests: XCTestCase {
     }
 
     /// FixItApplier not available in older versions of SwiftSyntax.
-#if canImport(SwiftSyntax600) || canImport(SwiftSyntax601) || canImport(SwiftSyntax602) || canImport(SwiftSyntax603)
+    #if canImport(SwiftSyntax600) || canImport(SwiftSyntax601) || canImport(SwiftSyntax602) || canImport(SwiftSyntax603)
     /// Test name is referenced in the README.
     func testAppliesFixIts() throws {
         let unterminatedString = """
-        let unterminated = "This is unterminated
-        """
+            let unterminated = "This is unterminated
+            """
         assertMacroExpansion(
             #"""
             @Enumerator("""
@@ -1254,52 +1271,56 @@ final class EnumeratorMacroTests: XCTestCase {
             }
             """#,
             expandedSource: #"""
-            enum TestEnum {
-                case a(val1: String, Int)
-                case b
-                case testCase(testValue: String)
+                enum TestEnum {
+                    case a(val1: String, Int)
+                    case b
+                    case testCase(testValue: String)
 
-                let unterminated = "This is unterminated"
-            }
-            """#,
+                    let unterminated = "This is unterminated"
+                }
+                """#,
             macros: EnumeratorMacroEntryPoint.macros
         )
     }
-#endif
+    #endif
 }
 
-@Enumerator("""
-{{#cases}}
-var is{{capitalized(name)}}: Bool {
-    switch self {
-    case .{{name}}:
-        return true
-    default:
-        return false
-    }
-}
-{{/cases}}
-""",
-"""
-var isTestCase2: Bool {
-    switch self {
-    case let .testCase:
-        return true
-    default:
-        return false
-    }
-}
-""")
-@Enumerator("""
-var caseName: String {
-    switch self {
+@Enumerator(
+    """
     {{#cases}}
-    case .{{name}}:
-        return "{{name}}"
-    {{/cases}}
+    var is{{capitalized(name)}}: Bool {
+        switch self {
+        case .{{name}}:
+            return true
+        default:
+            return false
+        }
     }
-}
-""")
+    {{/cases}}
+    """,
+    """
+    var isTestCase2: Bool {
+        switch self {
+        case let .testCase:
+            return true
+        default:
+            return false
+        }
+    }
+    """
+)
+@Enumerator(
+    """
+    var caseName: String {
+        switch self {
+        {{#cases}}
+        case .{{name}}:
+            return "{{name}}"
+        {{/cases}}
+        }
+    }
+    """
+)
 enum TestEnum {
     case a(val1: String, val2: Int)
     case b

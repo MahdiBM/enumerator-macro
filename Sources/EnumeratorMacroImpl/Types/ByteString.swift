@@ -1,12 +1,10 @@
-/*
- This source file is part of the Swift.org open source project
-
- Copyright (c) 2014 - 2017 Apple Inc. and the Swift project authors
- Licensed under Apache License v2.0 with Runtime Library Exception
-
- See http://swift.org/LICENSE.txt for license information
- See http://swift.org/CONTRIBUTORS.txt for Swift project authors
- */
+// This source file is part of the Swift.org open source project
+//
+// Copyright (c) 2014 - 2017 Apple Inc. and the Swift project authors
+// Licensed under Apache License v2.0 with Runtime Library Exception
+//
+// See http://swift.org/LICENSE.txt for license information
+// See http://swift.org/CONTRIBUTORS.txt for Swift project authors
 
 /// Borrowed from https://github.com/swiftlang/swift-tools-support-core/Sources/TSCBasic/ByteString.swift
 
@@ -56,7 +54,7 @@ struct ByteString: ExpressibleByArrayLiteral, Hashable, Sendable {
 
     /// Create a byte string from an byte buffer.
     @inlinable
-    init<S: Sequence> (_ contents: S) where S.Iterator.Element == UInt8 {
+    init<S: Sequence>(_ contents: S) where S.Iterator.Element == UInt8 {
         _bytes = [UInt8](contents)
     }
 
@@ -69,13 +67,13 @@ struct ByteString: ExpressibleByArrayLiteral, Hashable, Sendable {
     /// Access the byte string contents as an array.
     @inlinable
     var contents: [UInt8] {
-        return _bytes
+        _bytes
     }
 
     /// Return the byte string size.
     @inlinable
     var count: Int {
-        return _bytes.count
+        _bytes.count
     }
 
     /// Gives a non-escaping closure temporary access to an immutable `Data` instance wrapping the `ByteString` without
@@ -85,7 +83,7 @@ struct ByteString: ExpressibleByArrayLiteral, Hashable, Sendable {
     ///   - closure: The closure that will have access to a `Data` instance for the duration of its lifetime.
     @inlinable
     func withData<T>(_ closure: (Data) throws -> T) rethrows -> T {
-        return try _bytes.withUnsafeBytes { pointer -> T in
+        try _bytes.withUnsafeBytes { pointer -> T in
             let mutatingPointer = UnsafeMutableRawPointer(mutating: pointer.baseAddress!)
             let data = Data(bytesNoCopy: mutatingPointer, count: pointer.count, deallocator: .none)
             return try closure(data)
@@ -123,7 +121,7 @@ struct ByteString: ExpressibleByArrayLiteral, Hashable, Sendable {
 extension ByteString: CustomStringConvertible {
     /// Return the string decoded as a UTF8 sequence, or traps if not possible.
     var description: String {
-        return cString
+        cString
     }
 
     /// Return the string decoded as a UTF8 sequence, if possible.
@@ -134,7 +132,9 @@ extension ByteString: CustomStringConvertible {
         // is also wrong if the string contains embedded '\0' characters.
         let tmp = _bytes + [UInt8(0)]
         return tmp.withUnsafeBufferPointer { ptr in
-            return String(validatingUTF8: unsafeBitCast(ptr.baseAddress, to: UnsafePointer<CChar>.self))
+            String(
+                validatingUTF8: unsafeBitCast(ptr.baseAddress, to: UnsafePointer<CChar>.self)
+            )
         }
     }
 
@@ -142,12 +142,12 @@ extension ByteString: CustomStringConvertible {
     /// characters for ill-formed UTF8 sequences.
     @inlinable
     var cString: String {
-        return String(decoding: _bytes, as: Unicode.UTF8.self)
+        String(decoding: _bytes, as: Unicode.UTF8.self)
     }
 
     @available(*, deprecated, message: "use description or validDescription instead")
     var asString: String? {
-        return validDescription
+        validDescription
     }
 }
 

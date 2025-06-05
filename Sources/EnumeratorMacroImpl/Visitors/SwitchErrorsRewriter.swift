@@ -33,7 +33,8 @@ final class SwitchErrorsRewriter: SyntaxRewriter {
         let lastIndex = items.lastIndex(where: { _ in true })!
         var lastIsAMissingExpr: Bool {
             if let pattern = items[lastIndex].pattern.as(ExpressionPatternSyntax.self),
-               pattern.expression.is(MissingExprSyntax.self) {
+                pattern.expression.is(MissingExprSyntax.self)
+            {
                 return true
             } else {
                 return false
@@ -45,19 +46,20 @@ final class SwitchErrorsRewriter: SyntaxRewriter {
         }
 
         if lastIsAMissingExpr,
-           oneToLastContainsTrailingComma {
+            oneToLastContainsTrailingComma
+        {
 
             items[items.index(before: lastIndex)].trailingComma = nil
             items.remove(at: lastIndex)
 
             let node = node.with(
                 \.label,
-                 SwitchCaseSyntax.Label(
+                SwitchCaseSyntax.Label(
                     label.with(
                         \.caseItems,
-                         items
+                        items
                     )
-                 )
+                )
             )
             return node
         } else {

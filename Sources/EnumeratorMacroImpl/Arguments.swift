@@ -1,6 +1,6 @@
+import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
-import SwiftDiagnostics
 
 struct Arguments {
 
@@ -75,10 +75,12 @@ struct Arguments {
                 )
                 continue
             }
-            guard let string = self.requireStringLiteralOrThrowDiagnostic(
-                node: stringLiteral,
-                context: context
-            ) else { continue }
+            guard
+                let string = self.requireStringLiteralOrThrowDiagnostic(
+                    node: stringLiteral,
+                    context: context
+                )
+            else { continue }
             self.allowedComments!.keys.append(string)
         }
     }
@@ -98,10 +100,12 @@ struct Arguments {
             )
             return
         }
-        guard let template = self.requireStringLiteralOrThrowDiagnostic(
-            node: stringLiteral,
-            context: context
-        ) else {
+        guard
+            let template = self.requireStringLiteralOrThrowDiagnostic(
+                node: stringLiteral,
+                context: context
+            )
+        else {
             return
         }
         self.templates.append((template, stringLiteral))

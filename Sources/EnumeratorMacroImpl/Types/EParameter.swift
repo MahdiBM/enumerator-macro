@@ -20,7 +20,8 @@ struct EParameter {
 
         let parameterName = (parameter.secondName ?? parameter.firstName)?.trimmedDescription
         if let parameterName,
-           !parameterName.isEmpty {
+            !parameterName.isEmpty
+        {
             self.name = .init(parameterName)
         } else {
             self.name = .init("param\(index + 1)")
@@ -62,15 +63,16 @@ extension EParameter: Comparable {
     }
 }
 
-private extension TypeSyntax {
-    var isOptional: Bool {
+extension TypeSyntax {
+    fileprivate var isOptional: Bool {
         switch self.kind {
         case .optionalType, .implicitlyUnwrappedOptionalType:
             return true
         case .identifierType:
             if let type = self.as(IdentifierTypeSyntax.self),
-               let genericArgumentClause = type.genericArgumentClause,
-               !genericArgumentClause.arguments.isEmpty {
+                let genericArgumentClause = type.genericArgumentClause,
+                !genericArgumentClause.arguments.isEmpty
+            {
                 let arguments = genericArgumentClause.arguments
                 switch (arguments.count, type.name.tokenKind) {
                 case (1, .identifier("Optional")):
@@ -80,7 +82,7 @@ private extension TypeSyntax {
                 }
             }
             return false
-        default: 
+        default:
             return false
         }
     }

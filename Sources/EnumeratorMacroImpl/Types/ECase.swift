@@ -1,7 +1,7 @@
-import SwiftDiagnostics
-import SwiftSyntax
 import Foundation
 import Mustache
+import SwiftDiagnostics
+import SwiftSyntax
 
 struct ECase {
     let node: EnumCaseElementSyntax
@@ -22,7 +22,7 @@ struct ECase {
         self.index = EInt(index)
         self.isFirst = isFirst
         self.isLast = isLast
-        
+
         self.name = .init(element.name.trimmedDescription)
         let parameters = element.parameterClause?.parameters ?? []
         let lastIdx = parameters.count - 1
@@ -39,9 +39,9 @@ struct ECase {
 
         let keyValues: [EKeyValue] = element.trailingTrivia
             .description
-            .replacingOccurrences(of: "///", with: "") /// remove comment signs
-            .replacingOccurrences(of: "//", with: "") /// remove comment signs
-            .split(separator: ";") /// separator of parameters
+            .replacingOccurrences(of: "///", with: "")/// remove comment signs
+            .replacingOccurrences(of: "//", with: "")/// remove comment signs
+            .split(separator: ";")/// separator of parameters
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }
             .compactMap {

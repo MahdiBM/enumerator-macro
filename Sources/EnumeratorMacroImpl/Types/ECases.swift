@@ -30,7 +30,8 @@ struct ECases {
         context: some MacroExpansionContext
     ) -> Bool {
         guard let allowedComments = arguments.allowedComments,
-              !allowedComments.keys.isEmpty else {
+            !allowedComments.keys.isEmpty
+        else {
             return true
         }
         var allGood = true

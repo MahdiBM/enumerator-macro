@@ -1,7 +1,8 @@
-@testable import EnumeratorMacroImpl
-import SwiftSyntax
 import SwiftParser
+import SwiftSyntax
 import XCTest
+
+@testable import EnumeratorMacroImpl
 
 final class EParameterTests: XCTestCase {
 
@@ -104,4 +105,3 @@ final class EParameterTests: XCTestCase {
         return typeAnnotation.type
     }
 }
-

@@ -1,4 +1,3 @@
-
 protocol WithNormalizedTypeName {
     static var normalizedTypeName: String { get }
 }

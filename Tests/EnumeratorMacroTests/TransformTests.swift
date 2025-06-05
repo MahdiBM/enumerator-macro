@@ -1,7 +1,8 @@
-@testable import EnumeratorMacroImpl
 import Mustache
 import SwiftSyntax
 import XCTest
+
+@testable import EnumeratorMacroImpl
 
 final class TransformTests: XCTestCase {
     func testCommentsValueIsEmptyBecauseDoesNotExist() throws {
@@ -50,10 +51,10 @@ final class TransformTests: XCTestCase {
 
     func testCommentsValueConditionalSection() throws {
         let template = """
-        {{^exists(custom_params(comments))}}
-        thing!
-        {{/exists(custom_params(comments))}}
-        """
+            {{^exists(custom_params(comments))}}
+            thing!
+            {{/exists(custom_params(comments))}}
+            """
         let render = try MustacheTemplate(
             string: "{{%CONTENT_TYPE:TEXT}}\n" + template
         ).render(
@@ -84,14 +85,16 @@ final class TransformTests: XCTestCase {
         ECase(
             node: .init(name: .identifier("empty")),
             name: "case3",
-            parameters: .init(underlying: [EParameter(
-                name: "thing",
-                type: "String",
-                isOptional: false,
-                index: 0,
-                isFirst: true,
-                isLast: true
-            )]),
+            parameters: .init(underlying: [
+                EParameter(
+                    name: "thing",
+                    type: "String",
+                    isOptional: false,
+                    index: 0,
+                    isFirst: true,
+                    isLast: true
+                )
+            ]),
             comments: [],
             index: 2,
             isFirst: false,
@@ -116,15 +119,15 @@ final class TransformTests: XCTestCase {
                     index: 1,
                     isFirst: false,
                     isLast: true
-                )
+                ),
             ]),
             comments: [
                 .init(from: "bool_value")!,
-                .init(from: "custom_params:")!
+                .init(from: "custom_params:")!,
             ],
             index: 3,
             isFirst: false,
             isLast: true
-        )
+        ),
     ]
 }

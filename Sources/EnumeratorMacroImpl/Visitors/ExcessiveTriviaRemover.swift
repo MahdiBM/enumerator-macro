@@ -4,7 +4,8 @@ final class ExcessiveTriviaRemover: SyntaxRewriter {
     /// Removes empty lines.
     override func visitAny(_ node: Syntax) -> Syntax? {
         var node = node
-        let leadingModified, trailingModified: Bool
+        let leadingModified: Bool
+        let trailingModified: Bool
         (leadingModified, node) = self.removeEmptyLineTrivia(from: node, at: \.leadingTrivia)
         (trailingModified, node) = self.removeEmptyLineTrivia(from: node, at: \.trailingTrivia)
         let modified = leadingModified || trailingModified
@@ -30,8 +31,9 @@ final class ExcessiveTriviaRemover: SyntaxRewriter {
                 previousWasNewLines = true
             case .spaces:
                 if previousWasNewLines,
-                   idx + 1 < pieces.count,
-                   case .newlines = pieces[idx + 1] {
+                    idx + 1 < pieces.count,
+                    case .newlines = pieces[idx + 1]
+                {
                     /// Previous and next are both `newlines`, so remove this `spaces`.
                     toBeRemoved.append(idx)
                 }
@@ -49,8 +51,9 @@ final class ExcessiveTriviaRemover: SyntaxRewriter {
             /// Combine consecutive `newlines` into a single one.
             pieces = pieces.reduce(into: [TriviaPiece]()) { result, next in
                 if case let .newlines(countNext) = next,
-                   let previous = result.last,
-                   case let .newlines(countLast) = previous {
+                    let previous = result.last,
+                    case let .newlines(countLast) = previous
+                {
                     result[result.count - 1] = .newlines(countNext + countLast)
                 } else {
                     result.append(next)
@@ -60,7 +63,8 @@ final class ExcessiveTriviaRemover: SyntaxRewriter {
 
         pieces = pieces.map { piece in
             if case let .newlines(count) = piece,
-               count > 1 {
+                count > 1
+            {
                 modified = true
                 return TriviaPiece.newlines(1)
             } else {

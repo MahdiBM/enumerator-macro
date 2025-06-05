@@ -1,6 +1,6 @@
-import SwiftDiagnostics
-import Mustache
 import Foundation
+import Mustache
+import SwiftDiagnostics
 
 struct EComments {
     let underlying: EArray<EKeyValue>
@@ -67,9 +67,10 @@ extension EComments: EMustacheTransformable {
             return self
         default:
             if let context = RenderingContext.current,
-               let allowedComments = context.allowedComments,
-               !allowedComments.keys.isEmpty,
-               !allowedComments.keys.contains(name) {
+                let allowedComments = context.allowedComments,
+                !allowedComments.keys.isEmpty,
+                !allowedComments.keys.contains(name)
+            {
                 context.diagnose(
                     error: .commentKeyNotAllowed(key: name),
                     node: context.node

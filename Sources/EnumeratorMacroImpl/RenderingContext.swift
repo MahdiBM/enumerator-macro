@@ -1,6 +1,6 @@
-import SwiftSyntaxMacros
-import SwiftSyntax
 import SwiftDiagnostics
+import SwiftSyntax
+import SwiftSyntaxMacros
 
 /// The macro works in a single thread so `@unchecked Sendable` is justified.
 final class RenderingContext: @unchecked Sendable {
@@ -32,20 +32,24 @@ final class RenderingContext: @unchecked Sendable {
         error: MacroError,
         node: any SyntaxProtocol
     ) {
-        self.context.diagnose(.init(
-            node: node,
-            message: error
-        ))
+        self.context.diagnose(
+            .init(
+                node: node,
+                message: error
+            )
+        )
         self.emittedAnyDiagnostics = true
     }
 
     /// Returns whether there were any diagnostics emitted at all
     func finishDiagnostics() -> Bool {
         if let diagnostic = self.functionDiagnostic {
-            self.context.diagnose(.init(
-                node: self.node,
-                message: diagnostic
-            ))
+            self.context.diagnose(
+                .init(
+                    node: self.node,
+                    message: diagnostic
+                )
+            )
             return true
         } else if self.emittedAnyDiagnostics {
             return true

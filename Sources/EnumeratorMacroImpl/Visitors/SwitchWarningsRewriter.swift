@@ -31,8 +31,9 @@ final class SwitchWarningsRewriter: SyntaxRewriter {
 
         for (idx, item) in items.enumerated() {
             guard let pattern = item.pattern.as(ValueBindingPatternSyntax.self),
-                  let expr = pattern.pattern.as(ExpressionPatternSyntax.self),
-                  let functionCallSyntax = expr.expression.as(FunctionCallExprSyntax.self) else {
+                let expr = pattern.pattern.as(ExpressionPatternSyntax.self),
+                let functionCallSyntax = expr.expression.as(FunctionCallExprSyntax.self)
+            else {
                 continue
             }
 
@@ -42,7 +43,8 @@ final class SwitchWarningsRewriter: SyntaxRewriter {
 
             for (idx, argument) in arguments.enumerated() {
                 guard let patternExpr = argument.expression.as(PatternExprSyntax.self),
-                      let identifier = patternExpr.pattern.as(IdentifierPatternSyntax.self) else {
+                    let identifier = patternExpr.pattern.as(IdentifierPatternSyntax.self)
+                else {
                     continue
                 }
                 /// Only try to do something if the `tokenKind` is `.identifier`.
@@ -64,23 +66,23 @@ final class SwitchWarningsRewriter: SyntaxRewriter {
 
                 if presenceDetector.detectCount < 2 {
                     /// Doesn't logically do anything, so commented out.
-                    /* allArgsAreWildcards = allArgsAreWildcards && true */
+                    /// allArgsAreWildcards = allArgsAreWildcards && true
 
                     didModify = true
                     let idx = arguments.index(at: idx)
                     arguments[idx] = arguments[idx].with(
                         \.expression,
-                         ExprSyntax(
+                        ExprSyntax(
                             patternExpr.with(
                                 \.pattern,
-                                 PatternSyntax(
+                                PatternSyntax(
                                     identifier.with(
                                         \.identifier,
-                                         .wildcardToken()
+                                        .wildcardToken()
                                     )
-                                 )
+                                )
                             )
-                         )
+                        )
                     )
                 }
             }
@@ -94,7 +96,7 @@ final class SwitchWarningsRewriter: SyntaxRewriter {
                 innerExpression = ExprSyntax(
                     functionCallSyntax.with(
                         \.arguments,
-                         arguments
+                        arguments
                     )
                 )
             case (false, false):
@@ -104,28 +106,28 @@ final class SwitchWarningsRewriter: SyntaxRewriter {
 
             items = items.with(
                 \.[items.index(at: idx)].pattern,
-                 PatternSyntax(
+                PatternSyntax(
                     pattern.with(
                         \.pattern,
-                         PatternSyntax(
+                        PatternSyntax(
                             expr.with(
                                 \.expression,
-                                 innerExpression
+                                innerExpression
                             )
-                         )
+                        )
                     )
-                 )
+                )
             )
         }
 
         let node = node.with(
             \.label,
-             SwitchCaseSyntax.Label(
+            SwitchCaseSyntax.Label(
                 label.with(
                     \.caseItems,
-                     items
+                    items
                 )
-             )
+            )
         )
 
         return node
@@ -150,26 +152,27 @@ final class SwitchWarningsRewriter: SyntaxRewriter {
 
         for (idx, item) in items.enumerated() {
             guard let pattern = item.pattern.as(ValueBindingPatternSyntax.self),
-                  pattern.bindingSpecifier.tokenKind == .keyword(.let),
-                  let expr = pattern.pattern.as(ExpressionPatternSyntax.self),
-                  expr.expression.is(MemberAccessExprSyntax.self) else {
+                pattern.bindingSpecifier.tokenKind == .keyword(.let),
+                let expr = pattern.pattern.as(ExpressionPatternSyntax.self),
+                expr.expression.is(MemberAccessExprSyntax.self)
+            else {
                 continue
             }
 
             items = items.with(
                 \.[items.index(at: idx)].pattern,
-                 PatternSyntax(expr)
+                PatternSyntax(expr)
             )
         }
 
         let node = node.with(
             \.label,
-             SwitchCaseSyntax.Label(
+            SwitchCaseSyntax.Label(
                 label.with(
                     \.caseItems,
-                     items
+                    items
                 )
-             )
+            )
         )
 
         return node

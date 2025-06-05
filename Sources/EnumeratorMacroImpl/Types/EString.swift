@@ -1,5 +1,12 @@
 import Mustache
 
+/// Importing FoundationEssentials for `.capitalized`
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
+import Foundation
+#endif
+
 struct EString {
     var underlying: String
 
@@ -35,7 +42,8 @@ extension EString: EMustacheTransformable {
             if self.isEmpty || self[self.startIndex].isUppercase {
                 return self
             }
-            let modified = self[self.startIndex].uppercased() + self[self.index(after: self.startIndex)...]
+            let modified =
+                self[self.startIndex].uppercased() + self[self.index(after: self.startIndex)...]
             return EString(modified)
         case "lowercased":
             return EString(self.lowercased())
@@ -121,11 +129,13 @@ extension EString: StringProtocol {
     init<C, Encoding>(
         decoding codeUnits: C,
         as sourceEncoding: Encoding.Type = Encoding.self
-    ) where C : Collection, Encoding : _UnicodeEncoding, C.Element == Encoding.CodeUnit {
-        self.init(String(
-            decoding: codeUnits,
-            as: sourceEncoding
-        ))
+    ) where C: Collection, Encoding: _UnicodeEncoding, C.Element == Encoding.CodeUnit {
+        self.init(
+            String(
+                decoding: codeUnits,
+                as: sourceEncoding
+            )
+        )
     }
 
     init(cString nullTerminatedUTF8: UnsafePointer<CChar>) {
@@ -135,11 +145,13 @@ extension EString: StringProtocol {
     init<Encoding>(
         decodingCString nullTerminatedCodeUnits: UnsafePointer<Encoding.CodeUnit>,
         as sourceEncoding: Encoding.Type = Encoding.self
-    ) where Encoding : _UnicodeEncoding {
-        self.init(String(
-            decodingCString: nullTerminatedCodeUnits,
-            as: sourceEncoding
-        ))
+    ) where Encoding: _UnicodeEncoding {
+        self.init(
+            String(
+                decodingCString: nullTerminatedCodeUnits,
+                as: sourceEncoding
+            )
+        )
     }
 
     func withCString<Result>(_ body: (UnsafePointer<CChar>) throws -> Result) rethrows -> Result {
@@ -149,7 +161,7 @@ extension EString: StringProtocol {
     func withCString<Result, Encoding>(
         encodedAs targetEncoding: Encoding.Type = Encoding.self,
         _ body: (UnsafePointer<Encoding.CodeUnit>) throws -> Result
-    ) rethrows -> Result where Encoding : _UnicodeEncoding {
+    ) rethrows -> Result where Encoding: _UnicodeEncoding {
         try self.underlying.withCString(encodedAs: targetEncoding, body)
     }
 
@@ -173,7 +185,7 @@ extension EString: StringProtocol {
         self.underlying.write(string)
     }
 
-    func write<Target>(to target: inout Target) where Target : TextOutputStream {
+    func write<Target>(to target: inout Target) where Target: TextOutputStream {
         self.underlying.write(to: &target)
     }
 
@@ -190,12 +202,12 @@ extension EString: RangeReplaceableCollection {
     mutating func replaceSubrange<C>(
         _ subrange: Range<String.Index>,
         with newElements: C
-    ) where C : Collection, Character == C.Element {
+    ) where C: Collection, Character == C.Element {
         self.underlying.replaceSubrange(subrange, with: newElements)
     }
 }
 
-private extension StringProtocol where Self: RangeReplaceableCollection {
+extension StringProtocol where Self: RangeReplaceableCollection {
     /// Returns a new string with the camel-case-based words of this string
     /// split by the specified separator.
     ///
@@ -205,7 +217,7 @@ private extension StringProtocol where Self: RangeReplaceableCollection {
     ///     // my_property
     ///     "myURLProperty".convertedToSnakeCase()
     ///     // my_url_property
-    func convertedToSnakeCase() -> Self {
+    fileprivate func convertedToSnakeCase() -> Self {
         guard !isEmpty else { return "" }
         var result: Self = ""
         // Whether we should append a separator when we see a uppercase character.
@@ -219,7 +231,10 @@ private extension StringProtocol where Self: RangeReplaceableCollection {
                     result += "_"
                 }
                 // If the next character is uppercase and the next-next character is lowercase, like "L" in "URLSession", we should separate words.
-                separateOnUppercase = nextIndex < endIndex && self[nextIndex].isUppercase && self.index(after: nextIndex) < endIndex && self[self.index(after: nextIndex)].isLowercase
+                separateOnUppercase =
+                    nextIndex < endIndex && self[nextIndex].isUppercase
+                    && self.index(after: nextIndex) < endIndex
+                    && self[self.index(after: nextIndex)].isLowercase
             } else {
                 // If the character is `separator`, we do not want to append another separator when we see the next uppercase character.
                 separateOnUppercase = character != "_"
@@ -230,7 +245,7 @@ private extension StringProtocol where Self: RangeReplaceableCollection {
         return result
     }
 
-    func convertToCamelCase() -> Self {
+    fileprivate func convertToCamelCase() -> Self {
         guard !self.isEmpty else { return self }
 
         // Find the first non-underscore character
@@ -255,17 +270,21 @@ private extension StringProtocol where Self: RangeReplaceableCollection {
             // No underscores in key, leave the word as is - maybe already camel cased
             joinedString = Self(self[keyRange])
         } else {
-            joinedString = Self(([components[0].lowercased()] + components[1...].map(\.capitalized)).joined())
+            joinedString = Self(
+                ([components[0].lowercased()] + components[1...].map(\.capitalized)).joined()
+            )
         }
 
         // Do a cheap isEmpty check before creating and appending potentially empty strings
         let result: Self
-        if (leadingUnderscoreRange.isEmpty && trailingUnderscoreRange.isEmpty) {
+        if leadingUnderscoreRange.isEmpty && trailingUnderscoreRange.isEmpty {
             result = joinedString
-        } else if (!leadingUnderscoreRange.isEmpty && !trailingUnderscoreRange.isEmpty) {
+        } else if !leadingUnderscoreRange.isEmpty && !trailingUnderscoreRange.isEmpty {
             // Both leading and trailing underscores
-            result = Self(self[leadingUnderscoreRange]) + joinedString + Self(self[trailingUnderscoreRange])
-        } else if (!leadingUnderscoreRange.isEmpty) {
+            result =
+                Self(self[leadingUnderscoreRange]) + joinedString
+                + Self(self[trailingUnderscoreRange])
+        } else if !leadingUnderscoreRange.isEmpty {
             // Just leading
             result = Self(self[leadingUnderscoreRange]) + joinedString
         } else {

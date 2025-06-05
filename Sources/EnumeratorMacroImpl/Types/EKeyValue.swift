@@ -1,15 +1,15 @@
-import SwiftSyntax
-import SwiftSyntaxMacros
-import SwiftDiagnostics
-import Mustache
 /// Importing foundation for `.trimmingCharacters(in: .whitespacesAndNewlines)`
 import Foundation
+import Mustache
+import SwiftDiagnostics
+import SwiftSyntax
+import SwiftSyntaxMacros
 
 struct EKeyValue {
     let key: EString
     let value: EString
 
-    init? (from string: String) {
+    init?(from string: String) {
         let split = string.split(
             separator: ":",
             maxSplits: 1

@@ -1,5 +1,5 @@
-import SwiftDiagnostics
 import Mustache
+import SwiftDiagnostics
 
 struct EArray<Element> {
     let underlying: [Element]

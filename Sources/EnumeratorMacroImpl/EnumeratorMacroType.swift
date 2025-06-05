@@ -1,14 +1,15 @@
+import Foundation
+import Mustache
+import SwiftDiagnostics
+import SwiftParser
+import SwiftParserDiagnostics
+import SwiftSyntax
+import SwiftSyntaxMacros
+
 /// FixItApplier not available in older versions of SwiftSyntax.
 #if canImport(SwiftSyntax600) || canImport(SwiftSyntax601) || canImport(SwiftSyntax602) || canImport(SwiftSyntax603)
 @_spi(FixItApplier) import SwiftIDEUtils
 #endif
-import SwiftDiagnostics
-import SwiftSyntax
-import SwiftSyntaxMacros
-import SwiftParser
-import SwiftParserDiagnostics
-import Mustache
-import Foundation
 
 enum EnumeratorMacroType {}
 
@@ -16,6 +17,7 @@ extension EnumeratorMacroType: MemberMacro {
     static func expansion(
         of node: AttributeSyntax,
         providingMembersOf declaration: some DeclGroupSyntax,
+        conformingTo protocols: [TypeSyntax],
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
         if declaration.hasError { return [] }
@@ -37,10 +39,12 @@ extension EnumeratorMacroType: MemberMacro {
             context: context
         )
 
-        guard cases.checkCommentsOnlyContainAllowedKeysOrDiagnose(
-            arguments: parsedArguments,
-            context: context
-        ) else {
+        guard
+            cases.checkCommentsOnlyContainAllowedKeysOrDiagnose(
+                arguments: parsedArguments,
+                context: context
+            )
+        else {
             return []
         }
 
@@ -104,8 +108,11 @@ extension EnumeratorMacroType: MemberMacro {
         }
         typealias DeclWithOriginalSyntax = (DeclSyntax, StringLiteralExprSyntax)
         let syntaxes: [DeclWithOriginalSyntax] = rendered.compactMap {
-            (rendered, codeSyntax)
-            -> (declSyntaxes: [DeclSyntax], codeSyntax: StringLiteralExprSyntax)? in
+            (
+                rendered,
+                codeSyntax
+            )
+                -> (declSyntaxes: [DeclSyntax], codeSyntax: StringLiteralExprSyntax)? in
             var parser = Parser(rendered)
             let decls = SourceFileSyntax.parse(
                 from: &parser
@@ -113,7 +120,7 @@ extension EnumeratorMacroType: MemberMacro {
                 var statement = statement
                 var diagnostics = ParseDiagnosticsGenerator.diagnostics(for: statement)
 
-#if canImport(SwiftSyntax600) || canImport(SwiftSyntax601) || canImport(SwiftSyntax602) || canImport(SwiftSyntax603)
+                #if canImport(SwiftSyntax600) || canImport(SwiftSyntax601) || canImport(SwiftSyntax602) || canImport(SwiftSyntax603)
                 /// Returns if anything changed at all.
                 func tryApplyFixIts() -> Bool {
                     guard diagnostics.contains(where: { !$0.fixIts.isEmpty }) else {
@@ -141,7 +148,7 @@ extension EnumeratorMacroType: MemberMacro {
                         return true
                     }
                 }
-#endif
+                #endif
 
                 /// Returns if anything changed at all.
                 func tryManuallyFixErrors() -> Bool {
@@ -164,11 +171,11 @@ extension EnumeratorMacroType: MemberMacro {
                     }
                 }
 
-#if canImport(SwiftSyntax600) || canImport(SwiftSyntax601) || canImport(SwiftSyntax602) || canImport(SwiftSyntax603)
+                #if canImport(SwiftSyntax600) || canImport(SwiftSyntax601) || canImport(SwiftSyntax602) || canImport(SwiftSyntax603)
                 if tryApplyFixIts() {
                     diagnostics = ParseDiagnosticsGenerator.diagnostics(for: statement)
                 }
-#endif
+                #endif
 
                 if diagnostics.containsError, tryManuallyFixErrors() {
                     diagnostics = ParseDiagnosticsGenerator.diagnostics(for: statement)
@@ -176,22 +183,26 @@ extension EnumeratorMacroType: MemberMacro {
 
                 if diagnostics.containsError {
                     /// If still not recovered, throw a diagnostic error.
-                    context.diagnose(.init(
-                        node: codeSyntax,
-                        message: MacroError.renderedSyntaxContainsErrors(statement.description)
-                    ))
+                    context.diagnose(
+                        .init(
+                            node: codeSyntax,
+                            message: MacroError.renderedSyntaxContainsErrors(statement.description)
+                        )
+                    )
                 }
 
                 for diagnostic in diagnostics
                 where diagnostic.diagMessage.severity == .error {
-                    context.diagnose(.init(
-                        node: codeSyntax,
-                        position: diagnostic.position,
-                        message: diagnostic.diagMessage,
-                        highlights: diagnostic.highlights,
-                        notes: diagnostic.notes,
-                        fixIts: diagnostic.fixIts
-                    ))
+                    context.diagnose(
+                        .init(
+                            node: codeSyntax,
+                            position: diagnostic.position,
+                            message: diagnostic.diagMessage,
+                            highlights: diagnostic.highlights,
+                            notes: diagnostic.notes,
+                            fixIts: diagnostic.fixIts
+                        )
+                    )
                 }
                 if diagnostics.containsError {
                     return nil
@@ -245,8 +256,8 @@ extension EnumeratorMacroType: MemberMacro {
     }
 }
 
-private extension [Diagnostic] {
-    var containsError: Bool {
+extension [Diagnostic] {
+    fileprivate var containsError: Bool {
         self.contains(where: { $0.diagMessage.severity == .error })
     }
 }

@@ -4,7 +4,7 @@ enum EOptional<Wrapped> {
     case none
     case some(Wrapped)
 
-    init(_ optional: Optional<Wrapped>) {
+    init(_ optional: Wrapped?) {
         switch optional {
         case .none:
             self = .none
@@ -13,7 +13,7 @@ enum EOptional<Wrapped> {
         }
     }
 
-    func toOptional() -> Optional<Wrapped> {
+    func toOptional() -> Wrapped? {
         switch self {
         case .none:
             return .none
