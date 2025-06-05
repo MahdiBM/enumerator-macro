@@ -1,5 +1,5 @@
 /// FixItApplier not available in older versions of SwiftSyntax.
-#if canImport(SwiftSyntax600)
+#if canImport(SwiftSyntax600) || canImport(SwiftSyntax601) || canImport(SwiftSyntax602) || canImport(SwiftSyntax603)
 @_spi(FixItApplier) import SwiftIDEUtils
 #endif
 import SwiftDiagnostics
@@ -113,7 +113,7 @@ extension EnumeratorMacroType: MemberMacro {
                 var statement = statement
                 var diagnostics = ParseDiagnosticsGenerator.diagnostics(for: statement)
 
-#if canImport(SwiftSyntax600)
+#if canImport(SwiftSyntax600) || canImport(SwiftSyntax601) || canImport(SwiftSyntax602) || canImport(SwiftSyntax603)
                 /// Returns if anything changed at all.
                 func tryApplyFixIts() -> Bool {
                     guard diagnostics.contains(where: { !$0.fixIts.isEmpty }) else {
@@ -164,7 +164,7 @@ extension EnumeratorMacroType: MemberMacro {
                     }
                 }
 
-#if canImport(SwiftSyntax600)
+#if canImport(SwiftSyntax600) || canImport(SwiftSyntax601) || canImport(SwiftSyntax602) || canImport(SwiftSyntax603)
                 if tryApplyFixIts() {
                     diagnostics = ParseDiagnosticsGenerator.diagnostics(for: statement)
                 }

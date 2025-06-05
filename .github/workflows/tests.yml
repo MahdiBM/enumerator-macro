@@ -14,16 +14,21 @@ jobs:
         swift-image:
           - name: swift:5.10-noble
             continue-on-error: false
+            code_cov_args: ""
           - name: swift:6.0-noble
             continue-on-error: false
+            code_cov_args: "--enable-code-coverage"
+          - name: swift:6.1-noble
+            continue-on-error: false
+            # Some kind of issue with code coverage on 6.1
+            code_cov_args: ""
           - name: swiftlang/swift:nightly-main-jammy
             # https://github.com/swiftlang/swift/issues/77242
             continue-on-error: true
+            code_cov_args: "--enable-code-coverage"
         config:
           - mode: "debug"
-            build_args: ""
           - mode: "release"
-            build_args: "-Xswiftc -enable-testing"
 
     runs-on: ubuntu-latest
 
@@ -35,7 +40,13 @@ jobs:
       - name: Check out ${{ github.event.repository.name }}
         uses: actions/checkout@v4
 
+      - name: Install zstd
+        run: |
+          apt-get update -y
+          apt-get install -y zstd
+
       - name: Restore .build
+        if: ${{ runner.debug != '1' }}
         id: "restore-cache"
         uses: actions/cache/restore@v4
         with:
@@ -46,7 +57,7 @@ jobs:
 
       - name: Build ${{ github.event.repository.name }}
         continue-on-error: ${{ matrix.swift-image.continue-on-error }}
-        run: swift build --build-tests -c ${{ matrix.config.mode }} ${{ matrix.config.build_args }}
+        run: swift build --build-tests -Xswiftc -enable-testing -c ${{ matrix.config.mode }} ${{ matrix.swift-image.code_cov_args }}
 
       - name: Cache .build
         if: steps.restore-cache.outputs.cache-hit != 'true'
@@ -57,10 +68,11 @@ jobs:
 
       - name: Run tests
         continue-on-error: ${{ matrix.swift-image.continue-on-error }}
-        run: swift test --parallel --enable-code-coverage -c ${{ matrix.config.mode }}
+        run: swift test --skip-build --parallel -c ${{ matrix.config.mode }} ${{ matrix.swift-image.code_cov_args }}
 
       - name: Submit code coverage
         continue-on-error: ${{ matrix.swift-image.continue-on-error }}
+        if: ${{ matrix.swift-image.code_cov_args != '' }}
         uses: vapor/swift-codecov-action@v0.3
         with:
           build_parameters: "-c ${{ matrix.config.mode }}"

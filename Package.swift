@@ -21,7 +21,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/swiftlang/swift-syntax.git",
-            "509.0.0" ..< "601.0.0-latest"
+            "509.0.0" ..< "603.0.0"
         ),
         .package(
             url: "https://github.com/hummingbird-project/swift-mustache.git",

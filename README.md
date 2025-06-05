@@ -6,15 +6,15 @@
         <img src="https://codecov.io/github/mahdibm/enumerator-macro/branch/main/graph/badge.svg" alt="Code Coverage">
     </a>
     <a href="https://swift.org">
-        <img src="https://img.shields.io/badge/swift-6.0%20%2F%205.10-brightgreen.svg" alt="Latest/Minimum Swift Version">
+        <img src="https://img.shields.io/badge/swift-6.1%20%2F%206.0%20%2F%205.10-brightgreen.svg" alt="Latest/Minimum Swift Version">
     </a>
 </p>
 
 # EnumeratorMacro
-A utility for creating case-by-case code for your Swift enums using the Mustache templating engine.   
+A utility for creating case-by-case code for your Swift enums using the Mustache templating engine.
 `EnumeratorMacro` uses [swift-mustache](https://github.com/hummingbird-project/swift-mustache)'s flavor.
 
-The macro will parse your enum code, and pass different info of your enum to the mustache template renderer.   
+The macro will parse your enum code, and pass different info of your enum to the mustache template renderer.
 Then you can access each case-name, case-parameters etc.. in the template, and create code based on that.
 
 ## How Does Mustache Templating Work?
@@ -143,7 +143,7 @@ enum TestEnum {
 
 <details>
   <summary> Click to expand </summary>
-    
+
 ```swift
 @Enumerator("""
 {{#cases}}
@@ -192,7 +192,7 @@ enum TestEnum {
 ```
 
 </details>
-    
+
 ### Create Get-Case-Value Functions
 
 <details>
@@ -253,7 +253,7 @@ enum TestEnum {
 
 <details>
   <summary> Click to expand </summary>
-    
+
 ```swift
 @Enumerator("""
 {{#cases}}
@@ -307,9 +307,9 @@ enum TestEnum {
 ### Using Comments For Code Generation
 
 > [!NOTE]
-> You can use comments in front of each case, as values for `EnumeratorMacro` to process.   
-> Use `;` to divide the comments, and use `:` to separate the `key` and the possible `value`.   
-> Example: `myKey1; myKey2: value; myKey3`.   
+> You can use comments in front of each case, as values for `EnumeratorMacro` to process.
+> Use `;` to divide the comments, and use `:` to separate the `key` and the possible `value`.
+> Example: `myKey1; myKey2: value; myKey3`.
 
 > [!TIP]
 > You should declare a `allowedComments` argument to enforce that only certain comments are used, so you avoid typo bugs.
@@ -370,7 +370,7 @@ public enum ErrorMessage {
 
 <details>
   <summary> Click to expand </summary>
-    
+
 ```swift
 @Enumerator(
     allowedComments: ["business_error", "l8n_params"],
@@ -380,13 +380,13 @@ public enum ErrorMessage {
         {{#cases}}
     {{! Only create a case for enum cases that have any parameters at all: }}
         {{^isEmpty(parameters)}}
-    
+
     {{! Create a case for those who have non-empty 'l8n_params' comment: }}
         {{^isEmpty(l8n_params(comments))}}
         case let .{{name}}{{withParens(joined(names(parameters)))}}:
             [{{l8n_params(comments)}}]
         {{/isEmpty(l8n_params(comments))}}
-    
+
     {{! Create a case for those who don't have 'l8n_params' comment at all: }}
         {{^exists(l8n_params(comments))}}
         case let .{{name}}{{withParens(joined(names(parameters)))}}:
@@ -396,7 +396,7 @@ public enum ErrorMessage {
                 {{/parameters}}
             ]
         {{/exists(l8n_params(comments))}}
-    
+
         {{/isEmpty(parameters)}}
         {{/cases}}
         default:
@@ -494,7 +494,7 @@ Although not visible when writing templates, each underlying value that is passe
   * `dropLast() -> String`: Equivalent to Swift's `.dropLast()`.
   * `hash() -> String`: The hash of the string using the `CRC32` algorithm.
   * `sha() -> String`: The SHA256 hash of the string using the `SHA256` algorithm.
-    * DO NOT rely on this to be cryptographically secure. 
+    * DO NOT rely on this to be cryptographically secure.
   * `snakeCased() -> String`: Converts the string from camelCase to snake_case.
   * `camelCased() -> String`: Converts the string from snake_case to camelCase.
   * `withParens() -> String`: If the string is not empty, surrounds it in parenthesis.
@@ -536,9 +536,9 @@ Although not visible when writing templates, each underlying value that is passe
   * `types() -> [String]`: Returns the types of the parameters.
     * Use with `joined`: `joined(types(parameters))` -> `(String, Int, Double)`.
   * `namesAndTypes() -> [String]`: Returns an array where each element is equivalent to `"\(name): \(type)"`.
-    * Use with `joined`: `joined(namesAndTypes(parameters))` -> `(key: String)` or `(key: String, value: Int)`. 
+    * Use with `joined`: `joined(namesAndTypes(parameters))` -> `(key: String)` or `(key: String, value: Int)`.
   * `tupleValue() -> String`: Suitable to be used for making tuples from the parameters.
-    * Use with `withParens`: `withParens(tupleValue(parameters))` -> `(String)` or `(key: String, value: Int)`. 
+    * Use with `withParens`: `withParens(tupleValue(parameters))` -> `(String)` or `(key: String, value: Int)`.
 
 Feel free to suggest a function if you think it'll solve a problem.
 
@@ -546,7 +546,7 @@ Feel free to suggest a function if you think it'll solve a problem.
 
 <details>
   <summary> Click to expand </summary>
-    
+
 In case there is an error in the expanded macro code, or in any other step of the code generation, `EnumeratorMacro` will try to emit diagnostics pointing to the line of the code which is the source of the issue.
 
 For example, `EnumeratorMacro` will properly forward template render errors from the template engine to your source code.
@@ -569,7 +569,7 @@ Here, I've supposedly forgot to write the `:` between `caseName` and `String`.
 
 ## How To Add EnumeratorMacro To Your Project
 
-To use the `EnumeratorMacro` library in a SwiftPM project, 
+To use the `EnumeratorMacro` library in a SwiftPM project,
 add the following line to the dependencies in your `Package.swift` file:
 
 ```swift
