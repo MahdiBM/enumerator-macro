@@ -65,6 +65,7 @@ let package = Package(
 var swiftSettings: [SwiftSetting] {
     [
         .enableExperimentalFeature("ExistentialAny"),
+        .enableExperimentalFeature("MemberImportVisibility"),
         .enableExperimentalFeature("AccessLevelOnImport"),
         .enableUpcomingFeature("StrictConcurrency"),
     ]

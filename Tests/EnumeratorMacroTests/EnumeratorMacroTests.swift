@@ -3,6 +3,7 @@ import EnumeratorMacroImpl
 import SwiftSyntaxMacros
 import SwiftDiagnostics
 import SwiftSyntaxMacrosTestSupport
+import SwiftSyntaxMacrosGenericTestSupport
 import XCTest
 
 final class EnumeratorMacroTests: XCTestCase {

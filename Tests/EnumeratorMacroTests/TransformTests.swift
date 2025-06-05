@@ -1,5 +1,6 @@
 @testable import EnumeratorMacroImpl
 import Mustache
+import SwiftSyntax
 import XCTest
 
 final class TransformTests: XCTestCase {

@@ -2,6 +2,8 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftDiagnostics
 import Mustache
+/// Importing foundation for `.trimmingCharacters(in: .whitespacesAndNewlines)`
+import Foundation
 
 struct EKeyValue {
     let key: EString

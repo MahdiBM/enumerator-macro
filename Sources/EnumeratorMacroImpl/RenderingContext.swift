@@ -1,5 +1,6 @@
 import SwiftSyntaxMacros
 import SwiftSyntax
+import SwiftDiagnostics
 
 /// The macro works in a single thread so `@unchecked Sendable` is justified.
 final class RenderingContext: @unchecked Sendable {
