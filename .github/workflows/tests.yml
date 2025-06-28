@@ -61,7 +61,7 @@ jobs:
 
       - name: Build ${{ github.event.repository.name }}
         continue-on-error: ${{ matrix.swift-image.continue-on-error }}
-        run: swift build --build-tests -Xswiftc -enable-testing -c ${{ matrix.config.mode }} ${{ matrix.swift-image.code_cov_args }} ${{ matrix.swift-image.experimental_args }}
+        run: swift build --build-tests --enable-testable-imports -c ${{ matrix.config.mode }} ${{ matrix.swift-image.code_cov_args }} ${{ matrix.swift-image.experimental_args }}
 
       - name: Cache .build
         if: steps.restore-cache.outputs.cache-hit != 'true'
