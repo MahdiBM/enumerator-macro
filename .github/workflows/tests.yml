@@ -49,10 +49,10 @@ jobs:
       - name: Check out ${{ github.event.repository.name }}
         uses: actions/checkout@v4
 
-      - name: Install zstd
+      - name: Install curl & zstd
         run: |
           apt-get update -y
-          apt-get install -y zstd
+          apt-get install -y curl zstd
 
       - name: Restore .build
         if: ${{ runner.debug != '1' }}
