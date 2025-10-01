@@ -6,11 +6,10 @@ import PackageDescription
 let package = Package(
     name: "EnumeratorMacro",
     platforms: [
-        .macOS(.v14),
-        .iOS(.v17),
-        .tvOS(.v17),
-        .watchOS(.v10),
-        .visionOS(.v1),
+        .macOS(.v10_15),
+        .iOS(.v13),
+        .tvOS(.v13),
+        .watchOS(.v6)
     ],
     products: [
         .library(
@@ -21,7 +20,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/swiftlang/swift-syntax.git",
-            "509.0.0"..<"603.0.0"
+            "509.0.0"..<"604.0.0"
         ),
         .package(
             url: "https://github.com/hummingbird-project/swift-mustache.git",

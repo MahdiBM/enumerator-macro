@@ -1,22 +1,22 @@
 {
-  "originHash" : "0c7908022810b3286f0040ca845237da499f35ad14893772383d48582c6ee942",
+  "originHash" : "6c7413d5e077ef260661eecbb1d9801df3ace8adf0093bd649e9995f211aa07a",
   "pins" : [
     {
       "identity" : "swift-mustache",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/hummingbird-project/swift-mustache",
+      "location" : "https://github.com/hummingbird-project/swift-mustache.git",
       "state" : {
-        "revision" : "9de71fc4d10f0efc0ac758d0acf14e75d39b47b4",
-        "version" : "2.0.0"
+        "revision" : "534f9f9e60ccc1ecc947cababb71c5f91497f4a2",
+        "version" : "2.0.1"
       }
     },
     {
       "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swiftlang/swift-syntax",
+      "location" : "https://github.com/swiftlang/swift-syntax.git",
       "state" : {
-        "revision" : "f99ae8aa18f0cf0d53481901f88a0991dc3bd4a2",
-        "version" : "601.0.1"
+        "revision" : "4799286537280063c85a32f09884cfbca301b1a1",
+        "version" : "602.0.0"
       }
     }
   ],
