@@ -25,6 +25,11 @@ jobs:
             # Some kind of issue with code coverage on 6.1
             code_cov_args: ""
             experimental_args: "--enable-experimental-prebuilts"
+          - name: swift:6.2-noble
+            continue-on-error: false
+            # Some kind of issue with code coverage on 6.1
+            code_cov_args: ""
+            experimental_args: ""
           - name: swiftlang/swift:nightly-main-jammy
             # https://github.com/swiftlang/swift/issues/77242
             continue-on-error: true
@@ -87,7 +92,7 @@ jobs:
 
     timeout-minutes: 20
 
-    container: swift:6.1-noble
+    container: swift:6.2-noble
 
     defaults:
       run:
