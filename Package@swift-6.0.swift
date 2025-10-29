@@ -66,5 +66,6 @@ var swiftSettings: [SwiftSetting] {
         .enableExperimentalFeature("ExistentialAny"),
         .enableExperimentalFeature("AccessLevelOnImport"),
         .enableExperimentalFeature("MemberImportVisibility"),
+        .enableExperimentalFeature("InternalImportsByDefault"),
     ]
 }
